@@ -10,7 +10,7 @@ export const tabsLayout = Tabs({
       icon: 'description',
       path: '/docs/:id',
       screen: 'sw-docs-screen',
-      match: ['docs', 'introduction', 'installation', 'quickstart'],
+      match: ['docs', 'introduction', 'installation', 'quickstart', 'router'],
       initialRoute: 'introduction'
     }
   ],

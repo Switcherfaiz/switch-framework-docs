@@ -13,11 +13,42 @@ export class SwDocsScreen extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this._unsub = null;
   }
 
   connectedCallback() {
     this.render();
     this.bindPagination();
+    this.showActiveSection();
+    
+    // Subscribe to route changes
+    if (globalStates?.subscribe) {
+      this._unsub = globalStates.subscribe(() => this.showActiveSection());
+    }
+  }
+
+  disconnectedCallback() {
+    if (this._unsub) this._unsub();
+  }
+
+  showActiveSection() {
+    const activeRoute = globalStates?.getState ? globalStates.getState('activeRoute') : '';
+    const sectionId = activeRoute.includes('/') ? activeRoute.split('/')[1] : 'intro';
+    
+    // Hide all sections
+    this.shadowRoot.querySelectorAll('.section').forEach(section => {
+      section.style.display = 'none';
+    });
+    
+    // Show the active section
+    const activeSection = this.shadowRoot.querySelector(`#${sectionId}`);
+    if (activeSection) {
+      activeSection.style.display = 'block';
+    } else {
+      // Fallback to intro if section not found
+      const introSection = this.shadowRoot.querySelector('#intro');
+      if (introSection) introSection.style.display = 'block';
+    }
   }
 
   bindPagination() {
@@ -196,6 +227,7 @@ app.start();`
 
         .section {
           margin-bottom: 48px;
+          display: none; /* Hidden by default */
         }
 
         .section-title {
