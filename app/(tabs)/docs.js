@@ -19,7 +19,9 @@ const SECTION_MAP = {
   cli: 'cli',
   router: 'router',
   state: 'state',
-  theming: 'theming'
+  theming: 'theming',
+  animations: 'animations',
+  changelogs: 'changelogs'
 };
 
 function getSectionIdFromRoute() {
@@ -115,36 +117,47 @@ export default layout;`
           <section id="intro" class="section">
             <h1 class="section-title">Introduction</h1>
             <p class="section-desc">
-              Switch Framework is a lightweight, runtime-first frontend framework designed to work seamlessly with <code>switch-framework-backend</code> for building modern web and Electron applications. It prioritizes simplicity and developer experience without requiring a build step for basic setups.
+              <strong>Switch Framework</strong> is a lightweight, runtime-first frontend framework that plays nicely with <code>switch-framework-backend</code>. Think of it as your friendly neighborhood router + component layer – no build step required, no webpack config to cry over. Just HTML, ES modules, and a sprinkle of structure.
             </p>
-            <h3 class="subsection">What is Switch Framework?</h3>
+            <h3 class="subsection">What's the deal?</h3>
             <p class="section-desc">
-              Switch Framework provides a declarative routing system, component-based architecture using Web Components, and optional state management. It runs directly in the browser—no bundler required for getting started—so you can prototype quickly and iterate without complex tooling.
+              You get a declarative routing system (stack screens, tab navigation), Web Components for encapsulation, and optional state management. Everything runs directly in the browser – no bundler needed to get started. Prototype fast, ship faster. If you've ever wanted "React Router but simpler" or "Vue's structure without the framework," Switch is here for you.
             </p>
             <h3 class="subsection">Key Features</h3>
             <ul class="feature-list">
-              <li><strong>Runtime-first</strong> – No bundler required for basic setup. Use native ES modules and import maps.</li>
-              <li><strong>Web Components</strong> – Built on Custom Elements for encapsulation and reusability.</li>
-              <li><strong>Stack & Tabs layouts</strong> – Flexible navigation with stack layouts and tab-based navigation.</li>
-              <li><strong>Backend integration</strong> – Works with <code>switch-framework-backend</code> for full-stack apps.</li>
-              <li><strong>Theming</strong> – Built-in dark/light mode support with CSS variables.</li>
+              <li><strong>Runtime-first</strong> – No bundler required. Use native ES modules. Your <code>index.html</code> loads scripts, and you're off to the races.</li>
+              <li><strong>Web Components</strong> – Built on Custom Elements. Encapsulation, reusability, shadow DOM – the whole package.</li>
+              <li><strong>Stack & Tabs layouts</strong> – Stack for "push a screen, pop it back" flows. Tabs for bottom nav, side nav, whatever you need.</li>
+              <li><strong>Backend integration</strong> – <code>switch-framework-backend</code> gives you auth, sessions, and API helpers. Full-stack made easy.</li>
+              <li><strong>Theming</strong> – Dark/light mode with CSS variables. One line to init, and you're themed.</li>
             </ul>
-            <h3 class="subsection">When to Use Switch</h3>
+            <h3 class="subsection">When should I use Switch?</h3>
             <p class="section-desc">
-              Switch Framework is ideal for documentation sites, dashboards, internal tools, and apps that need a simple routing layer without the overhead of React or Vue. If you prefer vanilla JavaScript with minimal abstractions, Switch gives you structure without lock-in.
+              Documentation sites, dashboards, internal tools, admin panels – anything that needs routing and a bit of structure without the overhead of a big framework. If you like vanilla JS and want "just enough" abstraction, Switch fits. If you're building the next Facebook, maybe reach for something heavier – but for most apps, Switch has your back.
             </p>
           </section>
 
           <section id="install" class="section">
             <h2 class="section-title">Installation</h2>
-            <p class="section-desc">Install the core packages:</p>
+            <p class="section-desc">
+              Two ways to get started: install the packages yourself, or let the CLI do the heavy lifting. We recommend the CLI – it scaffolds everything so you can start coding in seconds.
+            </p>
+            <h3 class="subsection">Option 1: Manual install</h3>
+            <p class="section-desc">Add the core packages to your project:</p>
             <sw-codeblock data="${encodeData(installCode)}"></sw-codeblock>
-            <p class="section-desc">Or create a new app:</p>
+            <h3 class="subsection">Option 2: Create a new app (recommended)</h3>
+            <p class="section-desc">One command, full project structure. Web, Electron, or both – you choose:</p>
             <sw-codeblock data="${encodeData(createCode)}"></sw-codeblock>
+            <p class="section-desc">
+              <strong>Using the local framework?</strong> Run <code>npm link</code> in your <code>switch-framework</code> folder, then <code>npm link switch-framework</code> in your app. Your app will use your local copy instead of the npm version.
+            </p>
           </section>
 
           <section id="quickstart" class="section">
             <h2 class="section-title">Quick Start</h2>
+            <p class="section-desc">
+              Here's the mental model: you have a <strong>layout</strong> (stack + optional tabs), <strong>screens</strong> (routes mapped to custom elements), and an <strong>init</strong> phase where you load data and show a splash. Once you get this, you've got 80% of the framework.
+            </p>
             <h3 class="subsection">Folder structure</h3>
             <sw-codeblock data="${encodeData({
               title: 'Project structure',
@@ -264,7 +277,9 @@ npx create-switch-framework-app my-app --use-local`
 
           <section id="router" class="section">
             <h2 class="section-title">Router</h2>
-            <p class="section-desc">Import routing functions from <code>switch-framework/router</code>:</p>
+            <p class="section-desc">
+              The router handles URL → screen mapping, history, and params. Import what you need from <code>/switch-framework/router/index.js</code> – no magic, just functions that talk to the router via <code>globalStates</code>.
+            </p>
             <sw-codeblock data="${encodeData({
               title: 'Import router helpers',
               language: 'javascript',
@@ -313,14 +328,86 @@ if (prev) navigate(prev.route, prev.params);`
           </section>
 
           <section id="state" class="section">
-            <h2 class="section-title">State Management</h2>
+            <h2 class="section-title">State Management (SwitchStateManager)</h2>
             <p class="section-desc">
-              Use <code>useRouteChangesSubscriber(callback)</code> from the router to react to route changes. Returns an unsubscribe function.
+              Need to share data between components that live in totally different parts of your app? Say hello to <strong>SwitchStateManager</strong> – a lightweight, event-driven state system. Create a state once, subscribe from anywhere, update from anywhere. No prop drilling, no context providers. Just good ol' reactive state that works.
             </p>
+            <h3 class="subsection">The Big Idea</h3>
+            <p class="section-desc">
+              You give each state a unique <strong>identifier</strong> (a string like <code>'patient-list'</code> or <code>'cart-items'</code>). One component creates it and gets a setter. Other components – anywhere in the tree – can subscribe and get updates. When someone calls <code>updateState</code>, every subscriber gets notified. Magic! ✨
+            </p>
+            <h3 class="subsection">Create a state</h3>
+            <p class="section-desc">
+              Call <code>createState(initialValue, identifier)</code> once – typically in your layout <code>init</code> or a root component. It returns <code>[getValue, setValue]</code>. The identifier must be unique – think of it as the state's "event name" for the whole app.
+            </p>
+            <sw-codeblock data="${encodeData({
+              title: 'app/_layout.js – create state at app boot',
+              language: 'javascript',
+              code: `import { createState } from '/switch-framework/index.js';
+
+export default {
+  async init({ globalStates, renderSplashscreen }) {
+    // Create once – any component can now subscribe
+    createState([], 'patient-list');
+    createState(0, 'docs-helpful-count');
+
+    // ... rest of init
+  }
+};`
+            })}"></sw-codeblock>
+            <h3 class="subsection">Subscribe in a component (useState)</h3>
+            <p class="section-desc">
+              Use <code>useState(identifier, callback)</code> to consume a state. You get <code>[currentValue, unsubscribe]</code>. The callback runs immediately with the current value, and again whenever the state changes. Perfect for fine-grained DOM updates without re-rendering the whole component!
+            </p>
+            <sw-codeblock data="${encodeData({
+              title: 'Component – subscribe and react',
+              language: 'javascript',
+              code: `import { useState, updateState } from '/switch-framework/index.js';
+
+class MyPatientList extends HTMLElement {
+  connectedCallback() {
+    this.render();
+
+    const [patients, unsubscribe] = useState('patient-list', (newPatients) => {
+      // Optional: update only the count element
+      const el = this.shadowRoot?.querySelector('#patient-count');
+      if (el) el.textContent = \`Patients: \${newPatients.length}\`;
+    });
+    this._unsub = unsubscribe;
+  }
+
+  disconnectedCallback() {
+    if (this._unsub) this._unsub();
+  }
+}`
+            })}"></sw-codeblock>
+            <h3 class="subsection">Update from anywhere (updateState)</h3>
+            <p class="section-desc">
+              Don't have the setter? No problem. <code>updateState(identifier, newValueOrUpdater)</code> updates any state by its identifier. Pass a value or an updater function <code>(old) => new</code>. Every subscriber gets the new value.
+            </p>
+            <sw-codeblock data="${encodeData({
+              title: 'Update state from any component',
+              language: 'javascript',
+              code: `import { updateState } from '/switch-framework/index.js';
+
+// Add a patient
+updateState('patient-list', (list) => [...list, newPatient]);
+
+// Increment a counter
+updateState('docs-helpful-count', (n) => n + 1);`
+            })}"></sw-codeblock>
+            <h3 class="subsection">API summary</h3>
             <ul class="feature-list">
-              <li><code>getActiveRoute()</code> – current route string</li>
-              <li><code>useRouteChangesSubscriber(fn)</code> – subscribe to route changes, returns unsubscribe</li>
+              <li><code>createState(initialValue, identifier)</code> – create a new state. Returns <code>[getValue, setValue]</code>. Throws if identifier already exists.</li>
+              <li><code>useState(identifier, callback?)</code> – subscribe to a state. Returns <code>[currentValue, unsubscribe]</code>. Callback runs immediately and on every update.</li>
+              <li><code>updateState(identifier, valueOrUpdater)</code> – update any state by identifier. Same as using the setter from createState.</li>
+              <li><code>getState(identifier)</code> – read current value without subscribing.</li>
+              <li><code>subscribeState(identifier, callback, options)</code> – lower-level subscribe. Returns unsubscribe. Use <code>options.immediate: false</code> to skip the initial call.</li>
             </ul>
+            <p class="section-desc">
+              <strong>Pro tip:</strong> Always call <code>unsubscribe</code> in your component's <code>disconnectedCallback</code> to avoid memory leaks. The "Was this helpful?" widget below uses this state – try it! 👇
+            </p>
+            <sw-docs-feedback></sw-docs-feedback>
           </section>
 
           <section id="theming" class="section">
@@ -377,6 +464,154 @@ startApp(layout, appRegisters);`
               <li><code>useThemesChangesSubscriber(callback)</code> – subscribe to theme changes; callback receives current theme; returns unsubscribe</li>
             </ul>
           </section>
+
+          <section id="animations" class="section">
+            <h2 class="section-title">Animations</h2>
+            <p class="section-desc">
+              Animations in Switch Framework are built with standard CSS: <code>@keyframes</code>, <code>transition</code>, and <code>animation</code>. No special library needed. You control visibility and animation state by toggling classes or inline styles – and our <strong>state functions</strong> (<code>updateState</code>, <code>subscribeState</code>) make those values reactive.
+            </p>
+            <h3 class="subsection">Basic @keyframes</h3>
+            <p class="section-desc">
+              Define keyframe animations in your component's stylesheet. Use <code>animation</code> or <code>animation-name</code> to apply them.
+            </p>
+            <sw-codeblock data="${encodeData({
+              title: 'CSS keyframes example',
+              language: 'css',
+              code: `@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal {
+  animation: slideUp 0.25s ease;
+}
+
+.overlay {
+  animation: fadeIn 0.2s ease;
+}`
+            })}"></sw-codeblock>
+            <h3 class="subsection">Transitions for simple state changes</h3>
+            <p class="section-desc">
+              Use <code>transition</code> for smooth property changes (opacity, transform, background). Toggle a class or style to trigger the transition.
+            </p>
+            <sw-codeblock data="${encodeData({
+              title: 'Transition example',
+              language: 'css',
+              code: `.panel {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.panel.active {
+  opacity: 1;
+  transform: scale(1);
+}`
+            })}"></sw-codeblock>
+            <h3 class="subsection">State-driven reactivity</h3>
+            <p class="section-desc">
+              Use <code>updateState</code> and <code>subscribeState</code> to control when animations run. A modal might subscribe to <code>modal-edit-profile</code> – when <code>open: true</code>, the component sets <code>display: flex</code> and applies an animation class. When <code>open: false</code>, it hides.
+            </p>
+            <sw-codeblock data="${encodeData({
+              title: 'Modal – state controls visibility',
+              language: 'javascript',
+              code: `// Open from any screen:
+updateState('modal-edit-profile', { open: true, data: { name: 'Jane' } });
+
+// In the modal component:
+subscribeState('modal-edit-profile', () => this.render());
+const state = getState('modal-edit-profile');
+this.style.display = state?.open ? 'flex' : 'none';
+// Apply .active class for animation
+this.classList.toggle('active', !!state?.open);`
+            })}"></sw-codeblock>
+            <h3 class="subsection">Toasts & alerts from bottom</h3>
+            <p class="section-desc">
+              For toasts or alerts that slide up from the bottom, use a transparent overlay and the same <code>slideUp</code> keyframe. The overlay doesn't block clicks when transparent – or use <code>pointer-events: none</code> on the overlay and <code>pointer-events: auto</code> only on the toast container.
+            </p>
+            <sw-codeblock data="${encodeData({
+              title: 'Toast – bottom slide-up',
+              language: 'css',
+              code: `:host {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: transparent; /* No dimming */
+}
+
+.toast-container {
+  padding: 14px 20px;
+  background: var(--main_text);
+  color: #fff;
+  border-radius: 24px;
+  animation: slideUp 0.3s ease;
+}`
+            })}"></sw-codeblock>
+            <p class="section-desc">
+              <strong>Summary:</strong> Use standard CSS for animations. Use state to control when they run – <code>updateState</code> to open/close, <code>subscribeState</code> to react and toggle classes or styles.
+            </p>
+          </section>
+
+          <section id="changelogs" class="section">
+            <h2 class="section-title">Changelogs</h2>
+            <p class="section-desc">
+              Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
+            </p>
+
+            <h3 class="subsection">v1.2.0 – March 10, 2026</h3>
+            <p class="section-desc"><strong>Features</strong></p>
+            <ul class="feature-list">
+              <li>Added <code>SwitchStateManager</code> for lightweight reactive state management</li>
+              <li>Introduced modal components with state-driven visibility and animations</li>
+              <li>Added Toast/Alert components for bottom-up notifications</li>
+              <li>New fullscreen pin viewer with scale-up reveal animation</li>
+              <li>Framework theming system with dark/light mode support</li>
+            </ul>
+            <p class="section-desc"><strong>Improvements</strong></p>
+            <ul class="feature-list">
+              <li>Refactored documentation to use modular screen components</li>
+              <li>Enhanced animation system with keyframes and transitions</li>
+              <li>Better code organization with state helpers in app/state.js</li>
+              <li>Improved type safety in router with route parameter handling</li>
+            </ul>
+            <p class="section-desc"><strong>Bug Fixes</strong></p>
+            <ul class="feature-list">
+              <li>Fixed modal z-index stacking issues</li>
+              <li>Corrected route matching for static vs dynamic paths</li>
+              <li>Fixed template literal syntax in code blocks</li>
+            </ul>
+
+            <h3 class="subsection">v1.1.0 – February 28, 2026</h3>
+            <p class="section-desc"><strong>Features</strong></p>
+            <ul class="feature-list">
+              <li>Added responsive tab layout system</li>
+              <li>Introduced stack navigation for modal-like flows</li>
+              <li>New router with URL parameter support</li>
+            </ul>
+            <p class="section-desc"><strong>Improvements</strong></p>
+            <ul class="feature-list">
+              <li>Better CSS variable system for theming</li>
+              <li>Optimized Web Components performance</li>
+            </ul>
+
+            <h3 class="subsection">v1.0.0 – January 15, 2026</h3>
+            <p class="section-desc"><strong>Initial Release</strong></p>
+            <ul class="feature-list">
+              <li>Runtime-first framework with no build step required</li>
+              <li>Web Components-based architecture</li>
+              <li>Built-in router with stack and tab layouts</li>
+              <li>Basic theming system</li>
+              <li>Documentation and examples</li>
+            </ul>
+          </section>
+
           </div>
           <sw-docs-pagination class="pagination-sticky"></sw-docs-pagination>
         </main>

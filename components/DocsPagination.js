@@ -1,6 +1,6 @@
 import { previousRoute, nextRoute, navigate } from '/switch-framework/router/index.js';
 
-const DOC_ORDER = ['introduction', 'installation', 'quickstart', 'cli', 'router', 'state', 'theming'];
+const DOC_ORDER = ['introduction', 'installation', 'quickstart', 'cli', 'router', 'state', 'theming', 'animations', 'changelogs'];
 
 export class DocsPagination extends HTMLElement {
   constructor() {

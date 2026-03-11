@@ -42,7 +42,8 @@ export class DocsLeftSidebarNav extends HTMLElement {
         items: [
           { label: 'Router', to: 'docs/router' },
           { label: 'State Management', to: 'docs/state' },
-          { label: 'Theming', to: 'docs/theming' }
+          { label: 'Theming', to: 'docs/theming' },
+          { label: 'Animations', to: 'docs/animations' }
         ]
       },
       {
@@ -51,6 +52,12 @@ export class DocsLeftSidebarNav extends HTMLElement {
           { label: 'Components', to: 'docs/components' },
           { label: 'Hooks', to: 'docs/hooks' },
           { label: 'Middleware', to: 'docs/middleware' }
+        ]
+      },
+      {
+        title: 'Reference',
+        items: [
+          { label: 'Changelogs', to: 'docs/changelogs' }
         ]
       }
     ];

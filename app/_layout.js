@@ -1,4 +1,4 @@
-import { Stack, registerScreens } from '/switch-framework/index.js';
+import { Stack, registerScreens, createState } from '/switch-framework/index.js';
 import tabsLayout from './(tabs)/_layout.js';
 
 const tabScreens = Array.isArray(tabsLayout?.screens) ? tabsLayout.screens : [];
@@ -32,6 +32,9 @@ const layout = {
 
   async init({ globalStates, renderSplashscreen }) {
     renderSplashscreen('sw-starter-splash');
+
+    // Create app-level state (SwitchStateManager) – any component can subscribe
+    createState(0, 'docs-helpful-count');
 
     // your async operation here that made splashscreen appear
     await new Promise((resolve) => setTimeout(resolve, 3000));
