@@ -1,4 +1,5 @@
 import { encodeData } from '/switch-framework/index.js';
+import { navigate } from '/switch-framework/router/index.js';
 
 export const screen = {
   name: 'index',
@@ -22,19 +23,15 @@ export class SwIndexScreen extends HTMLElement {
   bindEvents() {
     const getStarted = this.shadowRoot.querySelector('#get_started');
     const talkToUs = this.shadowRoot.querySelector('#talk_to_us');
-    
-    if (getStarted) {
-      getStarted.addEventListener('click', () => {
-        const navigate = globalStates?.getState ? globalStates.getState('navigate') : null;
-        if (typeof navigate === 'function') navigate('/docs');
-      });
-    }
+    const ctaGetStarted = this.shadowRoot.querySelector('#cta_get_started');
+    const ctaReadDocs = this.shadowRoot.querySelector('#cta_read_docs');
+    const exploreLink = this.shadowRoot.querySelector('#explore_features');
 
-    if (talkToUs) {
-      talkToUs.addEventListener('click', () => {
-        console.log('Talk to us clicked');
-      });
-    }
+    if (getStarted) getStarted.addEventListener('click', () => navigate('docs/introduction'));
+    if (ctaGetStarted) ctaGetStarted.addEventListener('click', () => navigate('docs/introduction'));
+    if (ctaReadDocs) ctaReadDocs.addEventListener('click', () => navigate('docs/introduction'));
+    if (exploreLink) exploreLink.addEventListener('click', (e) => { e.preventDefault(); navigate('docs/introduction'); });
+    if (talkToUs) talkToUs.addEventListener('click', () => console.log('Talk to us clicked'));
   }
 
   render() {
@@ -60,9 +57,11 @@ export default function ActionCenter() {
     this.shadowRoot.innerHTML = `
       ${this.styleSheet()}
       <div class="wrap">
-        <sw-topbar></sw-topbar>
+        <header class="topbar-fixed">
+          <sw-topbar></sw-topbar>
+        </header>
 
-        <main class="main">
+        <main class="main main-scroll">
           <section class="hero">
             <div class="bg-blob blob-1"></div>
             <div class="bg-blob blob-2"></div>
@@ -111,24 +110,61 @@ export default function ActionCenter() {
             </div>
 
             <div class="hero-visual">
-              <div class="browser-window">
-                <div class="browser-header">
-                  <div class="browser-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+              <div class="mac-window">
+                <div class="mac-titlebar">
+                  <div class="mac-dots">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
                   </div>
+                  <span class="mac-title">my-app — Switch Framework</span>
                 </div>
-                <div class="browser-content">
-                  <div class="browser-sidebar">
-                    <div class="sidebar-item"></div>
-                    <div class="sidebar-item small"></div>
-                    <div class="sidebar-item medium"></div>
-                  </div>
-                  <div class="browser-main">
-                    <h4 class="content-title">Welcome to Switch</h4>
-                    <sw-codeblock data="${encodeData(codeData)}"></sw-codeblock>
-                  </div>
+                <div class="mac-content">
+                  <aside class="mac-sidebar">
+                    <div class="sidebar-header">
+                      <span class="sidebar-title">Favorites</span>
+                    </div>
+                    <div class="sidebar-item active">
+                      <span class="folder-icon">📁</span>
+                      <span>my-app</span>
+                    </div>
+                    <div class="sidebar-divider"></div>
+                    <div class="sidebar-header">
+                      <span class="sidebar-title">Project</span>
+                    </div>
+                    <div class="sidebar-item">
+                      <span class="folder-icon">📂</span>
+                      <span>app</span>
+                    </div>
+                    <div class="sidebar-item indent">
+                      <span class="file-icon">📄</span>
+                      <span>_layout.js</span>
+                    </div>
+                    <div class="sidebar-item indent">
+                      <span class="file-icon">📄</span>
+                      <span>index.js</span>
+                    </div>
+                    <div class="sidebar-item">
+                      <span class="folder-icon">📂</span>
+                      <span>components</span>
+                    </div>
+                    <div class="sidebar-item">
+                      <span class="folder-icon">📂</span>
+                      <span>assets</span>
+                    </div>
+                    <div class="sidebar-item">
+                      <span class="file-icon">📄</span>
+                      <span>index.js</span>
+                    </div>
+                  </aside>
+                  <main class="mac-main">
+                    <div class="mac-toolbar">
+                      <span class="toolbar-path">app/index.js</span>
+                    </div>
+                    <div class="mac-editor">
+                      <sw-codeblock data="${encodeData(codeData)}"></sw-codeblock>
+                    </div>
+                  </main>
                 </div>
               </div>
             </div>
@@ -140,7 +176,7 @@ export default function ActionCenter() {
                 <h2 class="section-label">Why Switch Framework?</h2>
                 <h3 class="section-title">Everything you need to build great apps.</h3>
               </div>
-              <a href="#" class="explore-link">
+              <a href="#" id="explore_features" class="explore-link">
                 Explore all features
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -205,8 +241,8 @@ export default function ActionCenter() {
                 <h2 class="cta-title">Ready to start building?</h2>
                 <p class="cta-subtitle">Join thousands of developers building the future with Switch Framework today.</p>
                 <div class="cta-actions">
-                  <button class="cta-btn-primary">Get Started Now</button>
-                  <button class="cta-btn-secondary">Read Documentation</button>
+                  <button id="cta_get_started" class="cta-btn-primary">Get Started Now</button>
+                  <button id="cta_read_docs" class="cta-btn-secondary">Read Documentation</button>
                 </div>
               </div>
             </div>
@@ -329,8 +365,8 @@ export default function ActionCenter() {
           width: 100%;
           min-height: 100vh;
           font-family: 'Montserrat', sans-serif;
-          background: #ffffff;
-          color: #111827;
+          background: var(--page_background);
+          color: var(--main_text);
         }
 
         * {
@@ -346,12 +382,23 @@ export default function ActionCenter() {
           flex-direction: column;
         }
 
+        .topbar-fixed {
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          flex-shrink: 0;
+        }
+
         .main {
           flex: 1;
           display: flex;
           flex-direction: column;
           align-items: center;
           width: 100%;
+        }
+
+        .main-scroll {
+          overflow-y: auto;
         }
 
         /* Hero Section */
@@ -366,7 +413,7 @@ export default function ActionCenter() {
           align-items: center;
           text-align: center;
           overflow: hidden;
-          background: linear-gradient(180deg, rgba(247, 248, 250, 0) 0%, rgba(247, 248, 250, 0.5) 100%);
+          background: linear-gradient(180deg, transparent 0%, var(--surface_2) 100%);
         }
 
         .bg-blob {
@@ -432,13 +479,13 @@ export default function ActionCenter() {
         }
 
         .badge-text {
-          color: #6b7280;
+          color: var(--sub_text);
           font-size: 14px;
           font-weight: 500;
         }
 
         .badge-arrow {
-          color: #9ca3af;
+          color: var(--muted_text);
         }
 
         .hero-title {
@@ -446,7 +493,7 @@ export default function ActionCenter() {
           font-weight: 700;
           line-height: 1.1;
           letter-spacing: -0.02em;
-          color: #111827;
+          color: var(--main_text);
           margin-bottom: 24px;
         }
 
@@ -462,7 +509,7 @@ export default function ActionCenter() {
           font-size: 20px;
           font-weight: 400;
           line-height: 1.6;
-          color: #6b7280;
+          color: var(--sub_text);
           max-width: 800px;
           margin: 0 auto 40px;
         }
@@ -580,77 +627,129 @@ export default function ActionCenter() {
           max-width: 1000px;
         }
 
-        .browser-window {
-          background: white;
-          border: 1px solid #e5e7eb;
+        .mac-window {
+          background: var(--surface_1);
+          border: 1px solid var(--border_color);
           border-radius: 12px;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+          box-shadow: var(--shadow_lg);
           overflow: hidden;
           aspect-ratio: 16 / 9;
         }
 
-        .browser-header {
+        .mac-titlebar {
           display: flex;
           align-items: center;
+          gap: 12px;
           padding: 12px 16px;
-          background: #f9fafb;
-          border-bottom: 1px solid #e5e7eb;
-          height: 40px;
+          background: var(--surface_2);
+          border-bottom: 1px solid var(--border_color);
+          height: 44px;
         }
 
-        .browser-dots {
+        .mac-dots {
           display: flex;
-          gap: 6px;
-        }
-
-        .browser-dots span {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: #d1d5db;
-        }
-
-        .browser-content {
-          display: flex;
-          height: calc(100% - 40px);
-        }
-
-        .browser-sidebar {
-          width: 256px;
-          padding: 16px;
-          border-right: 1px solid #e5e7eb;
-          background: white;
-          display: flex;
-          flex-direction: column;
           gap: 8px;
         }
 
-        .sidebar-item {
+        .mac-dots .dot {
+          width: 12px;
           height: 12px;
-          background: #f3f4f6;
-          border-radius: 4px;
+          border-radius: 50%;
         }
 
-        .sidebar-item.small {
-          width: 80%;
+        .mac-dots .dot.red { background: #ff5f57; }
+        .mac-dots .dot.yellow { background: #febc2e; }
+        .mac-dots .dot.green { background: #28c840; }
+
+        .mac-title {
+          font-size: 13px;
+          color: var(--sub_text);
+          font-weight: 500;
         }
 
-        .sidebar-item.medium {
-          width: 85%;
+        .mac-content {
+          display: flex;
+          height: calc(100% - 44px);
         }
 
-        .browser-main {
+        .mac-sidebar {
+          width: 200px;
+          padding: 12px 0;
+          border-right: 1px solid var(--border_color);
+          background: var(--surface_2);
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .sidebar-header {
+          padding: 4px 16px;
+          margin-top: 8px;
+        }
+
+        .sidebar-header:first-child { margin-top: 0; }
+
+        .sidebar-title {
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--muted_text);
+        }
+
+        .sidebar-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 16px;
+          font-size: 13px;
+          color: var(--sub_text);
+          cursor: default;
+        }
+
+        .sidebar-item.indent { padding-left: 28px; }
+
+        .sidebar-item.active {
+          background: var(--primary_light);
+          color: var(--primary);
+          font-weight: 500;
+        }
+
+        .sidebar-item .folder-icon, .sidebar-item .file-icon {
+          font-size: 14px;
+          opacity: 0.9;
+        }
+
+        .sidebar-divider {
+          height: 1px;
+          background: var(--border_color);
+          margin: 4px 12px;
+        }
+
+        .mac-main {
           flex: 1;
-          padding: 32px;
-          background: white;
+          display: flex;
+          flex-direction: column;
           overflow: hidden;
         }
 
-        .content-title {
-          font-size: 24px;
-          font-weight: 700;
-          color: #111827;
-          margin-bottom: 16px;
+        .mac-toolbar {
+          padding: 8px 16px;
+          background: var(--surface_1);
+          border-bottom: 1px solid var(--border_color);
+          font-size: 12px;
+          color: var(--muted_text);
+          font-family: monospace;
+        }
+
+        .mac-editor {
+          flex: 1;
+          padding: 16px;
+          overflow: auto;
+        }
+
+        .mac-editor sw-codeblock {
+          --codeblock-radius: 8px;
         }
 
         /* Features Section */
@@ -658,8 +757,8 @@ export default function ActionCenter() {
           width: 100%;
           max-width: 1200px;
           padding: 80px 40px;
-          background: white;
-          border-top: 1px solid #e5e7eb;
+          background: var(--page_background);
+          border-top: 1px solid var(--border_color);
         }
 
         .features-header {
@@ -687,14 +786,14 @@ export default function ActionCenter() {
           font-weight: 700;
           line-height: 1.2;
           letter-spacing: -0.02em;
-          color: #111827;
+          color: var(--main_text);
         }
 
         .explore-link {
           display: flex;
           align-items: center;
           gap: 4px;
-          color: #6b7280;
+          color: var(--sub_text);
           text-decoration: none;
           font-size: 16px;
           font-weight: 500;
@@ -702,7 +801,7 @@ export default function ActionCenter() {
         }
 
         .explore-link:hover {
-          color: #3713ec;
+          color: var(--primary);
         }
 
         .explore-link svg {
@@ -723,15 +822,15 @@ export default function ActionCenter() {
           display: flex;
           flex-direction: column;
           padding: 24px;
-          background: #f9fafb;
-          border: 1px solid #e5e7eb;
+          background: var(--surface_2);
+          border: 1px solid var(--border_color);
           border-radius: 16px;
           transition: all 0.3s;
         }
 
         .feature-card:hover {
-          background: white;
-          box-shadow: 0 10px 30px rgba(55, 19, 236, 0.05);
+          background: var(--surface_1);
+          box-shadow: var(--shadow_md);
           transform: translateY(-4px);
         }
 
@@ -753,14 +852,14 @@ export default function ActionCenter() {
         .feature-title {
           font-size: 20px;
           font-weight: 700;
-          color: #111827;
+          color: var(--main_text);
           margin-bottom: 8px;
         }
 
         .feature-description {
           font-size: 16px;
           line-height: 1.6;
-          color: #6b7280;
+          color: var(--sub_text);
         }
 
         /* Trusted Section */
@@ -772,7 +871,7 @@ export default function ActionCenter() {
 
         .trusted-label {
           text-align: center;
-          color: #6b7280;
+          color: var(--sub_text);
           font-size: 14px;
           font-weight: 600;
           text-transform: uppercase;
@@ -800,7 +899,7 @@ export default function ActionCenter() {
           display: flex;
           align-items: center;
           gap: 8px;
-          color: #111827;
+          color: var(--main_text);
           font-size: 20px;
           font-weight: 900;
         }
@@ -924,8 +1023,8 @@ export default function ActionCenter() {
         /* Footer */
         .footer {
           width: 100%;
-          border-top: 1px solid #e5e7eb;
-          background: white;
+          border-top: 1px solid var(--border_color);
+          background: var(--page_background);
           padding: 64px 0;
         }
 
@@ -967,13 +1066,13 @@ export default function ActionCenter() {
         .footer-logo-text {
           font-size: 18px;
           font-weight: 700;
-          color: #111827;
+          color: var(--main_text);
         }
 
         .footer-description {
           font-size: 14px;
           line-height: 1.6;
-          color: #6b7280;
+          color: var(--sub_text);
           margin-bottom: 24px;
         }
 
@@ -983,18 +1082,18 @@ export default function ActionCenter() {
         }
 
         .social-link {
-          color: #9ca3af;
+          color: var(--muted_text);
           transition: color 0.2s;
         }
 
         .social-link:hover {
-          color: #3713ec;
+          color: var(--primary);
         }
 
         .footer-column-title {
           font-size: 16px;
           font-weight: 700;
-          color: #111827;
+          color: var(--main_text);
           margin-bottom: 16px;
         }
 
@@ -1007,13 +1106,13 @@ export default function ActionCenter() {
 
         .footer-links a {
           font-size: 14px;
-          color: #6b7280;
+          color: var(--sub_text);
           text-decoration: none;
           transition: color 0.2s;
         }
 
         .footer-links a:hover {
-          color: #3713ec;
+          color: var(--primary);
         }
 
         .footer-bottom {
@@ -1021,12 +1120,12 @@ export default function ActionCenter() {
           justify-content: space-between;
           align-items: center;
           padding-top: 32px;
-          border-top: 1px solid #e5e7eb;
+          border-top: 1px solid var(--border_color);
         }
 
         .footer-copyright {
           font-size: 14px;
-          color: #6b7280;
+          color: var(--sub_text);
         }
 
         .footer-status {
@@ -1034,7 +1133,7 @@ export default function ActionCenter() {
           align-items: center;
           gap: 8px;
           font-size: 14px;
-          color: #6b7280;
+          color: var(--sub_text);
         }
 
         .status-dot {
@@ -1056,8 +1155,9 @@ export default function ActionCenter() {
             font-size: 56px;
           }
 
-          .browser-sidebar {
-            display: none;
+          .mac-sidebar {
+            width: 160px;
+            font-size: 12px;
           }
 
           .features-grid {
@@ -1151,16 +1251,16 @@ export default function ActionCenter() {
         }
 
         @media (max-width: 640px) {
-          .browser-window {
-            aspect-ratio: 1 / 1;
+          .mac-window {
+            aspect-ratio: 4 / 3;
           }
 
-          .browser-main {
-            padding: 16px;
+          .mac-sidebar {
+            display: none;
           }
 
-          .content-title {
-            font-size: 18px;
+          .mac-editor {
+            padding: 12px;
           }
         }
       </style>

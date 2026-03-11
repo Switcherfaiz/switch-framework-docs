@@ -11,13 +11,6 @@ const stackScreens = [
     tag: 'sw-index-screen'
   }),
   Stack.screen({
-    name: 'docs',
-    path: '/docs',
-    title: 'Docs',
-    tag: 'sw-docs-screen',
-    layout: 'tabs'
-  }),
-  Stack.screen({
     name: '+not-found',
     path: '/+not-found',
     title: 'Not Found',

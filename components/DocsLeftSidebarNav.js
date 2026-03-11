@@ -1,3 +1,5 @@
+import { navigate, useRouteChangesSubscriber, getActiveRoute } from '/switch-framework/router/index.js';
+
 export class DocsLeftSidebarNav extends HTMLElement {
   constructor() {
     super();
@@ -9,17 +11,14 @@ export class DocsLeftSidebarNav extends HTMLElement {
     this.render();
     this.updateActive();
 
-    if (globalStates?.subscribe) {
-      this._unsub = globalStates.subscribe(() => this.updateActive());
-    }
+    this._unsub = useRouteChangesSubscriber(() => this.updateActive());
 
     this.shadowRoot.addEventListener('click', (e) => {
       const link = e.target?.closest?.('a[data-route]');
       if (!link) return;
       e.preventDefault();
       const route = link.getAttribute('data-route');
-      const navigate = globalStates?.getState ? globalStates.getState('navigate') : null;
-      if (typeof navigate === 'function') navigate(route);
+      navigate(route);
     });
   }
 
@@ -32,36 +31,37 @@ export class DocsLeftSidebarNav extends HTMLElement {
       {
         title: 'Getting Started',
         items: [
-          { label: 'Introduction', to: 'intro' },
-          { label: 'Installation', to: 'install' },
-          { label: 'Quick Start', to: 'quickstart' }
+          { label: 'Introduction', to: 'docs/introduction' },
+          { label: 'Installation', to: 'docs/installation' },
+          { label: 'Quick Start', to: 'docs/quickstart' },
+          { label: 'CLI (create-switch-framework-app)', to: 'docs/cli' }
         ]
       },
       {
         title: 'Core Concepts',
         items: [
-          { label: 'Router', to: 'router' },
-          { label: 'Stack', to: 'stack' },
-          { label: 'Tabs', to: 'tabs' },
-          { label: 'State Management', to: 'state' }
+          { label: 'Router', to: 'docs/router' },
+          { label: 'State Management', to: 'docs/state' },
+          { label: 'Theming', to: 'docs/theming' }
         ]
       },
       {
         title: 'API',
         items: [
-          { label: 'Components', to: 'components' },
-          { label: 'Hooks', to: 'hooks' },
-          { label: 'Middleware', to: 'middleware' }
+          { label: 'Components', to: 'docs/components' },
+          { label: 'Hooks', to: 'docs/hooks' },
+          { label: 'Middleware', to: 'docs/middleware' }
         ]
       }
     ];
   }
 
   updateActive() {
-    const activeRoute = globalStates?.getState ? globalStates.getState('activeRoute') : '';
-    this.shadowRoot.querySelectorAll('.nav-link').forEach(el => {
+    const activeRoute = getActiveRoute();
+    this.shadowRoot?.querySelectorAll('.nav-link').forEach(el => {
       const to = el.getAttribute('data-route');
-      el.classList.toggle('active', String(activeRoute || '') === String(to));
+      const isActive = String(activeRoute || '') === String(to);
+      el.classList.toggle('active', isActive);
     });
   }
 
@@ -114,7 +114,7 @@ export class DocsLeftSidebarNav extends HTMLElement {
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          color: #6b7280;
+          color: var(--muted_text);
           margin: 0 0 8px;
         }
 
@@ -128,7 +128,7 @@ export class DocsLeftSidebarNav extends HTMLElement {
           display: block;
           padding: 8px 12px;
           font-size: 14px;
-          color: #374151;
+          color: var(--sub_text);
           text-decoration: none;
           border-radius: 6px;
           transition: all 0.15s;
@@ -136,14 +136,26 @@ export class DocsLeftSidebarNav extends HTMLElement {
         }
 
         .nav-link:hover {
-          background: #f3f4f6;
-          color: #3713ec;
+          background: var(--surface_hover);
+          color: var(--primary);
         }
 
         .nav-link.active {
-          background: #e0e7ff;
-          color: #3713ec;
-          font-weight: 500;
+          background: var(--primary_light);
+          color: var(--primary);
+          font-weight: 600;
+          position: relative;
+        }
+
+        .nav-link.active::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 6px;
+          bottom: 6px;
+          width: 3px;
+          background: var(--primary);
+          border-radius: 0 2px 2px 0;
         }
       </style>
     `;

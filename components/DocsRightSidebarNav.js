@@ -38,8 +38,8 @@ export class DocsRightSidebarNav extends HTMLElement {
         .right-sidebar {
           width: 100%;
           height: 100%;
-          background: #f9fafb;
-          border-left: 1px solid #e5e7eb;
+          background: var(--surface_2);
+          border-left: 1px solid var(--border_color);
           padding: 20px 0;
           overflow-y: auto;
         }
@@ -53,7 +53,7 @@ export class DocsRightSidebarNav extends HTMLElement {
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          color: #6b7280;
+          color: var(--muted_text);
           margin: 0 0 12px;
         }
 
@@ -67,15 +67,15 @@ export class DocsRightSidebarNav extends HTMLElement {
           display: block;
           padding: 6px 12px;
           font-size: 13px;
-          color: #374151;
+          color: var(--sub_text);
           text-decoration: none;
           border-radius: 4px;
           transition: all 0.15s;
         }
 
         .toc-link:hover {
-          background: #e5e7eb;
-          color: #3713ec;
+          background: var(--surface_hover);
+          color: var(--primary);
         }
 
         @media (max-width: 1024px) {

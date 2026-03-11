@@ -1,3 +1,5 @@
+import { navigate } from '/switch-framework/router/index.js';
+
 export class SwTabBar extends HTMLElement {
   constructor() {
     super();
@@ -17,8 +19,7 @@ export class SwTabBar extends HTMLElement {
       const btn = e.target?.closest?.('button[data-route]');
       if (!btn) return;
       const route = btn.getAttribute('data-route');
-      const navigate = globalStates?.getState ? globalStates.getState('navigate') : null;
-      if (typeof navigate === 'function') navigate(route);
+      navigate(route);
     });
   }
 
@@ -39,7 +40,8 @@ export class SwTabBar extends HTMLElement {
     tabs.forEach((t) => {
       const el = this.shadowRoot.getElementById(`tab-${t.name}`);
       if (!el) return;
-      const isActive = String(activeRoute || '').startsWith(String(t.name));
+      const matchList = Array.isArray(t.match) ? t.match : [t.name].filter(Boolean);
+      const isActive = matchList.some((m) => String(activeRoute || '').startsWith(String(m)) || String(activeRoute || '') === String(m));
       el.classList.toggle('active', isActive);
     });
   }
@@ -50,12 +52,15 @@ export class SwTabBar extends HTMLElement {
     this.shadowRoot.innerHTML = `
       ${this.styleSheet()}
       <nav class="bar" aria-label="Bottom tabs">
-        ${tabs.map((t) => `
-          <button class="tab" id="tab-${t.name}" data-route="${t.name}" type="button">
+        ${tabs.map((t) => {
+          const route = t.initialRoute || (t.path ? t.path.replace(/^\//, '') : t.name);
+          return `
+          <button class="tab" id="tab-${t.name}" data-route="${route || t.name}" type="button">
             <span class="icon">${this.getIcon(t.icon)}</span>
             <span class="label">${t.title || t.name}</span>
           </button>
-        `).join('')}
+        `;
+        }).join('')}
       </nav>
     `;
   }
@@ -64,7 +69,8 @@ export class SwTabBar extends HTMLElement {
     const map = {
       home: `<span class='switch_icon_house'></span>`,
       compass: `<span class='switch_icon_compass'></span>`,
-      settings: `<span class='switch_icon_gear'></span>`
+      settings: `<span class='switch_icon_gear'></span>`,
+      description: `<span class='switch_icon_description'></span>`
     };
     return map[name] || map.home;
   }

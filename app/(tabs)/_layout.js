@@ -10,8 +10,8 @@ export const tabsLayout = Tabs({
       icon: 'description',
       path: '/docs/:id',
       screen: 'sw-docs-screen',
-      match: ['docs', 'introduction', 'installation', 'quickstart', 'router'],
-      initialRoute: 'introduction'
+      match: ['docs'],
+      initialRoute: 'docs/introduction'
     }
   ],
   options: {
@@ -85,13 +85,13 @@ export class SwTabsLayout extends HTMLElement {
 }
 
 .left-sidebar {
-  background: #f9fafb;
-  border-right: 1px solid #e5e7eb;
+  background: var(--surface_2);
+  border-right: 1px solid var(--border_color);
   overflow: hidden;
 }
 
 .right-sidebar {
-  border-left: 1px solid #e5e7eb;
+  border-left: 1px solid var(--border_color);
   overflow: hidden;
 }
 
@@ -128,27 +128,6 @@ export const screens = [
     path: '/docs/:id',
     title: 'Docs',
     tag: 'sw-docs-screen',
-    layout: 'tabs'
-  }),
-  Tabs.screen({
-    name: 'introduction',
-    path: '/docs/introduction',
-    title: 'Introduction',
-    tag: 'sw-introduction-screen',
-    layout: 'tabs'
-  }),
-  Tabs.screen({
-    name: 'installation',
-    path: '/docs/installation',
-    title: 'Installation',
-    tag: 'sw-installation-screen',
-    layout: 'tabs'
-  }),
-  Tabs.screen({
-    name: 'quickstart',
-    path: '/docs/quickstart',
-    title: 'Quick Start',
-    tag: 'sw-quickstart-screen',
     layout: 'tabs'
   })
 ];

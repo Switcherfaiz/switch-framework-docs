@@ -6,14 +6,12 @@ export async function appRegisters() {
     import('../components/CodeBlock.js'),
     import('../components/DocsLeftSidebarNav.js'),
     import('../components/DocsRightSidebarNav.js'),
+    import('../components/DocsPagination.js'),
 
     import('./index.js'),
     import('./+not-found.js'),
     import('./(tabs)/_layout.js'),
     import('./(tabs)/docs.js'),
-    import('./(tabs)/+not-found.js'),
-    import('./(tabs)/screens/introduction.js'),
-    import('./(tabs)/screens/installation.js'),
-    import('./(tabs)/screens/quickstart.js')
+    import('./(tabs)/+not-found.js')
   ]);
 }
