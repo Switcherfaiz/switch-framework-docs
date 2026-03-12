@@ -4,12 +4,12 @@ import { SwTabBar } from '/components/SwTabBar.js';
 
 registerComponents([SwStarterSplashScreen, SwTabBar]);
 import { SwIndexScreen } from './index.js';
-import { SwUserNotFoundScreen } from './+not-found.js';
+import NotFoundScreen from './+not-found.js';
 import { SwTabsLayout } from './(tabs)/_layout.js';
 
 export class SwStackLayout extends StackLayout {
   static tag = 'sw-stack-layout';
-  static stackScreens = [SwIndexScreen, SwUserNotFoundScreen];
+  static stackScreens = [SwIndexScreen, NotFoundScreen];
   static tabsLayout = SwTabsLayout;
   static splash = 'sw-starter-splash';
   static initialRoute = 'index';

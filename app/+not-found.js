@@ -1,47 +1,35 @@
-import { SwitchComponent } from '/switch-framework/index.js';
+import { SwitchComponent, navigate, goBack, getActiveRoute } from '/switch-framework/index.js';
 
-export class SwUserNotFoundScreen extends SwitchComponent {
+export default class extends SwitchComponent {
   static screenName = '+not-found';
   static path = '/+not-found';
   static title = 'Not Found';
   static tag = 'sw-user-not-found-screen';
   static layout = 'stack';
 
-  static get observedAttributes() {
-    return ['path'];
-  }
-
   connected() {
     this._bindEvents();
   }
 
-  attributeChangedCallback(name, oldVal, newVal) {
-    if (name === 'path' && oldVal !== newVal) {
-      this._renderToShadow?.();
-    }
-  }
-
   _bindEvents() {
     this.shadowRoot.getElementById('home')?.addEventListener('click', () => {
-      const nav = globalStates?.getState ? globalStates.getState('navigate') : null;
-      if (typeof nav === 'function') nav('/');
+      navigate('index');
     });
     this.shadowRoot.getElementById('back')?.addEventListener('click', () => {
-      const goBack = globalStates?.getState ? globalStates.getState('go_back') : null;
-      if (typeof goBack === 'function') goBack();
-      else window.history.back();
+      goBack();
     });
   }
 
   render() {
-    const path = this.getAttribute('path') || window.location.pathname || '';
+    const attemptedRoute = getActiveRoute() || '';
+    const safePath = this._escapeHtml(attemptedRoute);
     return `
       <div class="wrap">
         <div class="card">
           <div class="code">404</div>
           <div class="h">This screen does not exist</div>
           <div class="p">No screen is registered for:</div>
-          <div class="path">${path}</div>
+          <div class="path">${safePath}</div>
           <div class="row">
             <button class="btn" id="home">Go to Home</button>
             <button class="btn secondary" id="back">Go Back</button>
@@ -104,5 +92,14 @@ export class SwUserNotFoundScreen extends SwitchComponent {
         .btn.secondary:hover { background: var(--surface_3); }
       </style>
     `;
+  }
+
+  _escapeHtml(value = '') {
+    return String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
   }
 }

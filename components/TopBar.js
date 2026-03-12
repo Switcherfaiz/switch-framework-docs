@@ -336,7 +336,7 @@ export class TopBar extends SwitchComponent {
           border: 1px solid var(--border_color);
           border-radius: 8px;
           padding: 10px 12px;
-          min-width: 160px;
+          min-width: 250px;
           max-width: 256px;
           height: 40px;
           cursor: pointer;
