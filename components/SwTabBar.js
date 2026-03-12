@@ -1,14 +1,10 @@
+import { SwitchComponent } from '/switch-framework/index.js';
 import { navigate } from '/switch-framework/router/index.js';
 
-export class SwTabBar extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this._unsub = null;
-  }
+export class SwTabBar extends SwitchComponent {
+  static tag = 'sw-tab-bar';
 
-  connectedCallback() {
-    this.render();
+  connected() {
     this.updateActive();
 
     if (globalStates?.subscribe) {
@@ -23,7 +19,7 @@ export class SwTabBar extends HTMLElement {
     });
   }
 
-  disconnectedCallback() {
+  disconnected() {
     if (this._unsub) this._unsub();
   }
 
@@ -46,11 +42,20 @@ export class SwTabBar extends HTMLElement {
     });
   }
 
+  getIcon(name) {
+    const map = {
+      home: `<span class='switch_icon_house'></span>`,
+      compass: `<span class='switch_icon_compass'></span>`,
+      settings: `<span class='switch_icon_gear'></span>`,
+      description: `<span class='switch_icon_description'></span>`
+    };
+    return map[name] || map.home;
+  }
+
   render() {
     const tabs = this.getTabs();
 
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <nav class="bar" aria-label="Bottom tabs">
         ${tabs.map((t) => {
           const route = t.initialRoute || (t.path ? t.path.replace(/^\//, '') : t.name);
@@ -63,16 +68,6 @@ export class SwTabBar extends HTMLElement {
         }).join('')}
       </nav>
     `;
-  }
-
-  getIcon(name) {
-    const map = {
-      home: `<span class='switch_icon_house'></span>`,
-      compass: `<span class='switch_icon_compass'></span>`,
-      settings: `<span class='switch_icon_gear'></span>`,
-      description: `<span class='switch_icon_description'></span>`
-    };
-    return map[name] || map.home;
   }
 
   styleSheet() {
@@ -152,8 +147,4 @@ export class SwTabBar extends HTMLElement {
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-tab-bar')) {
-  customElements.define('sw-tab-bar', SwTabBar);
 }

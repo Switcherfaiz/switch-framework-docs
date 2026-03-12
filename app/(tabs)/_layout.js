@@ -1,48 +1,65 @@
-import { Tabs } from '/switch-framework/index.js';
+import { TabLayout, registerComponents } from '/switch-framework/index.js';
+import { CodeBlock } from '/components/CodeBlock.js';
+import { DocsLeftSidebarNav } from '/components/DocsLeftSidebarNav.js';
+import { DocsRightSidebarNav } from '/components/DocsRightSidebarNav.js';
+import { DocsParamsTable } from '/components/DocsParamsTable.js';
+import { DocsPagination } from '/components/DocsPagination.js';
+import { DocsFeedback } from '/components/DocsFeedback.js';
+import { TopBar } from '/components/TopBar.js';
 
-export const tabsLayout = Tabs({
-  name: 'sw-tabs-layout',
-  initialTab: 'docs',
-  tabs: [
+registerComponents([CodeBlock, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, TopBar]);
+import { SwDocsIntroScreen } from './screens/introduction.js';
+import { SwDocsInstallScreen } from './screens/installation.js';
+import { SwDocsQuickstartScreen } from './screens/quickstart.js';
+import { SwDocsCliScreen } from './screens/cli.js';
+import { SwDocsRouterScreen } from './screens/router.js';
+import { SwDocsStateScreen } from './screens/state.js';
+import { SwDocsComponentsScreen } from './screens/components.js';
+import { SwDocsThemingScreen } from './screens/theming.js';
+import { SwDocsAnimationsScreen } from './screens/animations.js';
+import { SwDocsChangelogsScreen } from './screens/changelogs.js';
+import { SwDocsRedirectScreen } from './screens/docs-redirect.js';
+
+export class SwTabsLayout extends TabLayout {
+  static tag = 'sw-tabs-layout';
+  static initialTab = 'docs';
+  static tabs = [
     {
       name: 'docs',
       title: 'Docs',
       icon: 'description',
       path: '/docs/:id',
-      screen: 'sw-docs-screen',
+      screen: 'sw-docs-intro-screen',
       match: ['docs'],
       initialRoute: 'docs/introduction'
     }
-  ],
-  options: {
-    position: 'bottom'
-  }
-});
-
-export class SwTabsLayout extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
-
-  connectedCallback() {
-    this.render();
-  }
-
-  getContentContainer() {
-    return this.shadowRoot.querySelector('.tabcontainer');
-  }
+  ];
+  static options = { position: 'bottom' };
+  static screens = [
+    SwDocsRedirectScreen,
+    SwDocsIntroScreen,
+    SwDocsInstallScreen,
+    SwDocsQuickstartScreen,
+    SwDocsCliScreen,
+    SwDocsRouterScreen,
+    SwDocsStateScreen,
+    SwDocsComponentsScreen,
+    SwDocsThemingScreen,
+    SwDocsAnimationsScreen,
+    SwDocsChangelogsScreen
+  ];
 
   render() {
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <div class="layout">
         <sw-topbar></sw-topbar>
         <div class="content">
           <div class="left-sidebar">
             <sw-docs-left-sidebar-nav></sw-docs-left-sidebar-nav>
           </div>
-          <div class="tabcontainer"></div>
+          <div class="tab-content-area">
+            <div class="tabcontainer"></div>
+          </div>
           <div class="right-sidebar">
             <sw-docs-right-sidebar-nav></sw-docs-right-sidebar-nav>
           </div>
@@ -95,11 +112,39 @@ export class SwTabsLayout extends HTMLElement {
   overflow: hidden;
 }
 
+.tab-content-area {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .tabcontainer {
   z-index: 1;
+  flex: 1;
   min-height: 0;
   overflow: auto;
   overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border_color) transparent;
+}
+
+.tabcontainer::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.tabcontainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tabcontainer::-webkit-scrollbar-thumb {
+  background: var(--border_color);
+  border-radius: 4px;
+}
+
+.tabcontainer::-webkit-scrollbar-thumb:hover {
+  background: var(--muted_text);
 }
 
 @media (max-width: 1024px) {
@@ -117,21 +162,3 @@ export class SwTabsLayout extends HTMLElement {
     `;
   }
 }
-
-if (!customElements.get('sw-tabs-layout')) {
-  customElements.define('sw-tabs-layout', SwTabsLayout);
-}
-
-export const screens = [
-  Tabs.screen({
-    name: 'docs',
-    path: '/docs/:id',
-    title: 'Docs',
-    tag: 'sw-docs-screen',
-    layout: 'tabs'
-  })
-];
-
-tabsLayout.screens = screens;
-
-export default tabsLayout;

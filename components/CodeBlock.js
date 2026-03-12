@@ -1,4 +1,7 @@
-import { encodeData, decodeData } from '/switch-framework/index.js';
+import { SwitchComponent, decodeData } from '/switch-framework/index.js';
+import { copyText } from '/utils/clipboard.js';
+
+const CHECK_ICON = '<span class="switch_icon_check copy-check-icon"></span>';
 
 const LANG_HIGHLIGHTERS = {
   javascript: (code) => highlightJs(code),
@@ -31,24 +34,17 @@ function highlightJson(code) {
     .replace(/"([^"]+)":/g, '<span class="hl-property">"$1"</span>:');
 }
 
-export class CodeBlock extends HTMLElement {
+export class CodeBlock extends SwitchComponent {
+  static tag = 'sw-codeblock';
   static observedAttributes = ['data'];
 
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this.data = null;
-  }
-
-  connectedCallback() {
-    this.data = this.decodeData();
-    this.render();
+  connected() {
+    this.shadowRoot.querySelector('.copy-btn')?.addEventListener('click', () => this.copyToClipboard());
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'data' && oldValue !== newValue) {
-      this.data = this.decodeData();
-      this.render();
+      this._renderToShadow();
     }
   }
 
@@ -76,24 +72,33 @@ export class CodeBlock extends HTMLElement {
   }
 
   async copyToClipboard() {
-    const { code = '' } = this.data || {};
-    try {
-      await navigator.clipboard.writeText(code);
-      const btn = this.shadowRoot.querySelector('.copy-btn');
-      if (btn) {
-        const orig = btn.innerHTML;
-        btn.innerHTML = '<span class="copied">Copied!</span>';
-        setTimeout(() => { btn.innerHTML = orig; }, 1500);
-      }
-    } catch (_) {}
+    const data = this.decodeData();
+    const { code = '' } = data || {};
+    const btn = this.shadowRoot.querySelector('.copy-btn');
+    if (!btn) return;
+    const ok = await copyText(code);
+    if (ok) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = CHECK_ICON;
+      btn.classList.add('copied');
+      btn.setAttribute('aria-label', 'Copied');
+      setTimeout(() => {
+        btn.innerHTML = orig;
+        btn.classList.remove('copied');
+        btn.setAttribute('aria-label', 'Copy to clipboard');
+      }, 1500);
+    } else {
+      btn.classList.add('copy-error');
+      setTimeout(() => btn.classList.remove('copy-error'), 1000);
+    }
   }
 
   render() {
+    this.data = this.decodeData();
     const { title = 'app.js', code = '', language = 'javascript' } = this.data || {};
     const highlighted = language === 'text' || language === 'plain' ? this.escapeHtml(code) : this.highlight(code, language);
 
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <div class="code-window">
         <div class="code-header">
           <div class="dots">
@@ -103,22 +108,27 @@ export class CodeBlock extends HTMLElement {
           </div>
           <span class="code-title">${this.escapeHtml(title)}</span>
           <button class="copy-btn" type="button" aria-label="Copy to clipboard">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
-              <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="2"/>
-            </svg>
+            <span class="copy-icon-svg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </span>
           </button>
         </div>
         <pre class="code-content"><code data-lang="${this.escapeHtml(language)}">${highlighted}</code></pre>
       </div>
     `;
-
-    this.shadowRoot.querySelector('.copy-btn')?.addEventListener('click', () => this.copyToClipboard());
   }
 
   styleSheet() {
     return `
       <style>
+        @import '/assets/icons/style.css';
+        *
+        {
+          box-sizing: border-box;
+        }
         :host {
           display: block;
           width: 100%;
@@ -126,10 +136,11 @@ export class CodeBlock extends HTMLElement {
         }
 
         .code-window {
-          background: #1e1e1e;
-          border-radius: 12px;
+          background: var(--codeblock_bg, #1e293b);
+          border-radius: var(--radius_md, 12px);
           overflow: hidden;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          box-shadow: var(--shadow_md);
+          border: 1px solid var(--codeblock_border, #334155);
           width: 100%;
         }
 
@@ -137,9 +148,9 @@ export class CodeBlock extends HTMLElement {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: #2d2d2d;
+          background: var(--codeblock_header, #334155);
           padding: 10px 16px;
-          border-bottom: 1px solid #3f3f3f;
+          border-bottom: 1px solid var(--codeblock_border, #334155);
           gap: 12px;
         }
 
@@ -159,7 +170,7 @@ export class CodeBlock extends HTMLElement {
         .dots span:nth-child(3) { background: #27c93f; }
 
         .code-title {
-          color: #9ca3af;
+          color: var(--codeblock_muted, #94a3b8);
           font-size: 12px;
           font-family: monospace;
           flex: 1;
@@ -170,28 +181,33 @@ export class CodeBlock extends HTMLElement {
           align-items: center;
           justify-content: center;
           padding: 6px 10px;
-          background: #3f3f3f;
-          border: none;
-          border-radius: 6px;
-          color: #9ca3af;
+          background: var(--codeblock_border, #334155);
+          border: 1px solid var(--codeblock_border, #334155);
+          border-radius: var(--radius_sm, 8px);
+          color: var(--codeblock_muted, #94a3b8);
           cursor: pointer;
           transition: all 0.2s;
           font-size: 12px;
         }
 
         .copy-btn:hover {
-          background: #4f4f4f;
-          color: #e5e7eb;
+          background: #475569;
+          color: var(--codeblock_text, #f8fafc);
         }
 
-        .copy-btn .copied {
+        .copy-btn.copied {
+          color: #27c93f;
+        }
+
+        .copy-btn .copy-check-icon {
+          font-size: 18px;
           color: #27c93f;
         }
 
         .code-content {
           margin: 0;
           padding: 20px;
-          color: #d4d4d4;
+          color: var(--codeblock_text, #f8fafc);
           font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
           font-size: 14px;
           line-height: 1.65;
@@ -203,19 +219,16 @@ export class CodeBlock extends HTMLElement {
         .code-content code {
           white-space: pre;
           display: block;
+          text-align: left !important;
         }
 
-        .hl-cmd { color: #569cd6; }
-        .hl-string { color: #ce9178; }
-        .hl-number { color: #b5cea8; }
-        .hl-literal { color: #569cd6; }
-        .hl-function { color: #dcdcaa; }
-        .hl-property { color: #9cdcfe; }
+        .hl-cmd { color: var(--codeblock_accent, #818cf8); }
+        .hl-string { color: var(--codeblock_string, #fbbf24); }
+        .hl-number { color: #86efac; }
+        .hl-literal { color: var(--codeblock_accent, #818cf8); }
+        .hl-function { color: var(--codeblock_accent, #818cf8); }
+        .hl-property { color: #7dd3fc; }
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-codeblock')) {
-  customElements.define('sw-codeblock', CodeBlock);
 }

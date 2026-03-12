@@ -1,16 +1,11 @@
+import { SwitchComponent } from '/switch-framework/index.js';
 import { navigate, useRouteChangesSubscriber, getActiveRoute } from '/switch-framework/router/index.js';
 
-export class DocsLeftSidebarNav extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this._unsub = null;
-  }
+export class DocsLeftSidebarNav extends SwitchComponent {
+  static tag = 'sw-docs-left-sidebar-nav';
 
-  connectedCallback() {
-    this.render();
+  connected() {
     this.updateActive();
-
     this._unsub = useRouteChangesSubscriber(() => this.updateActive());
 
     this.shadowRoot.addEventListener('click', (e) => {
@@ -22,7 +17,7 @@ export class DocsLeftSidebarNav extends HTMLElement {
     });
   }
 
-  disconnectedCallback() {
+  disconnected() {
     if (this._unsub) this._unsub();
   }
 
@@ -75,8 +70,7 @@ export class DocsLeftSidebarNav extends HTMLElement {
   render() {
     const navItems = this.getNavItems();
 
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <nav class="docs-nav">
         ${navItems.map(({ title, items }) => `
           <div class="nav-group">
@@ -106,23 +100,42 @@ export class DocsLeftSidebarNav extends HTMLElement {
         }
 
         .docs-nav {
-          padding: 20px 0;
+          padding: 24px 12px;
           height: 100%;
           overflow-y: auto;
+          scrollbar-width: thin;
+        }
+
+        .docs-nav::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .docs-nav::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .docs-nav::-webkit-scrollbar-thumb {
+          background: var(--border_color);
+          border-radius: 3px;
         }
 
         .nav-group {
-          padding: 0 16px;
-          margin-bottom: 24px;
+          padding: 0 12px;
+          margin-bottom: 28px;
+        }
+
+        .nav-group:last-child {
+          margin-bottom: 0;
         }
 
         .nav-title {
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.08em;
           color: var(--muted_text);
-          margin: 0 0 8px;
+          margin: 0 0 12px;
+          padding-left: 12px;
         }
 
         .nav-list {
@@ -131,15 +144,20 @@ export class DocsLeftSidebarNav extends HTMLElement {
           margin: 0;
         }
 
+        .nav-list li {
+          margin-bottom: 2px;
+        }
+
         .nav-link {
           display: block;
-          padding: 8px 12px;
-          font-size: 14px;
+          padding: 10px 14px;
+          font-size: 13px;
           color: var(--sub_text);
           text-decoration: none;
-          border-radius: 6px;
-          transition: all 0.15s;
+          border-radius: 8px;
+          transition: all 0.2s ease;
           cursor: pointer;
+          border: 1px solid transparent;
         }
 
         .nav-link:hover {
@@ -148,18 +166,20 @@ export class DocsLeftSidebarNav extends HTMLElement {
         }
 
         .nav-link.active {
+          position: relative;
           background: var(--primary_light);
           color: var(--primary);
           font-weight: 600;
-          position: relative;
+          border-color: rgba(var(--primary-rgb, 55, 19, 236), 0.2);
+          box-shadow: var(--shadow_sm);
         }
 
         .nav-link.active::before {
           content: '';
           position: absolute;
           left: 0;
-          top: 6px;
-          bottom: 6px;
+          top: 8px;
+          bottom: 8px;
           width: 3px;
           background: var(--primary);
           border-radius: 0 2px 2px 0;
@@ -167,8 +187,4 @@ export class DocsLeftSidebarNav extends HTMLElement {
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-docs-left-sidebar-nav')) {
-  customElements.define('sw-docs-left-sidebar-nav', DocsLeftSidebarNav);
 }

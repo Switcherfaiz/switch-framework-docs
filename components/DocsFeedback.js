@@ -1,16 +1,9 @@
-import { useState, updateState } from '/switch-framework/index.js';
+import { SwitchComponent, useState, updateState } from '/switch-framework/index.js';
 
-export class DocsFeedback extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this._unsub = null;
-  }
+export class DocsFeedback extends SwitchComponent {
+  static tag = 'sw-docs-feedback';
 
-  connectedCallback() {
-    this.render();
-
-    // Subscribe to docs-helpful-count – re-render when it changes
+  connected() {
     const [count, unsubscribe] = useState('docs-helpful-count', (newCount) => {
       const el = this.shadowRoot?.querySelector('#helpful-count');
       if (el) el.textContent = newCount;
@@ -22,13 +15,12 @@ export class DocsFeedback extends HTMLElement {
     });
   }
 
-  disconnectedCallback() {
+  disconnected() {
     if (this._unsub) this._unsub();
   }
 
   render() {
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <div class="feedback">
         <span class="feedback-label">Was this helpful?</span>
         <button id="helpful-yes" type="button" class="feedback-btn">
@@ -95,8 +87,4 @@ export class DocsFeedback extends HTMLElement {
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-docs-feedback')) {
-  customElements.define('sw-docs-feedback', DocsFeedback);
 }

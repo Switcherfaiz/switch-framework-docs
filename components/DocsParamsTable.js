@@ -1,23 +1,12 @@
-import { decodeData } from '/switch-framework/index.js';
+import { SwitchComponent, decodeData } from '/switch-framework/index.js';
 
-export class DocsParamsTable extends HTMLElement {
+export class DocsParamsTable extends SwitchComponent {
+  static tag = 'sw-docs-params-table';
   static observedAttributes = ['data'];
-
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this._data = null;
-  }
-
-  connectedCallback() {
-    this._data = this.decodeData();
-    this.render();
-  }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'data' && oldValue !== newValue) {
-      this._data = this.decodeData();
-      this.render();
+      this._renderToShadow();
     }
   }
 
@@ -38,7 +27,8 @@ export class DocsParamsTable extends HTMLElement {
   }
 
   render() {
-    const { headers = [], rows = [], htmlColumns = [] } = this._data || {};
+    const _data = this.decodeData();
+    const { headers = [], rows = [], htmlColumns = [] } = _data || {};
     const htmlSet = new Set(htmlColumns);
 
     const thead = headers.length
@@ -59,8 +49,7 @@ export class DocsParamsTable extends HTMLElement {
             .join('')}</tbody>`
         : '';
 
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <div class="table-wrap">
         <table class="params-table">
           ${thead}
@@ -124,8 +113,4 @@ export class DocsParamsTable extends HTMLElement {
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-docs-params-table')) {
-  customElements.define('sw-docs-params-table', DocsParamsTable);
 }

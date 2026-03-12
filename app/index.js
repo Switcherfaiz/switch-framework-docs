@@ -1,22 +1,15 @@
-import { encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from '/switch-framework/index.js';
 import { navigate } from '/switch-framework/router/index.js';
+import { copyText } from '/utils/clipboard.js';
 
-export const screen = {
-  name: 'index',
-  path: '/',
-  title: 'Welcome',
-  tag: 'sw-index-screen',
-  layout: 'stack'
-};
+export class SwIndexScreen extends SwitchComponent {
+  static screenName = 'index';
+  static path = '/';
+  static title = 'Welcome';
+  static tag = 'sw-index-screen';
+  static layout = 'stack';
 
-export class SwIndexScreen extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
-
-  async connectedCallback() {
-    this.render();
+  connected() {
     this.bindEvents();
   }
 
@@ -26,36 +19,65 @@ export class SwIndexScreen extends HTMLElement {
     const ctaGetStarted = this.shadowRoot.querySelector('#cta_get_started');
     const ctaReadDocs = this.shadowRoot.querySelector('#cta_read_docs');
     const exploreLink = this.shadowRoot.querySelector('#explore_features');
+    const copyBtn = this.shadowRoot.querySelector('.command-line .copy-btn');
 
     if (getStarted) getStarted.addEventListener('click', () => navigate('docs/introduction'));
     if (ctaGetStarted) ctaGetStarted.addEventListener('click', () => navigate('docs/introduction'));
     if (ctaReadDocs) ctaReadDocs.addEventListener('click', () => navigate('docs/introduction'));
     if (exploreLink) exploreLink.addEventListener('click', (e) => { e.preventDefault(); navigate('docs/introduction'); });
     if (talkToUs) talkToUs.addEventListener('click', () => console.log('Talk to us clicked'));
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        const ok = await copyText('npx create-switch-framework-app my-app');
+        if (ok) {
+          const orig = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<span class="switch_icon_check" style="color:#27c93f;font-size:18px"></span>';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.innerHTML = orig;
+            copyBtn.classList.remove('copied');
+          }, 1500);
+        }
+      });
+    }
   }
 
   render() {
     const codeData = {
-      title: 'app.js',
+      title: 'app/index.js',
       language: 'javascript',
-      code: `import { Button } from '@switch/ui';
+      code: `// 1. Create state at app init (app/_layout.js)
+createState(0, 'counter');
 
-// A clean, accessible button component
-export default function ActionCenter() {
-  return (
-    <Button 
-      variant="primary" 
-      size="lg"
-      onClick={() => dispatch('INITIALIZE')}
-    >
-      Deploy Application
-    </Button>
-  );
+// 2. Reactive counter component
+import { SwitchComponent, useState, updateState, getState } from '/switch-framework/index.js';
+
+export class Counter extends SwitchComponent {
+  static tag = 'sw-counter';
+
+  connected() {
+    const [, unsub] = useState('counter', () => this._renderToShadow());
+    this._unsub = unsub;
+    this.shadowRoot.querySelector('#inc')?.addEventListener('click', () => {
+      updateState('counter', (n) => n + 1);
+    });
+  }
+
+  disconnected() {
+    if (this._unsub) this._unsub();
+  }
+
+  render() {
+    const count = getState('counter') ?? 0;
+    return \`
+      <button id="inc">Count: \${count}</button>
+    \`;
+  }
 }`
     };
 
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
+    return `
       <div class="wrap">
         <header class="topbar-fixed">
           <sw-topbar></sw-topbar>
@@ -100,7 +122,7 @@ export default function ActionCenter() {
                   <span class="prompt-symbol">❯</span>
                 </div>
                 <code class="command-text">npx create-switch-framework-app my-app</code>
-                <button class="copy-btn" aria-label="Copy to clipboard">
+                <button class="copy-btn command-copy-btn" aria-label="Copy to clipboard">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
                     <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="2"/>
@@ -359,6 +381,7 @@ export default function ActionCenter() {
     return `
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+        @import '/assets/icons/style.css';
 
         :host {
           display: block;
@@ -399,6 +422,25 @@ export default function ActionCenter() {
 
         .main-scroll {
           overflow-y: auto;
+          scrollbar-width: thin;
+          scrollbar-color: var(--border_color) transparent;
+        }
+
+        .main-scroll::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .main-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .main-scroll::-webkit-scrollbar-thumb {
+          background: var(--border_color);
+          border-radius: 4px;
+        }
+
+        .main-scroll::-webkit-scrollbar-thumb:hover {
+          background: var(--muted_text);
         }
 
         /* Hero Section */
@@ -1266,8 +1308,4 @@ export default function ActionCenter() {
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-index-screen')) {
-  customElements.define('sw-index-screen', SwIndexScreen);
 }

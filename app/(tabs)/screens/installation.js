@@ -1,45 +1,31 @@
-import { encodeData } from '/switch-framework/index.js';
-import '../../../components/CodeBlock.js';
+import { SwitchComponent, encodeData } from '/switch-framework/index.js';
 
-export const screen = {
-  name: 'installation',
-  path: '/docs/installation',
-  title: 'Installation',
-  tag: 'sw-installation-screen',
-  layout: 'tabs'
-};
-
-export class SwInstallationScreen extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
-
-  connectedCallback() {
-    this.render();
-  }
+export class SwDocsInstallScreen extends SwitchComponent {
+  static screenName = 'docs/installation';
+  static path = '/docs/installation';
+  static title = 'Installation';
+  static tag = 'sw-docs-install-screen';
+  static layout = 'tabs';
 
   render() {
-    const installCode = {
-      title: 'bash',
-      language: 'bash',
-      code: `npm i switch-framework switch-framework-backend`
-    };
-
-    const createCode = {
-      title: 'bash',
-      language: 'bash',
-      code: `npx create-switch-framework-app my-app`
-    };
-
-    this.shadowRoot.innerHTML = `
-      ${this.styleSheet()}
-      <div class="content">
-        <h1 class="section-title">Installation</h1>
-        <p class="section-desc">Install the core packages:</p>
+    const installCode = { title: 'bash', language: 'bash', code: `npm i switch-framework switch-framework-backend` };
+    const createCode = { title: 'bash', language: 'bash', code: `npx create-switch-framework-app my-app` };
+    return `
+      <div class="doc-section">
+        <h2 class="section-title" id="overview">Installation</h2>
+        <p class="section-desc">
+          Two ways to get started: install the packages yourself, or let the CLI do the heavy lifting. We recommend the CLI – it scaffolds everything so you can start coding in seconds.
+        </p>
+        <h3 class="subsection" id="manual-install">Option 1: Manual install</h3>
+        <p class="section-desc">Add the core packages to your project:</p>
         <sw-codeblock data="${encodeData(installCode)}"></sw-codeblock>
-        <p class="section-desc">Or create a new app:</p>
+        <h3 class="subsection" id="create-app">Option 2: Create a new app (recommended)</h3>
+        <p class="section-desc">One command, full project structure. Web, Electron, or both – you choose:</p>
         <sw-codeblock data="${encodeData(createCode)}"></sw-codeblock>
+        <p class="section-desc">
+          <strong>Using the local framework?</strong> Run <code>npm link</code> in your <code>switch-framework</code> folder, then <code>npm link switch-framework</code> in your app. Your app will use your local copy instead of the npm version.
+        </p>
+        <sw-docs-pagination></sw-docs-pagination>
       </div>
     `;
   }
@@ -47,56 +33,14 @@ export class SwInstallationScreen extends HTMLElement {
   styleSheet() {
     return `
       <style>
-        :host {
-          display: block;
-          width: 100%;
-          height: 100%;
-          font-family: 'Montserrat', sans-serif;
-          color: #111827;
-        }
-
-        .content {
-          padding: 32px 48px;
-          max-width: 800px;
-        }
-
-        .section-title {
-          font-size: 32px;
-          font-weight: 800;
-          color: #111827;
-          margin-bottom: 16px;
-        }
-
-        .section-desc {
-          font-size: 16px;
-          line-height: 1.7;
-          color: #4b5563;
-          margin-bottom: 16px;
-        }
-
-        code {
-          background: #f3f4f6;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
-          font-size: 13px;
-          color: #3713ec;
-        }
-
-        @media (max-width: 768px) {
-          .content {
-            padding: 24px 20px;
-          }
-
-          .section-title {
-            font-size: 24px;
-          }
-        }
+        :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
+        * { box-sizing: border-box; }
+        .doc-section { padding: 32px; max-width: 900px; margin: 0 auto; }
+        .section-title { font-size: 32px; font-weight: 800; color: var(--main_text); margin: 0 0 16px; letter-spacing: -0.02em; }
+        .section-desc { font-size: 15px; line-height: 1.7; color: var(--sub_text); margin: 0 0 20px; }
+        .subsection { font-size: 18px; font-weight: 700; color: var(--main_text); margin: 28px 0 12px; }
+        code { background: var(--surface_2); padding: 2px 6px; border-radius: 4px; font-family: 'Monaco', monospace; font-size: 13px; color: var(--main_text); }
       </style>
     `;
   }
-}
-
-if (!customElements.get('sw-installation-screen')) {
-  customElements.define('sw-installation-screen', SwInstallationScreen);
 }
