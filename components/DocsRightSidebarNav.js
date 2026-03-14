@@ -126,7 +126,7 @@ export class DocsRightSidebarNav extends SwitchComponent {
         .right-sidebar {
           width: 100%;
           height: 100%;
-          background: var(--surface_2);
+          background: var(--page_background);
           border-left: 1px solid var(--border_color);
           padding: 20px 0;
           overflow-y: auto;

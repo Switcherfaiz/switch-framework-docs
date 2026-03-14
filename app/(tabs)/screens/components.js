@@ -68,18 +68,24 @@ export class CounterDisplay extends SwitchComponent {
         })}"></sw-codeblock>
         <h3 class="subsection" id="use-effect">useEffect for globalStates</h3>
         <p class="section-desc">
-          <code>useEffect(callback, deps)</code> subscribes to <code>globalStates</code> keys (e.g. <code>activeRoute</code>, <code>routeParams</code>). When any watched key changes, the callback runs. Use it to re-render when the route changes.
+          <code>useEffect(callback, deps)</code> subscribes to <code>globalStates</code> keys (e.g. <code>activeRoute</code>, <code>routeParams</code>). When any watched key changes, the callback runs. Import and call directly – use it to re-render when the route changes.
         </p>
         <sw-codeblock data="${encodeData({
           title: 'useEffect example',
           language: 'javascript',
-          code: `connected() {
-  this.useEffect(() => this._renderToShadow(), ['activeRoute', 'routeParams']);
+          code: `import { SwitchComponent, useEffect } from '/switch-framework/index.js';
+
+connected() {
+  this._effectUnsub = useEffect(() => this._renderToShadow(), ['activeRoute', 'routeParams']);
+}
+
+disconnected() {
+  if (this._effectUnsub) this._effectUnsub();
 }`
         })}"></sw-codeblock>
         <h3 class="subsection" id="not-found-screen">Not Found Screen</h3>
         <p class="section-desc">
-          Create a <code>+not-found.js</code> screen to handle routes that don't exist. Extend <code>SwitchComponent</code> and set <code>path: '/+not-found'</code>. The framework auto-detects it by path, so you can name the class anything. Use <code>getActiveRoute()</code> to display which route the user attempted to navigate to.
+          If the framework finds a <code>+not-found.js</code> file, it expects a component with <code>path: '/+not-found'</code>. That screen is used instead of the framework's default not-found. The router auto-detects it by path – add it to <code>stackScreens</code> in your layout.
         </p>
         <sw-codeblock data="${encodeData({
           title: '+not-found.js',
@@ -174,7 +180,7 @@ export class SwStackLayout extends StackLayout {
           <li><code>styleSheet()</code> – Return CSS string. Override for component styles.</li>
           <li><code>connected()</code> – Called when element is connected. Override for setup.</li>
           <li><code>disconnected()</code> – Called when element is disconnected. Override for cleanup.</li>
-          <li><code>useEffect(callback, deps)</code> – Subscribe to globalStates keys. Callback runs when deps change.</li>
+          <li><code>useEffect(callback, deps)</code> – Import from framework; subscribe to globalStates keys. Callback runs when deps change. Call in <code>connected()</code>, unsubscribe in <code>disconnected()</code>.</li>
           <li><code>_renderToShadow()</code> – Re-render. Call when state changes to refresh the DOM.</li>
           <li><code>static getScreenConfig()</code> – Returns <code>{ name, path, title, tag, layout }</code> for screens.</li>
         </ul>

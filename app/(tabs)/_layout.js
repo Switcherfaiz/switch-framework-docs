@@ -1,5 +1,6 @@
 import { TabLayout, registerComponents } from '/switch-framework/index.js';
 import { CodeBlock } from '/components/CodeBlock.js';
+import { DocsChangelogLink } from '/components/DocsChangelogLink.js';
 import { DocsLeftSidebarNav } from '/components/DocsLeftSidebarNav.js';
 import { DocsRightSidebarNav } from '/components/DocsRightSidebarNav.js';
 import { DocsParamsTable } from '/components/DocsParamsTable.js';
@@ -7,7 +8,10 @@ import { DocsPagination } from '/components/DocsPagination.js';
 import { DocsFeedback } from '/components/DocsFeedback.js';
 import { TopBar } from '/components/TopBar.js';
 
-registerComponents([CodeBlock, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, TopBar]);
+import { LiveView } from '/components/LiveView.js';
+import { LiveCodePreview } from '/components/LiveCodePreview.js';
+
+registerComponents([CodeBlock, DocsChangelogLink, LiveView, LiveCodePreview, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, TopBar]);
 import { SwDocsIntroScreen } from './screens/introduction.js';
 import { SwDocsInstallScreen } from './screens/installation.js';
 import { SwDocsQuickstartScreen } from './screens/quickstart.js';
@@ -15,9 +19,16 @@ import { SwDocsCliScreen } from './screens/cli.js';
 import { SwDocsRouterScreen } from './screens/router.js';
 import { SwDocsStateScreen } from './screens/state.js';
 import { SwDocsComponentsScreen } from './screens/components.js';
+import { SwDocsComponentsFlatListScreen } from './screens/components-flatlist.js';
 import { SwDocsThemingScreen } from './screens/theming.js';
 import { SwDocsAnimationsScreen } from './screens/animations.js';
-import { SwDocsChangelogsScreen } from './screens/changelogs.js';
+import { SwDocsTutorialReactiveButtonScreen } from './screens/tutorial/reactive-button.js';
+import { SwDocsThinkingScreen } from './screens/thinking.js';
+import { SwDocsGoalsScreen } from './screens/goals.js';
+import { SwDocsFolderStructureScreen } from './screens/folder-structure.js';
+import { SwDocsLayoutsScreen } from './screens/layouts.js';
+import { SwDocsInstallationDesktopScreen } from './screens/installation/desktop.js';
+import { SwDocsHooksScreen } from './screens/hooks.js';
 import { SwDocsRedirectScreen } from './screens/docs-redirect.js';
 
 export class SwTabsLayout extends TabLayout {
@@ -38,15 +49,22 @@ export class SwTabsLayout extends TabLayout {
   static screens = [
     SwDocsRedirectScreen,
     SwDocsIntroScreen,
+    SwDocsTutorialReactiveButtonScreen,
+    SwDocsThinkingScreen,
+    SwDocsGoalsScreen,
     SwDocsInstallScreen,
+    SwDocsInstallationDesktopScreen,
     SwDocsQuickstartScreen,
     SwDocsCliScreen,
     SwDocsRouterScreen,
+    SwDocsFolderStructureScreen,
+    SwDocsLayoutsScreen,
     SwDocsStateScreen,
-    SwDocsComponentsScreen,
     SwDocsThemingScreen,
     SwDocsAnimationsScreen,
-    SwDocsChangelogsScreen
+    SwDocsComponentsScreen,
+    SwDocsComponentsFlatListScreen,
+    SwDocsHooksScreen
   ];
 
   render() {
@@ -102,12 +120,13 @@ export class SwTabsLayout extends TabLayout {
 }
 
 .left-sidebar {
-  background: var(--surface_2);
+  background: var(--page_background);
   border-right: 1px solid var(--border_color);
   overflow: hidden;
 }
 
 .right-sidebar {
+  background: var(--page_background);
   border-left: 1px solid var(--border_color);
   overflow: hidden;
 }
@@ -117,6 +136,7 @@ export class SwTabsLayout extends TabLayout {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+  background: var(--page_background);
 }
 
 .tabcontainer {

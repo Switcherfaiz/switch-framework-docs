@@ -5,11 +5,14 @@ import { SwTabBar } from '/components/SwTabBar.js';
 registerComponents([SwStarterSplashScreen, SwTabBar]);
 import { SwIndexScreen } from './index.js';
 import NotFoundScreen from './+not-found.js';
+import { SwChangelogsScreen } from './changelogs.js';
+import { SwAuthorsScreen } from './authors.js';
+import { SwAboutScreen } from './about.js';
 import { SwTabsLayout } from './(tabs)/_layout.js';
 
 export class SwStackLayout extends StackLayout {
   static tag = 'sw-stack-layout';
-  static stackScreens = [SwIndexScreen, NotFoundScreen];
+  static stackScreens = [SwIndexScreen, SwChangelogsScreen, SwAuthorsScreen, SwAboutScreen, NotFoundScreen];
   static tabsLayout = SwTabsLayout;
   static splash = 'sw-starter-splash';
   static initialRoute = 'index';
@@ -18,6 +21,7 @@ export class SwStackLayout extends StackLayout {
     renderSplashscreen('sw-starter-splash');
     createState(0, 'docs-helpful-count');
     createState(false, 'search-open');
+    createState({ count: 0 }, 'liveview-tutorial');
     await new Promise((resolve) => setTimeout(resolve, 3000));
     return { splash: 'sw-starter-splash', initialRoute: 'index' };
   }

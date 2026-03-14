@@ -38,18 +38,20 @@ static async init({ globalStates, renderSplashscreen }) {
           Use <code>useState(identifier, callback)</code> to consume a state. You get <code>[currentValue, unsubscribe]</code>. The callback runs immediately with the current value, and again whenever the state changes. Perfect for fine-grained DOM updates without re-rendering the whole component! In SwitchComponent, use <code>connected()</code> and <code>disconnected()</code> for lifecycle hooks.
         </p>
         <sw-codeblock data="${encodeData({
-          title: 'SwitchComponent – subscribe and react',
+          title: 'SwitchComponent – separate concerns with updateCount',
           language: 'javascript',
           code: `import { SwitchComponent, useState, updateState } from '/switch-framework/index.js';
 
 export class PatientList extends SwitchComponent {
   static tag = 'sw-patient-list';
 
+  updateCount(newPatients) {
+    const el = this.shadowRoot?.querySelector('#patient-count');
+    if (el) el.textContent = \`Patients: \${(newPatients || []).length}\`;
+  }
+
   connected() {
-    const [patients, unsubscribe] = useState('patient-list', (newPatients) => {
-      const el = this.shadowRoot?.querySelector('#patient-count');
-      if (el) el.textContent = \`Patients: \${newPatients.length}\`;
-    });
+    const [patients, unsubscribe] = useState('patient-list', this.updateCount.bind(this));
     this._unsub = unsubscribe;
   }
 

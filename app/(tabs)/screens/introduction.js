@@ -29,7 +29,13 @@ export class SwDocsIntroScreen extends SwitchComponent {
         </ul>
         <h3 class="subsection" id="when-to-use">When should I use Switch?</h3>
         <p class="section-desc">
-          Documentation sites, dashboards, internal tools, admin panels – anything that needs routing and a bit of structure without the overhead of a big framework. If you like vanilla JS and want "just enough" abstraction, Switch fits. If you're building the next Facebook, maybe reach for something heavier – but for most apps, Switch has your back.
+          <strong>No-build apps.</strong> If you want a lightweight, zero-build frontend that runs directly in the browser – no webpack, no Vite, no bundler – Switch is built for that. Just HTML and ES modules.
+        </p>
+        <p class="section-desc">
+          <strong>State management + DOM.</strong> Switch gives you an event-driven state manager that plays nicely with normal DOM operations. You can mix reactive state (<code>createState</code>, <code>useState</code>) with vanilla DOM updates, <code>querySelector</code>, and direct manipulation. No virtual DOM lock-in – use as much or as little structure as you need.
+        </p>
+        <p class="section-desc">
+          <strong>Lightweight, event-driven.</strong> If you want a small runtime with state management, routing, and components – without the weight of a full framework – Switch fits. Documentation sites, dashboards, internal tools, admin panels, prototypes. Anything that benefits from routing and a bit of structure, without the overhead.
         </p>
         <sw-docs-pagination></sw-docs-pagination>
       </div>

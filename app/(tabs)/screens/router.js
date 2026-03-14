@@ -19,9 +19,32 @@ export class SwDocsRouterScreen extends SwitchComponent {
       code: 'import { navigate } from \'/switch-framework/router/index.js\';\n\nnavigate(\'docs/introduction\');\nnavigate(\'user/42\');\nnavigate(\'docs\', { id: \'introduction\' });'
     });
     const codeGetRoute = encodeData({
-      title: 'Get route info in a screen',
+      title: 'Path params (:id) and query params (?name=)',
       language: 'javascript',
-      code: 'import { useParams, getActiveRoute } from \'/switch-framework/router/index.js\';\n\nconnected() {\n  const params = useParams();  // { id: \'42\' }\n  const route = getActiveRoute();  // \'user/42\'\n}'
+      code: `import { useParams, useSearchParams, getActiveRoute } from '/switch-framework/router/index.js';
+
+// Path params from /user/:id  ->  useParams() returns { id: '42' }
+// Query params from ?name=Jane&age=30  ->  useSearchParams() returns { name: 'Jane', age: '30' }
+
+connected() {
+  const params = useParams();      // { id: '42' }
+  const search = useSearchParams(); // { name: 'Jane', age: '30' }
+  const route = getActiveRoute();   // 'user/42'
+}`
+    });
+
+    const codeDefineScreen = encodeData({
+      title: 'Define screen with dynamic path',
+      language: 'javascript',
+      code: `// Screen for /user/:id
+export class UserScreen extends SwitchComponent {
+  static screenName = 'user/[id]';
+  static path = '/user/:id';
+  static title = 'User';
+  static tag = 'sw-user-screen';
+  static layout = 'tabs';
+  // useParams() will return { id: '42' } when visiting /user/42
+}`
     });
     const codeNavHelpers = encodeData({
       title: 'previousRoute / nextRoute',
@@ -49,6 +72,11 @@ export class SwDocsRouterScreen extends SwitchComponent {
           Access route parameters and search params inside your screen. Use hooks to get the current route and params.
         </p>
         <sw-codeblock data="${codeGetRoute}"></sw-codeblock>
+        <h3 class="subsection" id="define-screens">Define screens with params</h3>
+        <p class="section-desc">
+          Use <code>:param</code> in your path for dynamic segments. Query params (<code>?name=value</code>) are automatically parsed into <code>searchParams</code> in globalStates; use <code>useSearchParams()</code> to read them.
+        </p>
+        <sw-codeblock data="${codeDefineScreen}"></sw-codeblock>
         <h3 class="subsection" id="nav-helpers">Navigation helpers</h3>
         <p class="section-desc">
           The router provides helper functions for common navigation patterns.
@@ -60,7 +88,8 @@ export class SwDocsRouterScreen extends SwitchComponent {
           <li><code>goBack()</code> – Go back in browser history</li>
           <li><code>redirect(route, params)</code> – Same as navigate (alias)</li>
           <li><code>replace(route, params)</code> – Replace current history entry instead of pushing</li>
-          <li><code>useParams()</code> – Get current route parameters</li>
+          <li><code>useParams()</code> – Get path params (e.g. <code>{ id: '42' }</code>)</li>
+          <li><code>useSearchParams()</code> – Get query params (e.g. <code>{ name: 'Jane' }</code> from <code>?name=Jane</code>)</li>
           <li><code>getActiveRoute()</code> – Get current route string</li>
           <li><code>useRouteChangesSubscriber(callback)</code> – Subscribe to route changes</li>
         </ul>

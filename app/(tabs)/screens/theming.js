@@ -55,11 +55,24 @@ import { initTheme } from '/switch-framework/themes/index.js';
 initTheme();
 startApp(layout);`
         })}"></sw-codeblock>
-        <h3 class="subsection" id="api">API</h3>
+        <h3 class="subsection" id="change-theme">changeTheme – what to pass</h3>
+        <p class="section-desc">
+          Pass <code>'dark'</code> or <code>'light'</code> to <code>changeTheme</code>. It sets <code>data-theme</code> on <code>document.body</code>, saves to localStorage, and dispatches a <code>theme:change</code> event.
+        </p>
+        <sw-codeblock data="${encodeData({
+          title: 'Toggle theme',
+          language: 'javascript',
+          code: `import { getTheme, changeTheme } from '/switch-framework/themes/index.js';
+
+// Pass 'dark' or 'light'
+changeTheme(getTheme() === 'dark' ? 'light' : 'dark');`
+        })}"></sw-codeblock>
+        <h3 class="subsection" id="api">All theming functions</h3>
         <ul class="feature-list">
-          <li><code>getSystemTheme()</code> – returns <code>'dark'</code> or <code>'light'</code> from system preference</li>
+          <li><code>getSystemTheme()</code> – returns <code>'dark'</code> or <code>'light'</code> from <code>prefers-color-scheme</code></li>
           <li><code>getTheme()</code> – returns current theme (localStorage first, else system)</li>
-          <li><code>changeTheme('dark'|'light')</code> – sets theme, updates <code>data-theme</code>, saves to localStorage</li>
+          <li><code>changeTheme('dark' | 'light')</code> – sets theme, updates <code>body[data-theme]</code>, saves to localStorage, dispatches <code>theme:change</code></li>
+          <li><code>initTheme()</code> – call before startApp; applies stored or system theme</li>
           <li><code>useThemesChangesSubscriber(callback)</code> – subscribe to theme changes; callback receives current theme; returns unsubscribe</li>
         </ul>
         <sw-docs-pagination></sw-docs-pagination>

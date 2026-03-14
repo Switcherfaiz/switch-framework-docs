@@ -52,19 +52,70 @@ export class SwDocsAnimationsScreen extends SwitchComponent {
   transform: scale(1);
 }`
         })}"></sw-codeblock>
-        <h3 class="subsection">State-driven reactivity</h3>
+        <h3 class="subsection">State-driven reactivity with useState</h3>
         <p class="section-desc">
-          Use <code>updateState</code> and <code>subscribeState</code> to control when animations run. A modal might subscribe to <code>modal-edit-profile</code> – when <code>open: true</code>, the component sets <code>display: flex</code> and applies an animation class. When <code>open: false</code>, it hides.
+          Use <code>updateState</code> and <code>useState</code> to control when animations run. Create a method that does fine-grained DOM manipulation (visibility, classes), then pass it to <code>useState</code>.
         </p>
         <sw-codeblock data="${encodeData({
-          title: 'Modal – state controls visibility',
+          title: 'Modal – updateModalVisibility method + useState',
           language: 'javascript',
           code: `updateState('modal-edit-profile', { open: true, data: { name: 'Jane' } });
 
-subscribeState('modal-edit-profile', () => this.render());
-const state = getState('modal-edit-profile');
-this.style.display = state?.open ? 'flex' : 'none';
-this.classList.toggle('active', !!state?.open);`
+// In your modal component – use useState, not subscribeState:
+updateModalVisibility(state) {
+  this.style.display = state?.open ? 'flex' : 'none';
+  this.classList.toggle('active', !!state?.open);
+}
+
+connected() {
+  const [, unsub] = useState('modal-edit-profile', this.updateModalVisibility.bind(this));
+  this._unsub = unsub;
+  this.updateModalVisibility(getState('modal-edit-profile') || {});
+}` 
+        })}"></sw-codeblock>
+        <sw-codeblock data="${encodeData({
+          title: 'Full modal component example',
+          language: 'javascript',
+          code: `import { SwitchComponent, useState, updateState, getState } from '/switch-framework/index.js';
+
+export class EditProfileModal extends SwitchComponent {
+  static tag = 'sw-edit-profile-modal';
+
+  updateModalVisibility(state) {
+    this.style.display = state?.open ? 'flex' : 'none';
+    this.classList.toggle('active', !!state?.open);
+    const nameEl = this.shadowRoot?.querySelector('#modal-name');
+    if (nameEl) nameEl.textContent = state?.data?.name || '';
+  }
+
+  connected() {
+    const [, unsub] = useState('modal-edit-profile', this.updateModalVisibility.bind(this));
+    this._unsub = unsub;
+    this.updateModalVisibility(getState('modal-edit-profile') || {});
+    this.shadowRoot.querySelector('#close')?.addEventListener('click', () => {
+      updateState('modal-edit-profile', { open: false });
+    });
+  }
+
+  disconnected() {
+    if (this._unsub) this._unsub();
+  }
+
+  render() {
+    return \`
+      <div class="modal-overlay">
+        <div class="modal">
+          <h2>Edit Profile</h2>
+          <span id="modal-name"></span>
+          <button id="close">Close</button>
+        </div>
+      </div>
+    \`;
+  }
+}
+
+// Trigger from anywhere:
+// updateState('modal-edit-profile', { open: true, data: { name: 'Jane' } });`
         })}"></sw-codeblock>
         <h3 class="subsection" id="toasts">Toasts & alerts from bottom</h3>
         <p class="section-desc">
@@ -91,7 +142,7 @@ this.classList.toggle('active', !!state?.open);`
 }`
         })}"></sw-codeblock>
         <p class="section-desc">
-          <strong>Summary:</strong> Use standard CSS for animations. Use state to control when they run – <code>updateState</code> to open/close, <code>subscribeState</code> to react and toggle classes or styles.
+          <strong>Summary:</strong> Use standard CSS for animations. Use state to control when they run – <code>updateState</code> to open/close, <code>useState</code> with a method that does DOM manipulation (visibility, classes) to react.
         </p>
         <sw-docs-pagination></sw-docs-pagination>
       </div>

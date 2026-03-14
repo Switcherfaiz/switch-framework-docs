@@ -25,7 +25,7 @@ export class SwIndexScreen extends SwitchComponent {
     if (ctaGetStarted) ctaGetStarted.addEventListener('click', () => navigate('docs/introduction'));
     if (ctaReadDocs) ctaReadDocs.addEventListener('click', () => navigate('docs/introduction'));
     if (exploreLink) exploreLink.addEventListener('click', (e) => { e.preventDefault(); navigate('docs/introduction'); });
-    if (talkToUs) talkToUs.addEventListener('click', () => console.log('Talk to us clicked'));
+    if (talkToUs) talkToUs.addEventListener('click', () => window.open('https://github.com/Switcherfaiz/switch-framework', '_blank'));
 
     if (copyBtn) {
       copyBtn.addEventListener('click', async () => {
@@ -109,12 +109,12 @@ export class Counter extends SwitchComponent {
 
               <div class="hero-actions">
                 <button id="get_started" class="btn-primary">
-                  Start for free
+                  Open Docs
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </button>
-                <button id="talk_to_us" class="btn-secondary">Talk to us</button>
+                <button id="talk_to_us" class="btn-secondary">Open Github</button>
               </div>
 
               <div class="command-line">
@@ -263,7 +263,7 @@ export class Counter extends SwitchComponent {
                 <h2 class="cta-title">Ready to start building?</h2>
                 <p class="cta-subtitle">Join thousands of developers building the future with Switch Framework today.</p>
                 <div class="cta-actions">
-                  <button id="cta_get_started" class="cta-btn-primary">Get Started Now</button>
+                  <button id="cta_get_started" class="cta-btn-primary">Open Docs →</button>
                   <button id="cta_read_docs" class="cta-btn-secondary">Read Documentation</button>
                 </div>
               </div>
