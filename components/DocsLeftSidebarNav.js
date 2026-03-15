@@ -12,7 +12,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
   getExpandedStateForRoute(activeRoute) {
     const route = String(activeRoute || '');
     const routeMap = {
-      'quick-start': ['docs/tutorial/reactive-button', 'docs/thinking', 'docs/goals'],
+      'quick-start': ['docs/introduction', 'docs/tutorial/reactive-button', 'docs/thinking', 'docs/goals'],
       installation: ['docs/cli', 'docs/installation', 'docs/installation/desktop'],
       'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations'],
       components: ['docs/components', 'docs/components/flatlist', 'docs/hooks']
@@ -70,6 +70,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
             expandable: true,
             key: 'quick-start',
             children: [
+              { label: 'Introduction', to: 'docs/introduction' },
               { label: 'Tutorial: Reactive button', to: 'docs/tutorial/reactive-button' },
               { label: 'Thinking in Switch Framework', to: 'docs/thinking' },
               { label: 'Switch Framework Main Goals', to: 'docs/goals' }
