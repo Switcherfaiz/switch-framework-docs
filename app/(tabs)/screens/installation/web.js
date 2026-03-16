@@ -1,9 +1,9 @@
 import { SwitchComponent, encodeData } from '/switch-framework/index.js';
 
 export class SwDocsInstallScreen extends SwitchComponent {
-  static screenName = 'docs/installation';
-  static path = '/docs/installation';
-  static title = 'Installation';
+  static screenName = 'docs/installation/web';
+  static path = '/docs/installation/web';
+  static title = 'Web Installation';
   static tag = 'sw-docs-install-screen';
   static layout = 'tabs';
 
@@ -12,7 +12,7 @@ export class SwDocsInstallScreen extends SwitchComponent {
     const createCode = { title: 'bash', language: 'bash', code: `npx create-switch-framework-app my-app` };
     return `
       <div class="doc-section">
-        <h2 class="section-title" id="overview">Installation</h2>
+        <h2 class="section-title" id="overview">Web Installation</h2>
         <p class="section-desc">
           Two ways to get started: install the packages yourself, or let the CLI do the heavy lifting. We recommend the CLI – it scaffolds everything so you can start coding in seconds.
         </p>

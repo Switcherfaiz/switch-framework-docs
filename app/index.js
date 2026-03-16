@@ -27,6 +27,14 @@ export class SwIndexScreen extends SwitchComponent {
     if (exploreLink) exploreLink.addEventListener('click', (e) => { e.preventDefault(); navigate('docs/introduction'); });
     if (talkToUs) talkToUs.addEventListener('click', () => window.open('https://github.com/Switcherfaiz/switch-framework', '_blank'));
 
+    this.shadowRoot.addEventListener('click', (e) => {
+      const link = e.target?.closest?.('a[data-route]');
+      if (!link) return;
+      e.preventDefault();
+      const route = link.getAttribute('data-route');
+      if (route) navigate(route);
+    });
+
     if (copyBtn) {
       copyBtn.addEventListener('click', async () => {
         const ok = await copyText('npx create-switch-framework-app my-app');
@@ -207,12 +215,12 @@ export class Counter extends SwitchComponent {
             </div>
 
             <div class="features-grid">
-              ${this.renderFeatureCard('accessibility_new', 'Accessible by default', 'Built with WAI-ARIA patterns for maximum accessibility. Screen reader support and keyboard navigation right out of the box.', '#3b82f6')}
-              ${this.renderFeatureCard('palette', 'Themable', 'Easily customize the look and feel with CSS variables or Tailwind utility classes. Supports dark mode natively.', '#a855f7')}
-              ${this.renderFeatureCard('bolt', 'Lightweight', 'Zero runtime overhead. Components are tree-shakeable so you only ship what you actually use.', '#14b8a6')}
-              ${this.renderFeatureCard('data_object', 'Type Safe', 'Written in TypeScript with extensive type definitions. Get autocomplete and validation in your IDE.', '#6366f1')}
-              ${this.renderFeatureCard('devices', 'Responsive', 'Designed for every screen size. Mobile-first architecture ensures your UI looks perfect on phones, tablets, and desktops.', '#ec4899')}
-              ${this.renderFeatureCard('communities', 'Community Driven', 'Open source and backed by a vibrant community. Regular updates, extensive docs, and active support channels.', '#f97316')}
+              ${this.renderFeatureCard('code', 'No Build Step', 'Run directly in the browser. Native ES modules, no bundler, no transpilation. Ideal for prototypes, internal tools, and docs sites.', '#3b82f6')}
+              ${this.renderFeatureCard('bolt', 'Lightweight', 'Small runtime. No virtual DOM, no diffing. Components render to shadow DOM. Fast load, fast interaction.', '#14b8a6')}
+              ${this.renderFeatureCard('communities', 'Familiar Patterns', 'Stack and tab navigation like mobile apps. State management that feels like React\'s useState. Web Components under the hood.', '#6366f1')}
+              ${this.renderFeatureCard('data_object', 'Flexible', 'Mix reactive state with vanilla DOM. Use as much or as little of the framework as you need. No lock-in – just JavaScript and HTML.', '#ec4899')}
+              ${this.renderFeatureCard('accessibility_new', 'Accessible', 'Built with WAI-ARIA patterns. Screen reader support and keyboard navigation right out of the box.', '#a855f7')}
+              ${this.renderFeatureCard('palette', 'Themable', 'CSS variables and dark/light mode. Easily customize the look and feel of your app.', '#f97316')}
             </div>
           </section>
 
@@ -289,20 +297,14 @@ export class Counter extends SwitchComponent {
                   Making web development easier, faster, and more accessible for everyone. Open source and MIT licensed.
                 </p>
                 <div class="footer-social">
-                  <a href="#" class="social-link">
+                  <a href="https://twitter.com/Switcherfaiz" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Twitter">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </a>
-                  <a href="#" class="social-link">
+                  <a href="https://github.com/Switcherfaiz/switch-framework" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
-                  <a href="#" class="social-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <circle cx="5" cy="19" r="1" fill="currentColor"/>
                     </svg>
                   </a>
                 </div>
@@ -311,29 +313,29 @@ export class Counter extends SwitchComponent {
               <div class="footer-column">
                 <h4 class="footer-column-title">Product</h4>
                 <ul class="footer-links">
-                  <li><a href="#">Features</a></li>
-                  <li><a href="#">Components</a></li>
-                  <li><a href="#">Resources</a></li>
-                  <li><a href="#">Changelog</a></li>
+                  <li><a href="#" data-route="docs/introduction">Features</a></li>
+                  <li><a href="#" data-route="docs/components">Components</a></li>
+                  <li><a href="#" data-route="docs/introduction">Resources</a></li>
+                  <li><a href="#" data-route="changelogs">Changelog</a></li>
                 </ul>
               </div>
 
               <div class="footer-column">
                 <h4 class="footer-column-title">Resources</h4>
                 <ul class="footer-links">
-                  <li><a href="#">Documentation</a></li>
-                  <li><a href="#">Examples</a></li>
-                  <li><a href="#">Community</a></li>
-                  <li><a href="#">Help Center</a></li>
+                  <li><a href="#" data-route="docs/introduction">Documentation</a></li>
+                  <li><a href="#" data-route="docs/introduction">Examples</a></li>
+                  <li><a href="#" data-route="docs/introduction">Community</a></li>
+                  <li><a href="#" data-route="docs/introduction">Help Center</a></li>
                 </ul>
               </div>
 
               <div class="footer-column">
                 <h4 class="footer-column-title">Legal</h4>
                 <ul class="footer-links">
-                  <li><a href="#">Privacy Policy</a></li>
-                  <li><a href="#">Terms of Service</a></li>
-                  <li><a href="#">License</a></li>
+                  <li><a href="#" data-route="privacy-policy">Privacy Policy</a></li>
+                  <li><a href="#" data-route="terms-of-service">Terms of Service</a></li>
+                  <li><a href="#" data-route="license">License</a></li>
                 </ul>
               </div>
             </div>
@@ -367,6 +369,7 @@ export class Counter extends SwitchComponent {
 
   getIconPath(icon) {
     const icons = {
+      'code': '<path d="M9 3L5 12l4 9M15 3l4 9-4 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
       'accessibility_new': '<path d="M12 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM8 7l4 13M16 7l-4 13M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
       'palette': '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" stroke="currentColor" stroke-width="2"/>',
       'bolt': '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',

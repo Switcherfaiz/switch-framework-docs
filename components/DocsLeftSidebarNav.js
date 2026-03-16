@@ -13,8 +13,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
     const route = String(activeRoute || '');
     const routeMap = {
       'quick-start': ['docs/introduction', 'docs/tutorial/reactive-button', 'docs/thinking', 'docs/goals'],
-      installation: ['docs/cli', 'docs/installation', 'docs/installation/desktop'],
-      'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations'],
+      installation: ['docs/cli', 'docs/installation/web', 'docs/installation/desktop'],
+      'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations', 'docs/switch-icons'],
       components: ['docs/components', 'docs/components/flatlist', 'docs/hooks']
     };
     const updates = {};
@@ -82,8 +82,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
             key: 'installation',
             children: [
               { label: 'cli', to: 'docs/cli' },
-              { label: 'web app installation', to: 'docs/installation' },
-              { label: 'Desktop app', to: 'docs/installation/desktop' }
+              { label: 'Web app installation', to: 'docs/installation/web' },
+              { label: 'Desktop app installation', to: 'docs/installation/desktop' }
             ]
           }
         ]
@@ -101,7 +101,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
               { label: 'Routing', to: 'docs/router' },
               { label: 'State Management', to: 'docs/state' },
               { label: 'Theming', to: 'docs/theming' },
-              { label: 'Animations', to: 'docs/animations' }
+              { label: 'Animations', to: 'docs/animations' },
+              { label: 'Switch Icons', to: 'docs/switch-icons' }
             ]
           }
         ]
@@ -186,13 +187,18 @@ export class DocsLeftSidebarNav extends SwitchComponent {
           display: block;
           width: 100%;
           height: 100%;
+          min-height: 0;
+          overflow: hidden;
         }
 
         .docs-nav {
-          padding: 24px 12px;
+          padding: 24px 12px 48px 12px;
           height: 100%;
+          min-height: 0;
           overflow-y: auto;
+          overflow-x: hidden;
           scrollbar-width: thin;
+          scrollbar-color: var(--border_color) transparent;
         }
 
         .docs-nav::-webkit-scrollbar {
@@ -206,6 +212,10 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         .docs-nav::-webkit-scrollbar-thumb {
           background: var(--border_color);
           border-radius: 3px;
+        }
+
+        .docs-nav::-webkit-scrollbar-thumb:hover {
+          background: var(--muted_text);
         }
 
         .nav-group {
@@ -336,6 +346,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
 
         .nav-sublist .nav-link {
           padding: 8px 12px 8px 20px;
+          font-weight: 600;
           font-size: 12px;
         }
       </style>

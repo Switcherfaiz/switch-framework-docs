@@ -8,11 +8,14 @@ import NotFoundScreen from './+not-found.js';
 import { SwChangelogsScreen } from './changelogs.js';
 import { SwAuthorsScreen } from './authors.js';
 import { SwAboutScreen } from './about.js';
+import { SwPrivacyPolicyScreen } from './privacy-policy.js';
+import { SwTermsOfServiceScreen } from './terms-of-service.js';
+import { SwLicenseScreen } from './license.js';
 import { SwTabsLayout } from './(tabs)/_layout.js';
 
 export class SwStackLayout extends StackLayout {
   static tag = 'sw-stack-layout';
-  static stackScreens = [SwIndexScreen, SwChangelogsScreen, SwAuthorsScreen, SwAboutScreen, NotFoundScreen];
+  static stackScreens = [SwIndexScreen, SwChangelogsScreen, SwAuthorsScreen, SwAboutScreen, SwPrivacyPolicyScreen, SwTermsOfServiceScreen, SwLicenseScreen, NotFoundScreen];
   static tabsLayout = SwTabsLayout;
   static splash = 'sw-starter-splash';
   static initialRoute = 'index';

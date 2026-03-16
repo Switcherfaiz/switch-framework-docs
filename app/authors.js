@@ -1,4 +1,13 @@
-import { SwitchComponent } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+
+const AUTHORS = [
+  {
+    name: 'Faiz Ahmad Ally',
+    subtitle: 'Main author & contributor (Switcherfaiz)',
+    image: '',
+    githubUrl: 'https://github.com/Switcherfaiz'
+  }
+];
 
 export class SwAuthorsScreen extends SwitchComponent {
   static screenName = 'authors';
@@ -16,7 +25,10 @@ export class SwAuthorsScreen extends SwitchComponent {
         <main class="authors-main">
           <div class="doc-section">
             <h2 class="section-title">Authors</h2>
-            <p class="section-desc">Contributors and maintainers of Switch Framework. Content coming soon.</p>
+            <p class="section-desc">Contributors and maintainers of Switch Framework.</p>
+            <div class="authors-list">
+              ${AUTHORS.map((author) => `<sw-profiles data="${encodeData(author)}"></sw-profiles>`).join('')}
+            </div>
           </div>
         </main>
       </div>
@@ -33,7 +45,8 @@ export class SwAuthorsScreen extends SwitchComponent {
         .authors-main { flex: 1; overflow-y: auto; padding: 32px 24px; }
         .doc-section { max-width: 900px; margin: 0 auto; }
         .section-title { font-size: 32px; font-weight: 800; color: var(--main_text); margin: 0 0 16px; }
-        .section-desc { font-size: 15px; line-height: 1.7; color: var(--sub_text); }
+        .section-desc { font-size: 15px; line-height: 1.7; color: var(--sub_text); margin: 0 0 24px; }
+        .authors-list { display: flex; flex-direction: column; }
       </style>
     `;
   }

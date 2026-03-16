@@ -10,10 +10,11 @@ import { TopBar } from '/components/TopBar.js';
 
 import { LiveView } from '/components/LiveView.js';
 import { LiveCodePreview } from '/components/LiveCodePreview.js';
+import { SwProfiles } from '/components/SwProfiles.js';
 
-registerComponents([CodeBlock, DocsChangelogLink, LiveView, LiveCodePreview, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, TopBar]);
+registerComponents([CodeBlock, DocsChangelogLink, LiveView, LiveCodePreview, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, TopBar, SwProfiles]);
 import { SwDocsIntroScreen } from './screens/introduction.js';
-import { SwDocsInstallScreen } from './screens/installation.js';
+import { SwDocsInstallScreen } from './screens/installation/web.js';
 import { SwDocsQuickstartScreen } from './screens/quickstart.js';
 import { SwDocsCliScreen } from './screens/cli.js';
 import { SwDocsRouterScreen } from './screens/router.js';
@@ -22,6 +23,7 @@ import { SwDocsComponentsScreen } from './screens/components.js';
 import { SwDocsComponentsFlatListScreen } from './screens/components-flatlist.js';
 import { SwDocsThemingScreen } from './screens/theming.js';
 import { SwDocsAnimationsScreen } from './screens/animations.js';
+import { SwDocsSwitchIconsScreen } from './screens/switch-icons.js';
 import { SwDocsTutorialReactiveButtonScreen } from './screens/tutorial/reactive-button.js';
 import { SwDocsThinkingScreen } from './screens/thinking.js';
 import { SwDocsGoalsScreen } from './screens/goals.js';
@@ -62,6 +64,7 @@ export class SwTabsLayout extends TabLayout {
     SwDocsStateScreen,
     SwDocsThemingScreen,
     SwDocsAnimationsScreen,
+    SwDocsSwitchIconsScreen,
     SwDocsComponentsScreen,
     SwDocsComponentsFlatListScreen,
     SwDocsHooksScreen
@@ -123,12 +126,18 @@ export class SwTabsLayout extends TabLayout {
   background: var(--page_background);
   border-right: 1px solid var(--border_color);
   overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .right-sidebar {
   background: var(--page_background);
   border-left: 1px solid var(--border_color);
   overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .tab-content-area {
@@ -150,8 +159,7 @@ export class SwTabsLayout extends TabLayout {
 }
 
 .tabcontainer::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
 }
 
 .tabcontainer::-webkit-scrollbar-track {
@@ -160,7 +168,7 @@ export class SwTabsLayout extends TabLayout {
 
 .tabcontainer::-webkit-scrollbar-thumb {
   background: var(--border_color);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .tabcontainer::-webkit-scrollbar-thumb:hover {

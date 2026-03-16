@@ -1,7 +1,7 @@
 import { SwitchComponent } from '/switch-framework/index.js';
 import { previousRoute, nextRoute, navigate, useRouteChangesSubscriber } from '/switch-framework/router/index.js';
 
-const DOC_ORDER = ['introduction', 'installation', 'quickstart', 'cli', 'router', 'state', 'components', 'theming', 'animations', 'changelogs'];
+const DOC_ORDER = ['introduction', 'installation', 'quickstart', 'cli', 'router', 'state', 'components', 'theming', 'animations', 'switch-icons', 'changelogs'];
 
 export class DocsPagination extends SwitchComponent {
   static tag = 'sw-docs-pagination';

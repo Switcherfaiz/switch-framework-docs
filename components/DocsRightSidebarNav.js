@@ -121,15 +121,37 @@ export class DocsRightSidebarNav extends SwitchComponent {
           display: block;
           width: 240px;
           height: 100%;
+          min-height: 0;
+          overflow: hidden;
         }
 
         .right-sidebar {
           width: 100%;
           height: 100%;
+          min-height: 0;
           background: var(--page_background);
-          border-left: 1px solid var(--border_color);
           padding: 20px 0;
           overflow-y: auto;
+          overflow-x: hidden;
+          scrollbar-width: thin;
+          scrollbar-color: var(--border_color) transparent;
+        }
+
+        .right-sidebar::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .right-sidebar::-webkit-scrollbar-thumb {
+          background: var(--border_color);
+          border-radius: 3px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-thumb:hover {
+          background: var(--muted_text);
         }
 
         .toc {
