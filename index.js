@@ -1,5 +1,5 @@
-import { startApp } from '/switch-framework/index.js';
-import { initTheme } from '/switch-framework/themes/index.js';
+import { startApp } from 'switch-framework';
+import { initTheme } from 'switch-framework/themes';
 import layout from './app/_layout.js';
 
 initTheme();

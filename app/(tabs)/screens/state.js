@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 export class SwDocsStateScreen extends SwitchComponent {
   static screenName = 'docs/state';
@@ -25,7 +25,7 @@ export class SwDocsStateScreen extends SwitchComponent {
         <sw-codeblock data="${encodeData({
           title: 'app/_layout.js – create state at app boot',
           language: 'javascript',
-          code: `import { createState } from '/switch-framework/index.js';
+          code: `import { createState } from 'switch-framework';
 
 static async init({ globalStates, renderSplashscreen }) {
   createState([], 'patient-list');
@@ -40,7 +40,7 @@ static async init({ globalStates, renderSplashscreen }) {
         <sw-codeblock data="${encodeData({
           title: 'SwitchComponent – separate concerns with updateCount',
           language: 'javascript',
-          code: `import { SwitchComponent, useState, updateState } from '/switch-framework/index.js';
+          code: `import { SwitchComponent, useState, updateState } from 'switch-framework';
 
 export class PatientList extends SwitchComponent {
   static tag = 'sw-patient-list';
@@ -71,7 +71,7 @@ export class PatientList extends SwitchComponent {
         <sw-codeblock data="${encodeData({
           title: 'Update state from any component',
           language: 'javascript',
-          code: `import { updateState } from '/switch-framework/index.js';
+          code: `import { updateState } from 'switch-framework';
 
 updateState('patient-list', (list) => [...list, newPatient]);
 updateState('docs-helpful-count', (n) => n + 1);`

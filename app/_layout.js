@@ -1,4 +1,4 @@
-import { StackLayout, createState, registerComponents } from '/switch-framework/index.js';
+import { StackLayout, createState, registerComponents } from 'switch-framework';
 import { SwStarterSplashScreen } from '/components/SwStarterSplashScreen.js';
 import { SwTabBar } from '/components/SwTabBar.js';
 

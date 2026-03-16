@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 const DOC_STYLES = `
   :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
@@ -24,7 +24,7 @@ export class SwDocsLayoutsScreen extends SwitchComponent {
     const stackCode = {
       title: 'app/_layout.js',
       language: 'javascript',
-      code: `import { StackLayout, createState } from '/switch-framework/index.js';
+      code: `import { StackLayout, createState } from 'switch-framework';
 
 export class SwStackLayout extends StackLayout {
   static stackScreens = [SwIndexScreen, SwChangelogsScreen, NotFoundScreen];

@@ -1,5 +1,5 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
-import { navigate } from '/switch-framework/router/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
+import { navigate } from 'switch-framework/router';
 import { copyText } from '/utils/clipboard.js';
 
 export class SwIndexScreen extends SwitchComponent {
@@ -59,7 +59,7 @@ export class SwIndexScreen extends SwitchComponent {
 createState(0, 'counter');
 
 // 2. Reactive counter component
-import { SwitchComponent, useState, updateState, getState } from '/switch-framework/index.js';
+import { SwitchComponent, useState, updateState, getState } from 'switch-framework';
 
 export class Counter extends SwitchComponent {
   static tag = 'sw-counter';

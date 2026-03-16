@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 const DOC_STYLES = `
   :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
@@ -26,7 +26,7 @@ export class SwDocsTutorialReactiveButtonScreen extends SwitchComponent {
     const counterCode = {
       title: 'components/Counter.js',
       language: 'javascript',
-      code: `import { SwitchComponent, useState, updateState, getState } from '/switch-framework/index.js';
+      code: `import { SwitchComponent, useState, updateState, getState } from 'switch-framework';
 
 export class Counter extends SwitchComponent {
   static tag = 'sw-counter';

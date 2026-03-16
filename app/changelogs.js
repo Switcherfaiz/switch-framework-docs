@@ -1,4 +1,4 @@
-import { SwitchComponent } from '/switch-framework/index.js';
+import { SwitchComponent } from 'switch-framework';
 
 export class SwChangelogsScreen extends SwitchComponent {
   static screenName = 'changelogs';
@@ -19,6 +19,21 @@ export class SwChangelogsScreen extends SwitchComponent {
             <p class="section-desc">
               Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
             </p>
+            <h3 class="subsection" id="v0-2-0">v0.2.0 – March 16, 2026</h3>
+            <p class="section-desc"><strong>Features</strong></p>
+            <ul class="feature-list">
+              <li>Next.js-like server API: <code>switchFrameworkBackend.config()</code> and <code>app.initServer((server) => { ... })</code></li>
+              <li>Clean import specifiers: <code>'switch-framework'</code> and <code>'switch-framework/router'</code> instead of path-based imports</li>
+              <li>Import map auto-injection: server injects import map into index.html on request – no import map in your HTML source</li>
+              <li>Backend owns Express setup: framework routes, static files, SPA catch-all, and session built-in</li>
+              <li>Dual module support: works with both CommonJS (<code>require</code>) and ESM (<code>import</code>)</li>
+            </ul>
+            <p class="section-desc"><strong>Improvements</strong></p>
+            <ul class="feature-list">
+              <li>Simplified server.js: user adds middleware via <code>initServer</code> callback; no manual <code>app.use</code> for framework routes</li>
+              <li>New <sw-docs-changelog-link text="Server documentation" route="docs/server/introduction"></sw-docs-changelog-link> (Introduction, Web Server, Desktop Server)</li>
+              <li>Updated CLI templates and docs code snippets to use clean import specifiers</li>
+            </ul>
             <h3 class="subsection" id="v1-2-0">v1.2.0 – March 10, 2026</h3>
             <p class="section-desc"><strong>Features</strong></p>
             <ul class="feature-list">

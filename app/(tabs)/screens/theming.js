@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 export class SwDocsThemingScreen extends SwitchComponent {
   static screenName = 'docs/theming';
@@ -23,7 +23,7 @@ export class SwDocsThemingScreen extends SwitchComponent {
   changeTheme,
   initTheme,
   useThemesChangesSubscriber
-} from '/switch-framework/themes/index.js';`
+} from 'switch-framework/themes';`
         })}"></sw-codeblock>
         <h3 class="subsection" id="setup">Setup</h3>
         <p class="section-desc">
@@ -49,8 +49,8 @@ body[data-theme="dark"] {
         <sw-codeblock data="${encodeData({
           title: 'index.js',
           language: 'javascript',
-          code: `import { startApp } from '/switch-framework/index.js';
-import { initTheme } from '/switch-framework/themes/index.js';
+          code: `import { startApp } from 'switch-framework';
+import { initTheme } from 'switch-framework/themes';
 
 initTheme();
 startApp(layout);`
@@ -62,7 +62,7 @@ startApp(layout);`
         <sw-codeblock data="${encodeData({
           title: 'Toggle theme',
           language: 'javascript',
-          code: `import { getTheme, changeTheme } from '/switch-framework/themes/index.js';
+          code: `import { getTheme, changeTheme } from 'switch-framework/themes';
 
 // Pass 'dark' or 'light'
 changeTheme(getTheme() === 'dark' ? 'light' : 'dark');`

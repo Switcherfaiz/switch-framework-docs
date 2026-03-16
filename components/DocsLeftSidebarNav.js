@@ -1,5 +1,5 @@
-import { SwitchComponent } from '/switch-framework/index.js';
-import { navigate, useRouteChangesSubscriber, getActiveRoute } from '/switch-framework/router/index.js';
+import { SwitchComponent } from 'switch-framework';
+import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-framework/router';
 
 export class DocsLeftSidebarNav extends SwitchComponent {
   static tag = 'sw-docs-left-sidebar-nav';
@@ -15,7 +15,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       'quick-start': ['docs/introduction', 'docs/tutorial/reactive-button', 'docs/thinking', 'docs/goals'],
       installation: ['docs/cli', 'docs/installation/web', 'docs/installation/desktop'],
       'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations', 'docs/switch-icons'],
-      components: ['docs/components', 'docs/components/flatlist', 'docs/hooks']
+      components: ['docs/components', 'docs/components/flatlist', 'docs/hooks'],
+      backend: ['docs/server/introduction', 'docs/server/web', 'docs/server/desktop']
     };
     const updates = {};
     for (const [key, routes] of Object.entries(routeMap)) {
@@ -118,6 +119,21 @@ export class DocsLeftSidebarNav extends SwitchComponent {
               { label: 'Component Setup', to: 'docs/components' },
               { label: 'Flatlists', to: 'docs/components/flatlist' },
               { label: 'Hooks', to: 'docs/hooks' }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'BACKEND',
+        items: [
+          {
+            label: 'Server',
+            expandable: true,
+            key: 'backend',
+            children: [
+              { label: 'Introduction', to: 'docs/server/introduction' },
+              { label: 'Web Server', to: 'docs/server/web' },
+              { label: 'Desktop Server', to: 'docs/server/desktop' }
             ]
           }
         ]

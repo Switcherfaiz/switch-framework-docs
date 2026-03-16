@@ -1,5 +1,5 @@
-import { SwitchComponent } from '/switch-framework/index.js';
-import { previousRoute, nextRoute, navigate, useRouteChangesSubscriber } from '/switch-framework/router/index.js';
+import { SwitchComponent } from 'switch-framework';
+import { previousRoute, nextRoute, navigate, useRouteChangesSubscriber } from 'switch-framework/router';
 
 const DOC_ORDER = ['introduction', 'installation', 'quickstart', 'cli', 'router', 'state', 'components', 'theming', 'animations', 'switch-icons', 'changelogs'];
 

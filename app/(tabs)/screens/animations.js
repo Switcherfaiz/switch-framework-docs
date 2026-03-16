@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 export class SwDocsAnimationsScreen extends SwitchComponent {
   static screenName = 'docs/animations';
@@ -76,7 +76,7 @@ connected() {
         <sw-codeblock data="${encodeData({
           title: 'Full modal component example',
           language: 'javascript',
-          code: `import { SwitchComponent, useState, updateState, getState } from '/switch-framework/index.js';
+          code: `import { SwitchComponent, useState, updateState, getState } from 'switch-framework';
 
 export class EditProfileModal extends SwitchComponent {
   static tag = 'sw-edit-profile-modal';

@@ -1,5 +1,5 @@
-import { SwitchComponent } from '/switch-framework/index.js';
-import { navigate } from '/switch-framework/router/index.js';
+import { SwitchComponent } from 'switch-framework';
+import { navigate } from 'switch-framework/router';
 
 export class SwTermsOfServiceScreen extends SwitchComponent {
   static screenName = 'terms-of-service';

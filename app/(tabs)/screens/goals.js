@@ -1,4 +1,4 @@
-import { SwitchComponent } from '/switch-framework/index.js';
+import { SwitchComponent } from 'switch-framework';
 
 const DOC_STYLES = `
   :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }

@@ -1,4 +1,4 @@
-import { SwitchComponent } from '/switch-framework/index.js';
+import { SwitchComponent } from 'switch-framework';
 
 export class SwDocsIntroScreen extends SwitchComponent {
   static screenName = 'docs/introduction';

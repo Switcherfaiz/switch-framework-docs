@@ -1,5 +1,5 @@
-import { SwitchComponent } from '/switch-framework/index.js';
-import { useRouteChangesSubscriber } from '/switch-framework/router/index.js';
+import { SwitchComponent } from 'switch-framework';
+import { useRouteChangesSubscriber } from 'switch-framework/router';
 
 export class DocsRightSidebarNav extends SwitchComponent {
   static tag = 'sw-docs-right-sidebar-nav';

@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 const DOC_STYLES = `
   :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
@@ -57,7 +57,7 @@ export class SwDocsHooksScreen extends SwitchComponent {
         <sw-codeblock data="${encodeData(useEffectCode)}"></sw-codeblock>
         <h3 class="subsection" id="router-hooks">Router hooks</h3>
         <p class="section-desc">
-          From <code>/switch-framework/router/index.js</code>: <code>useParams()</code>, <code>useSearchParams()</code>, <code>getActiveRoute()</code>, <code>useRouteChangesSubscriber()</code>.
+          From <code>switch-framework/router</code>: <code>useParams()</code>, <code>useSearchParams()</code>, <code>getActiveRoute()</code>, <code>useRouteChangesSubscriber()</code>.
         </p>
         <sw-docs-pagination></sw-docs-pagination>
       </div>

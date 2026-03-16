@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 export class SwDocsRouterScreen extends SwitchComponent {
   static screenName = 'docs/router';
@@ -11,17 +11,17 @@ export class SwDocsRouterScreen extends SwitchComponent {
     const codeRegisterScreens = encodeData({
       title: 'Register screens (app/_layout.js)',
       language: 'javascript',
-      code: 'import { StackLayout } from \'/switch-framework/index.js\';\n\nconst stackScreens = [SwIndexScreen, SwUserNotFoundScreen];\nconst layout = SwStackLayout.getAppLayout();'
+      code: 'import { StackLayout } from \'switch-framework\';\n\nconst stackScreens = [SwIndexScreen, SwUserNotFoundScreen];\nconst layout = SwStackLayout.getAppLayout();'
     });
     const codeNavigate = encodeData({
       title: 'Navigate to routes',
       language: 'javascript',
-      code: 'import { navigate } from \'/switch-framework/router/index.js\';\n\nnavigate(\'docs/introduction\');\nnavigate(\'user/42\');\nnavigate(\'docs\', { id: \'introduction\' });'
+      code: 'import { navigate } from \'switch-framework/router\';\n\nnavigate(\'docs/introduction\');\nnavigate(\'user/42\');\nnavigate(\'docs\', { id: \'introduction\' });'
     });
     const codeGetRoute = encodeData({
       title: 'Path params (:id) and query params (?name=)',
       language: 'javascript',
-      code: `import { useParams, useSearchParams, getActiveRoute } from '/switch-framework/router/index.js';
+      code: `import { useParams, useSearchParams, getActiveRoute } from 'switch-framework/router';
 
 // Path params from /user/:id  ->  useParams() returns { id: '42' }
 // Query params from ?name=Jane&age=30  ->  useSearchParams() returns { name: 'Jane', age: '30' }

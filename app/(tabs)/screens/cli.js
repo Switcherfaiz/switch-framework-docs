@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 export class SwDocsCliScreen extends SwitchComponent {
   static screenName = 'docs/cli';

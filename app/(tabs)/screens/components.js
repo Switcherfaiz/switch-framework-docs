@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 export class SwDocsComponentsScreen extends SwitchComponent {
   static screenName = 'docs/components';
@@ -19,7 +19,7 @@ export class SwDocsComponentsScreen extends SwitchComponent {
         <sw-codeblock data="${encodeData({
           title: 'Basic component',
           language: 'javascript',
-          code: `import { SwitchComponent } from '/switch-framework/index.js';
+          code: `import { SwitchComponent } from 'switch-framework';
 
 export class MyButton extends SwitchComponent {
   static tag = 'sw-my-button';
@@ -44,7 +44,7 @@ export class MyButton extends SwitchComponent {
         <sw-codeblock data="${encodeData({
           title: 'Reactive component with useState',
           language: 'javascript',
-          code: `import { SwitchComponent, useState, updateState } from '/switch-framework/index.js';
+          code: `import { SwitchComponent, useState, updateState } from 'switch-framework';
 
 export class CounterDisplay extends SwitchComponent {
   static tag = 'sw-counter-display';
@@ -73,7 +73,7 @@ export class CounterDisplay extends SwitchComponent {
         <sw-codeblock data="${encodeData({
           title: 'useEffect example',
           language: 'javascript',
-          code: `import { SwitchComponent, useEffect } from '/switch-framework/index.js';
+          code: `import { SwitchComponent, useEffect } from 'switch-framework';
 
 connected() {
   this._effectUnsub = useEffect(() => this._renderToShadow(), ['activeRoute', 'routeParams']);
@@ -90,7 +90,7 @@ disconnected() {
         <sw-codeblock data="${encodeData({
           title: '+not-found.js',
           language: 'javascript',
-          code: `import { SwitchComponent, navigate, goBack, getActiveRoute } from '/switch-framework/index.js';
+          code: `import { SwitchComponent, navigate, goBack, getActiveRoute } from 'switch-framework';
 
 export default class extends SwitchComponent {
   static screenName = '+not-found';

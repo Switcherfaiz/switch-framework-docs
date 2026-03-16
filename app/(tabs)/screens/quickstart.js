@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from '/switch-framework/index.js';
+import { SwitchComponent, encodeData } from 'switch-framework';
 
 export class SwDocsQuickstartScreen extends SwitchComponent {
   static screenName = 'docs/quickstart';
@@ -11,7 +11,7 @@ export class SwDocsQuickstartScreen extends SwitchComponent {
     const quickstartCode = {
       title: 'app/_layout.js',
       language: 'javascript',
-      code: `import { StackLayout } from '/switch-framework/index.js';
+      code: `import { StackLayout } from 'switch-framework';
 import SwIndexScreen from './index.js';
 import SwUserNotFoundScreen from './+not-found.js';
 import SwTabsLayout from './(tabs)/_layout.js';
@@ -58,7 +58,7 @@ export default SwStackLayout.getAppLayout();`
         <sw-codeblock data="${encodeData({
           title: 'index.js',
           language: 'javascript',
-          code: `import { startApp } from '/switch-framework/index.js';
+          code: `import { startApp } from 'switch-framework';
 import layout from './app/_layout.js';
 
 startApp(layout);`

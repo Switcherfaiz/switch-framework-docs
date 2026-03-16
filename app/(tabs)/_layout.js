@@ -1,4 +1,4 @@
-import { TabLayout, registerComponents } from '/switch-framework/index.js';
+import { TabLayout, registerComponents } from 'switch-framework';
 import { CodeBlock } from '/components/CodeBlock.js';
 import { DocsChangelogLink } from '/components/DocsChangelogLink.js';
 import { DocsLeftSidebarNav } from '/components/DocsLeftSidebarNav.js';
@@ -32,6 +32,9 @@ import { SwDocsLayoutsScreen } from './screens/layouts.js';
 import { SwDocsInstallationDesktopScreen } from './screens/installation/desktop.js';
 import { SwDocsHooksScreen } from './screens/hooks.js';
 import { SwDocsRedirectScreen } from './screens/docs-redirect.js';
+import { SwDocsServerIntroScreen } from './screens/server/introduction.js';
+import { SwDocsServerWebScreen } from './screens/server/web.js';
+import { SwDocsServerDesktopScreen } from './screens/server/desktop.js';
 
 export class SwTabsLayout extends TabLayout {
   static tag = 'sw-tabs-layout';
@@ -50,6 +53,9 @@ export class SwTabsLayout extends TabLayout {
   static options = { position: 'bottom' };
   static screens = [
     SwDocsRedirectScreen,
+    SwDocsServerIntroScreen,
+    SwDocsServerWebScreen,
+    SwDocsServerDesktopScreen,
     SwDocsIntroScreen,
     SwDocsTutorialReactiveButtonScreen,
     SwDocsThinkingScreen,

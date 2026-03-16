@@ -1,5 +1,5 @@
-import { SwitchComponent } from '/switch-framework/index.js';
-import { decodeData } from '/switch-framework/router/index.js';
+import { SwitchComponent } from 'switch-framework';
+import { decodeData } from 'switch-framework/router';
 
 export class SwProfiles extends SwitchComponent {
   static tag = 'sw-profiles';

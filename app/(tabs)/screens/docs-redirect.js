@@ -1,5 +1,5 @@
-import { SwitchComponent } from '/switch-framework/index.js';
-import { navigate } from '/switch-framework/router/index.js';
+import { SwitchComponent } from 'switch-framework';
+import { navigate } from 'switch-framework/router';
 
 export class SwDocsRedirectScreen extends SwitchComponent {
   static screenName = 'docs';
