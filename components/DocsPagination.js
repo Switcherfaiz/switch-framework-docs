@@ -1,61 +1,68 @@
 import { SwitchComponent } from 'switch-framework';
-import { previousRoute, nextRoute, navigate, useRouteChangesSubscriber } from 'switch-framework/router';
-
-const DOC_ORDER = ['introduction', 'installation', 'quickstart', 'cli', 'router', 'state', 'components', 'theming', 'animations', 'switch-icons', 'changelogs'];
+import { navigate, getActiveRoute, useRouteChangesSubscriber } from 'switch-framework/router';
+import { DOC_ORDER } from '/data/search-routes.js';
 
 export class DocsPagination extends SwitchComponent {
   static tag = 'sw-docs-pagination';
 
-  connected() {
-    this.updateLinks();
-    this._unsub = useRouteChangesSubscriber(() => this.updateLinks());
+  onMount() {
+    this.setupRouteSubscription();
+    this.bindPaginationEvents();
+  }
 
+  setupRouteSubscription() {
+    if (this._routeSubbed) return;
+    this._routeSubbed = true;
+    this._unsub = useRouteChangesSubscriber(() => this.rerender());
+    this.addOnDestroy(() => { this._unsub?.(); });
+  }
+
+  bindPaginationEvents() {
     this.shadowRoot.addEventListener('click', (e) => {
       const btn = e.target?.closest?.('button[data-action]');
-      if (!btn) return;
+      if (!btn || btn.disabled) return;
       const action = btn.getAttribute('data-action');
-      const target = action === 'prev' ? previousRoute('docs', DOC_ORDER) : nextRoute('docs', DOC_ORDER);
-      if (target?.route) navigate(target.route, target.params || {});
+      const { prev, next } = this.getPrevNext();
+      const target = action === 'prev' ? prev : next;
+      if (target) navigate(target.route);
     });
   }
 
-  disconnected() {
-    if (this._unsub) this._unsub();
-  }
-
-  updateLinks() {
-    const prev = previousRoute('docs', DOC_ORDER);
-    const next = nextRoute('docs', DOC_ORDER);
-    const prevBtn = this.shadowRoot.querySelector('[data-action="prev"]');
-    const nextBtn = this.shadowRoot.querySelector('[data-action="next"]');
-    const prevLabel = this.shadowRoot.querySelector('.pagination-btn.prev .pagination-page');
-    const nextLabel = this.shadowRoot.querySelector('.pagination-btn.next .pagination-page');
-
-    if (prevBtn) prevBtn.disabled = !prev;
-    if (nextBtn) nextBtn.disabled = !next;
-    if (prevLabel) prevLabel.textContent = prev?.title || 'Previous';
-    if (nextLabel) nextLabel.textContent = next?.title || 'Next';
+  getPrevNext() {
+    const active = getActiveRoute() || '';
+    const idx = DOC_ORDER.findIndex((r) => r.route === active);
+    const prev = idx > 0 ? DOC_ORDER[idx - 1] : null;
+    const next = idx >= 0 && idx < DOC_ORDER.length - 1 ? DOC_ORDER[idx + 1] : null;
+    return { prev, next };
   }
 
   render() {
+    const { prev, next } = this.getPrevNext();
+
     return `
       <div class="pagination">
-        <button data-action="prev" class="pagination-btn prev" type="button">
+        <button data-action="prev" class="pagination-btn prev" type="button" ${prev ? '' : 'disabled'}>
           <span class="switch_icon_chevron_left"></span>
           <div class="pagination-text">
             <span class="pagination-label">Previous</span>
-            <span class="pagination-page">Introduction</span>
+            <span class="pagination-page">${prev ? this.escapeHtml(prev.title) : 'Previous'}</span>
           </div>
         </button>
-        <button data-action="next" class="pagination-btn next" type="button">
+        <button data-action="next" class="pagination-btn next" type="button" ${next ? '' : 'disabled'}>
           <div class="pagination-text">
             <span class="pagination-label">Next</span>
-            <span class="pagination-page">Installation</span>
+            <span class="pagination-page">${next ? this.escapeHtml(next.title) : 'Next'}</span>
           </div>
           <span class="switch_icon_chevron_right"></span>
         </button>
       </div>
     `;
+  }
+
+  escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
   }
 
   styleSheet() {

@@ -22,9 +22,12 @@ export class SwStackLayout extends StackLayout {
 
   static async init({ globalStates, renderSplashscreen }) {
     renderSplashscreen('sw-starter-splash');
-    createState(0, 'docs-helpful-count');
-    createState(false, 'search-open');
-    createState({ count: 0 }, 'liveview-tutorial');
+    createState('docs-helpful-count', 0);
+    createState('search-open', false);
+    createState('search-query', '');
+    createState('liveview-tutorial', { count: 0 });
+    createState('live-edit-mode', 'view');
+    createState('docs-active-route', '');
     await new Promise((resolve) => setTimeout(resolve, 3000));
     return { splash: 'sw-starter-splash', initialRoute: 'index' };
   }

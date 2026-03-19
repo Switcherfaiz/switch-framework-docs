@@ -12,10 +12,24 @@ export class SwDocsCliScreen extends SwitchComponent {
 npx create-switch-framework-app my-app --yes --app-type web --port 4000
 npx create-switch-framework-app my-desktop-app --app-type electron --port 3000
 npx create-switch-framework-app my-app --use-local`;
+    const globalCommands = `# Install globally (run once)
+npm install -g create-switch-framework-app
+
+# Then use without npx
+create-switch-framework-app my-app
+create-switch-framework-app my-app --yes --app-type web`;
     return `
       <div class="doc-section">
         <h2 class="section-title" id="overview">CLI</h2>
-        <sw-codeblock data="${encodeData({ title: 'Commands', language: 'bash', code: allCommands })}"></sw-codeblock>
+        <p class="section-desc">
+          Use <code>npx</code> to run the CLI without installing, or install globally for faster repeated use.
+        </p>
+        <sw-codeblock data="${encodeData({ title: 'Commands (npx)', language: 'bash', code: allCommands })}"></sw-codeblock>
+        <h3 class="subsection">Global install</h3>
+        <p class="section-desc">
+          To install the CLI globally and use it without <code>npx</code>:
+        </p>
+        <sw-codeblock data="${encodeData({ title: 'Install globally and use', language: 'bash', code: globalCommands })}"></sw-codeblock>
         <h3 class="subsection">Options</h3>
         <sw-docs-params-table data="${encodeData({
           headers: ['Option', 'Description'],

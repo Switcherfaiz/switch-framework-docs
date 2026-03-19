@@ -1,4 +1,4 @@
-import { SwitchComponent } from 'switch-framework';
+import { SwitchComponent, updateState, getState } from 'switch-framework';
 import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-framework/router';
 
 export class DocsLeftSidebarNav extends SwitchComponent {
@@ -6,7 +6,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
 
   constructor() {
     super();
-    this._expanded = {};
+    this._expanded = { 'quick-start': true };
   }
 
   getExpandedStateForRoute(activeRoute) {
@@ -23,42 +23,92 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       const containsActive = routes.some((r) => route === r || route.startsWith(r + '/'));
       if (containsActive) updates[key] = true;
     }
-    return { ...(this._expanded || {}), ...updates };
+    return updates;
   }
 
-  connected() {
-    const activeRoute = getActiveRoute();
-    this._expanded = this.getExpandedStateForRoute(activeRoute);
-    if (Object.keys(this._expanded).length === 0) {
-      this._expanded = { 'quick-start': true };
-    }
-    this.updateActive();
+  onMount() {
+    this._lastRoute = getActiveRoute();
+    updateState('docs-active-route', this._lastRoute);
+    this.setupRouteSubscription();
+    this.bindNavEvents();
+    this.useEffect(() => this.updateActiveLinksDOM(), ['docs-active-route']);
+    this.syncExpandDOM();
+    this.updateActiveLinksDOM();
+  }
+
+  setupRouteSubscription() {
+    if (this._routeSubbed) return;
+    this._routeSubbed = true;
     this._unsub = useRouteChangesSubscriber(() => {
       const route = getActiveRoute();
+      if (route === this._lastRoute) return;
+      this._lastRoute = route;
       this._expanded = { ...this._expanded, ...this.getExpandedStateForRoute(route) };
-      this._renderToShadow();
-      this.updateActive();
+      updateState('docs-active-route', route);
+      this.syncExpandDOM();
     });
+    this.addOnDestroy(() => { this._unsub?.(); });
+  }
 
-    this.shadowRoot.addEventListener('click', (e) => {
-      const expandBtn = e.target?.closest?.('[data-expand]');
-      if (expandBtn) {
-        e.preventDefault();
-        const key = expandBtn.getAttribute('data-expand');
-        this._expanded[key] = !this._expanded[key];
-        this._renderToShadow();
-        return;
-      }
+  bindNavEvents() {
+    this.listener('[data-expand]', 'click', (e) => {
+      const btn = e.target?.closest?.('[data-expand]');
+      if (!btn) return;
+      e.preventDefault();
+      const key = btn.getAttribute('data-expand');
+      this._expanded[key] = !this._expanded[key];
+      this.toggleExpandInDOM(key);
+    });
+    this.listener('a[data-route]', 'click', (e) => {
       const link = e.target?.closest?.('a[data-route]');
       if (!link) return;
       e.preventDefault();
-      const route = link.getAttribute('data-route');
-      navigate(route);
+      navigate(link.getAttribute('data-route'));
     });
   }
 
-  disconnected() {
-    if (this._unsub) this._unsub();
+  toggleExpandInDOM(key) {
+    const btn = this.select(`[data-expand="${key}"]`);
+    const li = btn?.closest('.nav-expandable');
+    const ul = li?.querySelector('.nav-sublist');
+    const chevron = btn?.querySelector('.nav-chevron');
+    if (ul && btn) {
+      const expanded = !!this._expanded[key];
+      ul.classList.toggle('expanded', expanded);
+      btn.setAttribute('aria-expanded', expanded);
+      if (chevron) chevron.classList.toggle('expanded', expanded);
+      if (expanded) {
+        requestAnimationFrame(() => ul.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+      }
+    }
+  }
+
+  syncExpandDOM() {
+    this.selectAll('.nav-expandable').forEach((li) => {
+      const btn = li.querySelector('[data-expand]');
+      const ul = li.querySelector('.nav-sublist');
+      const chevron = btn?.querySelector('.nav-chevron');
+      const key = btn?.getAttribute('data-expand');
+      const expanded = !!this._expanded[key];
+      if (ul && btn) {
+        ul.classList.toggle('expanded', expanded);
+        btn.setAttribute('aria-expanded', expanded);
+        if (chevron) chevron.classList.toggle('expanded', expanded);
+      }
+    });
+  }
+
+  updateActiveLinksDOM() {
+    const activeRoute = getState('docs-active-route') || getActiveRoute();
+    this.selectAll('.nav-link').forEach((el) => {
+      const to = el.getAttribute('data-route');
+      const isActive = to && String(activeRoute || '') === String(to);
+      el.classList.toggle('active', isActive);
+    });
+    const activeLink = this.select('.nav-link.active');
+    if (activeLink) {
+      requestAnimationFrame(() => activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+    }
   }
 
   getNavItems() {
@@ -141,16 +191,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
     ];
   }
 
-  updateActive() {
-    const activeRoute = getActiveRoute();
-    this.shadowRoot?.querySelectorAll('.nav-link').forEach(el => {
-      const to = el.getAttribute('data-route');
-      const isActive = String(activeRoute || '') === String(to);
-      el.classList.toggle('active', isActive);
-    });
-  }
-
-  renderItem(item, indent = false) {
+  renderItem(item, activeRoute, indent = false) {
     if (item.expandable && item.children) {
       const key = item.key || item.label.toLowerCase().replace(/\s+/g, '-');
       const expanded = !!(this._expanded || {})[key];
@@ -161,24 +202,29 @@ export class DocsLeftSidebarNav extends SwitchComponent {
             <span class="nav-chevron ${expanded ? 'expanded' : ''}"><span class="switch_icon_chevron_right"></span></span>
           </button>
           <ul class="nav-sublist ${expanded ? 'expanded' : ''}">
-            ${item.children.map((child) => `
+            ${item.children.map((child) => {
+              const isActive = String(activeRoute || '') === String(child.to);
+              return `
               <li>
-                <a href="#" data-route="${child.to}" class="nav-link">${child.label}</a>
+                <a href="#" data-route="${child.to}" class="nav-link ${isActive ? 'active' : ''}">${child.label}</a>
               </li>
-            `).join('')}
+            `;
+            }).join('')}
           </ul>
         </li>
       `;
     }
+    const isActive = String(activeRoute || '') === String(item.to);
     return `
       <li>
-        <a href="#" data-route="${item.to}" class="nav-link ${indent ? 'nav-sublink' : ''}">${item.label}</a>
+        <a href="#" data-route="${item.to}" class="nav-link ${indent ? 'nav-sublink' : ''} ${isActive ? 'active' : ''}">${item.label}</a>
       </li>
     `;
   }
 
   render() {
     const navItems = this.getNavItems();
+    const activeRoute = getState('docs-active-route') || getActiveRoute();
 
     return `
       <nav class="docs-nav">
@@ -186,7 +232,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
           <div class="nav-group">
             <h3 class="nav-title">${title}</h3>
             <ul class="nav-list">
-              ${items.map((item) => this.renderItem(item)).join('')}
+              ${items.map((item) => this.renderItem(item, activeRoute)).join('')}
             </ul>
           </div>
         `).join('')}
@@ -208,7 +254,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         }
 
         .docs-nav {
-          padding: 24px 12px 48px 12px;
+          padding: 24px 12px 120px 12px;
           height: 100%;
           min-height: 0;
           overflow-y: auto;
@@ -241,6 +287,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
 
         .nav-group:last-child {
           margin-bottom: 0;
+          padding-bottom: 48px;
         }
 
         .nav-title {
@@ -353,7 +400,11 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         }
 
         .nav-sublist.expanded {
-          max-height: 400px;
+          max-height: 2000px;
+        }
+
+        .nav-group:last-child .nav-sublist.expanded {
+          padding-bottom: 24px;
         }
 
         .nav-sublist li {

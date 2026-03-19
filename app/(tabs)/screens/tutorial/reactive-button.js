@@ -1,4 +1,7 @@
 import { SwitchComponent, encodeData } from 'switch-framework';
+import { LiveCodePreview } from '../../../../components/LiveCodePreview.js';
+
+if (!customElements.get('sw-live-code-preview')) customElements.define('sw-live-code-preview', LiveCodePreview);
 
 const DOC_STYLES = `
   :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
@@ -26,27 +29,48 @@ export class SwDocsTutorialReactiveButtonScreen extends SwitchComponent {
     const counterCode = {
       title: 'components/Counter.js',
       language: 'javascript',
-      code: `import { SwitchComponent, useState, updateState, getState } from 'switch-framework';
+      code: `import { SwitchComponent, getState, updateState } from 'switch-framework';
 
 export class Counter extends SwitchComponent {
   static tag = 'sw-counter';
+  static { this.useState('counter'); }
 
-  connected() {
-    const [, unsub] = useState('counter', () => this._renderToShadow());
-    this._unsub = unsub;
-    this.shadowRoot.querySelector('#inc')?.addEventListener('click', () => {
-      updateState('counter', (n) => (n || 0) + 1);
+  onMount() {
+    this.listener('#inc', 'click', () => {
+      const next = (getState('counter') ?? 0) + 1;
+      updateState('counter', next);
+      console.log('Count:', next);
     });
-  }
-
-  disconnected() {
-    if (this._unsub) this._unsub();
   }
 
   render() {
     const count = getState('counter') ?? 0;
+    return \`<button id="inc">Count: \${count}</button>\`;
+  }
+
+  styleSheet() {
     return \`
-      <button id="inc">Count: \${count}</button>
+      <style>
+        :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
+        * { box-sizing: border-box; }
+        #inc {
+          padding: 14px 32px;
+          font-size: 18px;
+          font-weight: 700;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          color: white;
+          box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #inc:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+        #inc:active { transform: translateY(0); }
+      </style>
     \`;
   }
 }`
@@ -60,20 +84,21 @@ export class Counter extends SwitchComponent {
         </p>
         <h3 class="subsection" id="the-component">The component</h3>
         <p class="section-desc">
-          Use <code>createState</code> and <code>useState</code> for shared state. When the user clicks, we call <code>updateState</code> – the framework notifies subscribers, and our component re-renders.
+          Use <code>createState('counter', 0)</code> in layout init. Call <code>this.useState('counter')</code> in <code>static {}</code> for full re-render. Use <code>this.listener('#inc', 'click', handler)</code> in <code>onMount</code> – safe to call every render, no stacking. When the user clicks, we call <code>updateState</code> and the framework re-renders.
         </p>
         <sw-live-code-preview data="${encodeData({
-          fileName: 'App.js',
-          language: 'javascript',
+          title: counterCode.title,
+          language: counterCode.language,
           code: counterCode.code,
           preview: 'liveview'
         })}"></sw-live-code-preview>
         <h3 class="subsection" id="key-concepts">Key concepts</h3>
         <ul class="feature-list">
-          <li><code>createState(0, 'counter')</code> – Create state in your layout init.</li>
-          <li><code>useState('counter', callback)</code> – Subscribe to changes; callback runs when state updates.</li>
+          <li><code>createState('counter', 0)</code> – Create state in layout init (can be called anywhere).</li>
+          <li><code>static { this.useState('counter'); }</code> – Subscribe for full re-render. Only state key, no callback.</li>
+          <li><code>this.listener(selector, event, callback)</code> – Delegated listener, safe to call in <code>onMount</code> every render.</li>
           <li><code>updateState('counter', n => n + 1)</code> – Update state from anywhere.</li>
-          <li><code>getState('counter')</code> – Read current value.</li>
+          <li><code>getState('counter')</code> – Read current value in render or methods.</li>
         </ul>
         <p class="section-desc"><strong>Try it:</strong> Click the button in the Live Preview above. The count updates instantly – no manual DOM manipulation needed.</p>
         <sw-docs-pagination></sw-docs-pagination>

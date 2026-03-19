@@ -6,13 +6,14 @@ import { DocsRightSidebarNav } from '/components/DocsRightSidebarNav.js';
 import { DocsParamsTable } from '/components/DocsParamsTable.js';
 import { DocsPagination } from '/components/DocsPagination.js';
 import { DocsFeedback } from '/components/DocsFeedback.js';
+import { DocsSearch } from '/components/DocsSearch.js';
 import { TopBar } from '/components/TopBar.js';
 
 import { LiveView } from '/components/LiveView.js';
 import { LiveCodePreview } from '/components/LiveCodePreview.js';
 import { SwProfiles } from '/components/SwProfiles.js';
 
-registerComponents([CodeBlock, DocsChangelogLink, LiveView, LiveCodePreview, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, TopBar, SwProfiles]);
+registerComponents([CodeBlock, DocsChangelogLink, LiveView, LiveCodePreview, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, DocsSearch, TopBar, SwProfiles]);
 import { SwDocsIntroScreen } from './screens/introduction.js';
 import { SwDocsInstallScreen } from './screens/installation/web.js';
 import { SwDocsQuickstartScreen } from './screens/quickstart.js';

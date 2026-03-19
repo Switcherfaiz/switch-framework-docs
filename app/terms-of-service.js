@@ -38,7 +38,7 @@ export class SwTermsOfServiceScreen extends SwitchComponent {
     `;
   }
 
-  connected() {
+  onMount() {
     this.shadowRoot.addEventListener('click', (e) => {
       const link = e.target?.closest?.('a[data-route]');
       if (!link) return;

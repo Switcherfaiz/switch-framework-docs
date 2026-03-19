@@ -19,6 +19,19 @@ export class SwChangelogsScreen extends SwitchComponent {
             <p class="section-desc">
               Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
             </p>
+            <h3 class="subsection" id="v0-2-1">v0.2.1 – March 17, 2026</h3>
+            <p class="section-desc"><strong>Features</strong></p>
+            <ul class="feature-list">
+              <li>Docs search component with dedicated routes JSON – search matches keywords and navigates to the selected doc</li>
+              <li>Dashboard and CLI docs now show <code>npm install -g create-switch-framework-app</code> for global install</li>
+              <li>CLI page documents global install usage and how to run the CLI when installed globally</li>
+            </ul>
+            <p class="section-desc"><strong>Improvements</strong></p>
+            <ul class="feature-list">
+              <li>Expanded state management docs: static state behavior, onMount, getState in methods and styleSheet, useEffect for data fetching with loader, dependency array and rerender behavior</li>
+              <li>Fixed docs pagination (Previous/Next) to correctly point to all doc screens in order</li>
+              <li>Migrated DocsPagination and DocsLeftSidebarNav from deprecated connected/disconnected to onMount/onDestroy</li>
+            </ul>
             <h3 class="subsection" id="v0-2-0">v0.2.0 – March 16, 2026</h3>
             <p class="section-desc"><strong>Features</strong></p>
             <ul class="feature-list">

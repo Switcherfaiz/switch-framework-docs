@@ -1,22 +1,17 @@
-import { SwitchComponent, useState, updateState } from '/switch-framework/index.js';
+import { SwitchComponent, useState, updateState } from 'switch-framework';
 
 export class DocsFeedback extends SwitchComponent {
   static tag = 'sw-docs-feedback';
 
-  connected() {
-    const [count, unsubscribe] = useState('docs-helpful-count', (newCount) => {
+  onMount() {
+    useState('docs-helpful-count', (newCount) => {
       const el = this.shadowRoot?.querySelector('#helpful-count');
       if (el) el.textContent = newCount;
     });
-    this._unsub = unsubscribe;
 
     this.shadowRoot.querySelector('#helpful-yes')?.addEventListener('click', () => {
       updateState('docs-helpful-count', (n) => (n || 0) + 1);
     });
-  }
-
-  disconnected() {
-    if (this._unsub) this._unsub();
   }
 
   render() {

@@ -7,7 +7,7 @@ export default class extends SwitchComponent {
   static tag = 'sw-user-not-found-screen';
   static layout = 'stack';
 
-  connected() {
+  onMount() {
     this._bindEvents();
   }
 

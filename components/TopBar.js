@@ -1,72 +1,32 @@
-import { SwitchComponent, useState, updateState, getState } from '/switch-framework/index.js';
+import { SwitchComponent, updateState, getState } from '/switch-framework';
 import { navigate as swNavigate } from '/switch-framework/router/index.js';
 import { getTheme, changeTheme } from '/switch-framework/themes/index.js';
 
-const SEARCH_STORAGE_KEY = 'switch-docs-search-history';
-const MAX_HISTORY = 10;
-
-function getSearchHistory() {
-  try {
-    const raw = localStorage.getItem(SEARCH_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveSearchQuery(q) {
-  if (!q || !q.trim()) return;
-  const history = getSearchHistory().filter((h) => h !== q.trim());
-  history.unshift(q.trim());
-  localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(history.slice(0, MAX_HISTORY)));
-}
-
 export class TopBar extends SwitchComponent {
   static tag = 'sw-topbar';
+  static { this.useState('search-open'); }
 
-  connected() {
+  onMount() {
+    this.bindTopBarEvents();
+    this.setupThemeSubscription();
+    this.setupGlobalKeys();
+    this.updateThemeIcon();
+  }
+
+  bindTopBarEvents() {
+    if (this._topBarEventsBound) return;
+    this._topBarEventsBound = true;
     this.shadowRoot.addEventListener('click', (e) => {
       const link = e.target?.closest?.('a[data-route]');
-      if (!link) return;
-      e.preventDefault();
-      const route = link.getAttribute('data-route');
-      swNavigate(route);
-    });
-
-    this.updateThemeIcon();
-    this._themeHandler = () => this.updateThemeIcon();
-    document.addEventListener('theme:change', this._themeHandler);
-
-    const [searchOpen, unsubSearch] = useState('search-open', () => this._renderToShadow());
-    this._unsubSearch = unsubSearch;
-
-    this._keyHandler = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      if (link) {
         e.preventDefault();
-        const wasOpen = getState('search-open');
-        updateState('search-open', (v) => !v);
-        if (!wasOpen) {
-          requestAnimationFrame(() => {
-            const input = this.shadowRoot.querySelector('#search-input');
-            if (input) {
-              input.value = '';
-              input.focus();
-            }
-          });
-        }
+        swNavigate(link.getAttribute('data-route'));
+        return;
       }
-      if (e.key === 'Escape') {
-        updateState('search-open', false);
-      }
-    };
-    document.addEventListener('keydown', this._keyHandler);
-
-    this.shadowRoot.addEventListener('click', (e) => {
       const themeBtn = e.target?.closest?.('#theme-toggle');
       if (themeBtn) {
         e.preventDefault();
-        const next = getTheme() === 'dark' ? 'light' : 'dark';
-        changeTheme(next);
+        changeTheme(getTheme() === 'dark' ? 'light' : 'dark');
         this.updateThemeIcon();
         return;
       }
@@ -74,50 +34,32 @@ export class TopBar extends SwitchComponent {
       if (trigger) {
         e.preventDefault();
         updateState('search-open', true);
-        requestAnimationFrame(() => {
-          this.shadowRoot.querySelector('#search-input')?.focus();
-        });
-        return;
-      }
-      const closeBtn = e.target?.closest?.('#search-close');
-      if (closeBtn) {
-        updateState('search-open', false);
-        return;
-      }
-      const overlay = e.target?.closest?.('.search-overlay');
-      if (overlay && !e.target.closest('.search-modal')) {
-        updateState('search-open', false);
-        return;
-      }
-      const suggestion = e.target?.closest?.('.suggestion-item');
-      if (suggestion) {
-        const q = suggestion.getAttribute('data-query');
-        if (q) {
-          const input = this.shadowRoot.querySelector('#search-input');
-          if (input) input.value = q;
-          saveSearchQuery(q);
-          updateState('search-open', false);
-        }
-      }
-    });
-
-    this.shadowRoot.addEventListener('keydown', (e) => {
-      const input = e.target?.closest?.('#search-input');
-      if (!input || e.target !== input) return;
-      if (e.key === 'Enter') {
-        const q = input.value?.trim();
-        if (q) {
-          saveSearchQuery(q);
-          updateState('search-open', false);
-        }
       }
     });
   }
 
-  disconnected() {
-    if (this._themeHandler) document.removeEventListener('theme:change', this._themeHandler);
-    if (this._keyHandler) document.removeEventListener('keydown', this._keyHandler);
-    if (this._unsubSearch) this._unsubSearch();
+  setupThemeSubscription() {
+    if (this._themeSubbed) return;
+    this._themeSubbed = true;
+    this._themeHandler = () => this.updateThemeIcon();
+    document.addEventListener('theme:change', this._themeHandler);
+    this.addOnDestroy(() => {
+      document.removeEventListener('theme:change', this._themeHandler);
+    });
+  }
+
+  setupGlobalKeys() {
+    if (this._keysBound) return;
+    this._keysBound = true;
+    this._keyHandler = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        updateState('search-open', (v) => !v);
+      }
+      if (e.key === 'Escape') updateState('search-open', false);
+    };
+    document.addEventListener('keydown', this._keyHandler);
+    this.addOnDestroy(() => document.removeEventListener('keydown', this._keyHandler));
   }
 
   updateThemeIcon() {
@@ -137,15 +79,8 @@ export class TopBar extends SwitchComponent {
     ];
   }
 
-  getSearchOpen() {
-    return getState('search-open') === true;
-  }
-
   render() {
     const navLinks = this.getNavLinks();
-    const searchOpen = this.getSearchOpen();
-    const history = getSearchHistory();
-    const filtered = history;
 
     return `
       <header class="topbar">
@@ -194,36 +129,8 @@ export class TopBar extends SwitchComponent {
         </div>
       </header>
 
-      <div class="search-overlay ${searchOpen ? 'open' : ''}" id="search-overlay">
-        <div class="search-modal">
-          <div class="search-modal-header">
-            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"/>
-              <path d="M20 20L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <input id="search-input" type="text" placeholder="Search documentation..." autocomplete="off" />
-            <kbd>ESC</kbd>
-            <button id="search-close" class="search-close-btn" type="button" aria-label="Close">×</button>
-          </div>
-          <div class="search-suggestions">
-            <div class="suggestions-title">Recent searches</div>
-            ${filtered.length ? filtered.map((q) => `
-              <button type="button" class="suggestion-item" data-query="${this.escapeAttr(q)}">${this.escapeHtml(q)}</button>
-            `).join('') : '<div class="suggestions-empty">No recent searches</div>'}
-          </div>
-        </div>
-      </div>
+      <sw-docs-search></sw-docs-search>
     `;
-  }
-
-  escapeHtml(s) {
-    const div = document.createElement('div');
-    div.textContent = s;
-    return div.innerHTML;
-  }
-
-  escapeAttr(s) {
-    return String(s).replace(/"/g, '&quot;');
   }
 
   styleSheet() {
@@ -368,122 +275,6 @@ export class TopBar extends SwitchComponent {
           padding: 2px 6px;
           border-radius: 4px;
           font-family: sans-serif;
-        }
-
-        .search-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0,0,0,0.4);
-          z-index: 1000;
-          display: none;
-          align-items: flex-start;
-          justify-content: center;
-          padding-top: 15vh;
-        }
-
-        .search-overlay.open {
-          display: flex;
-        }
-
-        .search-modal {
-          background: var(--surface_1);
-          border: 1px solid var(--border_color);
-          border-radius: 12px;
-          box-shadow: var(--shadow_lg);
-          width: 100%;
-          max-width: 560px;
-          overflow: hidden;
-        }
-
-        .search-modal-header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 12px 16px;
-          border-bottom: 1px solid var(--border_color);
-        }
-
-        .search-modal-header .search-icon {
-          color: var(--muted_text);
-          flex-shrink: 0;
-        }
-
-        .search-modal-header input {
-          flex: 1;
-          border: none;
-          background: none;
-          outline: none;
-          font-size: 16px;
-          font-family: 'Montserrat', sans-serif;
-          color: var(--main_text);
-        }
-
-        .search-modal-header input::placeholder {
-          color: var(--muted_text);
-        }
-
-        .search-modal-header kbd {
-          font-size: 11px;
-          color: var(--muted_text);
-          padding: 2px 6px;
-          border-radius: 4px;
-          border: 1px solid var(--border_color);
-        }
-
-        .search-close-btn {
-          width: 32px;
-          height: 32px;
-          border: none;
-          background: transparent;
-          color: var(--muted_text);
-          font-size: 24px;
-          cursor: pointer;
-          border-radius: 6px;
-          line-height: 1;
-        }
-
-        .search-close-btn:hover {
-          background: var(--surface_hover);
-          color: var(--main_text);
-        }
-
-        .search-suggestions {
-          max-height: 280px;
-          overflow-y: auto;
-          padding: 8px 0;
-        }
-
-        .suggestions-title {
-          font-size: 11px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          color: var(--muted_text);
-          padding: 8px 16px;
-        }
-
-        .suggestion-item {
-          display: block;
-          width: 100%;
-          padding: 10px 16px;
-          border: none;
-          background: none;
-          font-size: 14px;
-          font-family: 'Montserrat', sans-serif;
-          color: var(--main_text);
-          text-align: left;
-          cursor: pointer;
-          transition: background 0.15s;
-        }
-
-        .suggestion-item:hover {
-          background: var(--surface_hover);
-        }
-
-        .suggestions-empty {
-          padding: 16px;
-          font-size: 14px;
-          color: var(--muted_text);
         }
 
         .button-group {

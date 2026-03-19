@@ -15,6 +15,8 @@ const LANG_HIGHLIGHTERS = {
 function highlightJs(code) {
   return code
     .replace(/(["'`])(?:(?!\1)[^\\]|\\.)*?\1/g, '<span class="hl-string">$&</span>')
+    .replace(/\/\/.*$/gm, '<span class="hl-comment">$&</span>')
+    .replace(/\/\*[\s\S]*?\*\//g, '<span class="hl-comment">$&</span>')
     .replace(/\b(true|false|null|undefined)\b/g, '<span class="hl-literal">$1</span>')
     .replace(/\b(\d+\.?\d*)\b/g, '<span class="hl-number">$1</span>')
     .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*)(?=\()/g, '<span class="hl-function">$1</span>$2');
@@ -23,6 +25,7 @@ function highlightJs(code) {
 function highlightBash(code) {
   return code
     .replace(/(["'`])(?:(?!\1)[^\\]|\\.)*\1/g, '<span class="hl-string">$&</span>')
+    .replace(/#.*$/gm, '<span class="hl-comment">$&</span>')
     .replace(/\b(npm|npx|cd|ls|mkdir|echo|export)\b/g, '<span class="hl-cmd">$1</span>');
 }
 
@@ -38,13 +41,13 @@ export class CodeBlock extends SwitchComponent {
   static tag = 'sw-codeblock';
   static observedAttributes = ['data'];
 
-  connected() {
+  onMount() {
     this.shadowRoot.querySelector('.copy-btn')?.addEventListener('click', () => this.copyToClipboard());
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'data' && oldValue !== newValue) {
-      this._renderToShadow();
+      this.rerender();
     }
   }
 
@@ -222,6 +225,7 @@ export class CodeBlock extends SwitchComponent {
           text-align: left !important;
         }
 
+        .hl-comment { color: var(--codeblock_comment, #64748b); }
         .hl-cmd { color: var(--codeblock_accent, #818cf8); }
         .hl-string { color: var(--codeblock_string, #fbbf24); }
         .hl-number { color: #86efac; }

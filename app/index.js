@@ -9,7 +9,7 @@ export class SwIndexScreen extends SwitchComponent {
   static tag = 'sw-index-screen';
   static layout = 'stack';
 
-  connected() {
+  onMount() {
     this.bindEvents();
   }
 
@@ -55,31 +55,37 @@ export class SwIndexScreen extends SwitchComponent {
     const codeData = {
       title: 'app/index.js',
       language: 'javascript',
-      code: `// 1. Create state at app init (app/_layout.js)
-createState(0, 'counter');
+      code: `// 1. Create state (in layout init or anywhere)
+createState('counter', 0);
 
 // 2. Reactive counter component
-import { SwitchComponent, useState, updateState, getState } from 'switch-framework';
+import { SwitchComponent, updateState, getState } from 'switch-framework';
 
 export class Counter extends SwitchComponent {
   static tag = 'sw-counter';
+  static { this.useState('counter'); }
 
-  connected() {
-    const [, unsub] = useState('counter', () => this._renderToShadow());
-    this._unsub = unsub;
-    this.shadowRoot.querySelector('#inc')?.addEventListener('click', () => {
-      updateState('counter', (n) => n + 1);
-    });
+  onMount() {
+    this.bindIncrement();
   }
 
-  disconnected() {
-    if (this._unsub) this._unsub();
+  bindIncrement() {
+    this.shadowRoot.querySelector('#inc')?.addEventListener('click', () => {
+      updateState('counter', (n) => (n ?? 0) + 1);
+    });
   }
 
   render() {
     const count = getState('counter') ?? 0;
+    return \`<button id="inc">Count: \${count}</button>\`;
+  }
+
+  styleSheet() {
     return \`
-      <button id="inc">Count: \${count}</button>
+      <style>
+        :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
+        * { box-sizing: border-box; }
+      </style>
     \`;
   }
 }`
@@ -137,6 +143,7 @@ export class Counter extends SwitchComponent {
                   </svg>
                 </button>
               </div>
+              <p class="command-hint">Or install globally: <code>npm install -g create-switch-framework-app</code> then run <code>create-switch-framework-app my-app</code></p>
             </div>
 
             <div class="hero-visual">
@@ -609,6 +616,17 @@ export class Counter extends SwitchComponent {
           background: #e5e7eb;
         }
 
+        .command-hint {
+          font-size: 13px;
+          color: var(--sub_text);
+          margin: 12px 0 24px;
+        }
+        .command-hint code {
+          background: var(--surface_2);
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-size: 12px;
+        }
         .command-line {
           display: inline-flex;
           align-items: center;
