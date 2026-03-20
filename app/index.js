@@ -66,11 +66,7 @@ export class Counter extends SwitchComponent {
   static { this.useState('counter'); }
 
   onMount() {
-    this.bindIncrement();
-  }
-
-  bindIncrement() {
-    this.shadowRoot.querySelector('#inc')?.addEventListener('click', () => {
+    this.listener('#inc', 'click', () => {
       updateState('counter', (n) => (n ?? 0) + 1);
     });
   }

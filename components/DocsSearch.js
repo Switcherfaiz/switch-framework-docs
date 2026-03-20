@@ -28,9 +28,9 @@ export class DocsSearch extends SwitchComponent {
   onMount() {
     this.focusInputIfOpen();
     this.subscribeToSearchQuery();
+    this.bindResultClickEvents();
     this.bindCloseEvents();
     this.bindInputEvents();
-    this.bindResultClickEvents();
     this.bindGlobalKeys();
   }
 
@@ -78,7 +78,7 @@ export class DocsSearch extends SwitchComponent {
   bindCloseEvents() {
     this.listener('#search-close', 'click', () => updateState('search-open', false));
     this.listener('.search-overlay', 'click', (e) => {
-      if (e.target.classList.contains('search-overlay')) updateState('search-open', false);
+      if (e.target === this.select('.search-overlay')) updateState('search-open', false);
     });
   }
 
