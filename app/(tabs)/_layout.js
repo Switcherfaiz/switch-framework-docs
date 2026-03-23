@@ -7,6 +7,7 @@ import { DocsParamsTable } from '/components/DocsParamsTable.js';
 import { DocsPagination } from '/components/DocsPagination.js';
 import { DocsFeedback } from '/components/DocsFeedback.js';
 import { DocsSearch } from '/components/DocsSearch.js';
+import { DocsSearchBar } from '/components/DocsSearchBar.js';
 import { TopBar } from '/components/TopBar.js';
 import { IconsBottomSheet } from '/components/IconsBottomSheet.js';
 
@@ -14,7 +15,7 @@ import { LiveView } from '/components/LiveView.js';
 import { LiveCodePreview } from '/components/LiveCodePreview.js';
 import { SwProfiles } from '/components/SwProfiles.js';
 
-registerComponents([CodeBlock, DocsChangelogLink, LiveView, LiveCodePreview, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, DocsSearch, TopBar, IconsBottomSheet, SwProfiles]);
+registerComponents([CodeBlock, DocsChangelogLink, LiveView, LiveCodePreview, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, DocsSearch, DocsSearchBar, TopBar, IconsBottomSheet, SwProfiles]);
 import { SwDocsIntroScreen } from './screens/introduction.js';
 import { SwDocsInstallScreen } from './screens/installation/web.js';
 import { SwDocsQuickstartScreen } from './screens/quickstart.js';
@@ -132,6 +133,10 @@ export class SwTabsLayout extends TabLayout {
             <sw-docs-right-sidebar-nav></sw-docs-right-sidebar-nav>
           </div>
         </div>
+        <div class="popups">
+          <sw-docs-search></sw-docs-search>
+          <sw-icons-bottom-sheet></sw-icons-bottom-sheet>
+        </div>
       </div>
     `;
   }
@@ -237,6 +242,18 @@ export class SwTabsLayout extends TabLayout {
 
         .mobile-sidebar-close {
           display: none;
+        }
+
+        .popups {
+          position: fixed;
+          inset: 0;
+          z-index: 10000;
+          pointer-events: none;
+        }
+
+        /* Sheets disable hit-test when closed; they set pointer-events:auto on host when open */
+        .popups > * {
+          pointer-events: none;
         }
 
         @media (max-width: 1024px) {

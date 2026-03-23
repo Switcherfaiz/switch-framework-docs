@@ -49,12 +49,13 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
   }
 
   openSheet(iconKey, filteredKeys, index) {
-    updateState('icon-sheet', {
+    updateState('icon-sheet', (prev) => ({
+      ...(prev || {}),
       open: true,
       iconKey,
       filteredKeys,
       index
-    });
+    }));
   }
 
   handleIconsFilterUpdate(state) {
@@ -88,7 +89,7 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
     });
     this.listener('#icons-search-input', 'input', this.handleSearchInput.bind(this));
     this.listener('#icons-load-more', 'click', this.handleLoadMore.bind(this));
-    this.listener('.icon-tile', 'click', this.handleIconTileClick.bind(this));
+    this.listener('.icon-tile', 'click', (e) => this.handleIconTileClick(e));
   }
 
   render() {
@@ -143,7 +144,6 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
           <button id="icons-load-more" type="button" class="icons-load-more-btn">Load more</button>
         </div>
 
-        <sw-icons-bottom-sheet></sw-icons-bottom-sheet>
         <sw-docs-pagination></sw-docs-pagination>
       </div>
     `;
@@ -281,6 +281,8 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
           background: var(--surface_2);
           border-radius: 10px;
           cursor: pointer;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: transparent;
           transition: background 0.15s;
           position: relative;
         }

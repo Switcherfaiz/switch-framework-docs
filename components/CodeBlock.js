@@ -1,4 +1,4 @@
-import { SwitchComponent, decodeData } from '/switch-framework/index.js';
+import { SwitchComponent, decodeData } from 'switch-framework';
 import { copyText } from '/utils/clipboard.js';
 
 const CHECK_ICON = '<span class="switch_icon_check copy-check-icon"></span>';
@@ -210,13 +210,21 @@ export class CodeBlock extends SwitchComponent {
         .code-content {
           margin: 0;
           padding: 20px;
+          max-height: min(480px, 70vh);
           color: var(--codeblock_text, #f8fafc);
           font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
           font-size: 14px;
           line-height: 1.65;
           white-space: pre;
-          overflow-x: auto;
+          overflow: auto;
           word-break: normal;
+          scrollbar-width: thin;
+          scrollbar-color: var(--scrollbar_thumb, #475569) var(--scrollbar_track, #1e293b);
+        }
+        .code-content::-webkit-scrollbar { width: 8px; height: 8px; }
+        .code-content::-webkit-scrollbar-thumb {
+          background: var(--scrollbar_thumb, #475569);
+          border-radius: 999px;
         }
 
         .code-content code {

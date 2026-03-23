@@ -70,6 +70,9 @@ export class DocsPagination extends SwitchComponent {
       <style>
         @import '/assets/icons/style.css';
 
+        *{
+          font-family: var(--font);
+        }
         :host {
           display: block;
           width: 100%;

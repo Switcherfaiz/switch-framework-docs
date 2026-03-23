@@ -1,4 +1,4 @@
-import { SwitchComponent, decodeData, getState, updateState } from '/switch-framework/index.js';
+import { SwitchComponent, decodeData, getState, updateState } from 'switch-framework';
 import { copyText } from '/utils/clipboard.js';
 
 const CHECK_ICON = '<span class="switch_icon_check copy-check-icon"></span>';
@@ -276,12 +276,27 @@ try {
           grid-template-columns: 1fr 1fr;
           gap: 16px;
           margin: 24px 0;
+          align-items: stretch;
         }
         @media (max-width: 768px) {
           .live-preview-wrap { grid-template-columns: 1fr; }
+          .code-panel, .preview-panel {
+            min-height: 320px;
+            max-height: none;
+          }
         }
-        .code-panel, .preview-panel { min-width: 0; }
+        .code-panel, .preview-panel {
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          min-height: min(420px, 70vh);
+          max-height: min(520px, 75vh);
+        }
         .code-window {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
           background: var(--codeblock_bg, #1e293b);
           border-radius: var(--radius_md, 12px);
           overflow: hidden;
@@ -352,12 +367,21 @@ try {
         .code-content {
           margin: 0;
           padding: 20px;
+          flex: 1;
+          min-height: 0;
           color: var(--codeblock_text, #f8fafc);
           font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
           font-size: 14px;
           line-height: 1.65;
           white-space: pre;
-          overflow-x: auto;
+          overflow: auto;
+          scrollbar-width: thin;
+          scrollbar-color: var(--scrollbar_thumb, #475569) var(--scrollbar_track, #1e293b);
+        }
+        .code-content::-webkit-scrollbar { width: 8px; height: 8px; }
+        .code-content::-webkit-scrollbar-thumb {
+          background: var(--scrollbar_thumb, #475569);
+          border-radius: 999px;
         }
         .code-content code { white-space: pre; display: block; }
         .hl-comment { color: var(--codeblock_comment, #64748b); }
@@ -368,6 +392,10 @@ try {
         .hl-function { color: var(--codeblock_accent, #818cf8); }
         .hl-property { color: #7dd3fc; }
         .preview-panel {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
           background: var(--codeblock_bg, #1e293b);
           border-radius: var(--radius_md, 12px);
           border: 1px solid var(--codeblock_border, #334155);
@@ -397,7 +425,8 @@ try {
         .run-btn:hover { opacity: 0.9; }
         .code-textarea {
           width: 100%;
-          min-height: 280px;
+          flex: 1;
+          min-height: 0;
           margin: 0;
           padding: 20px;
           background: transparent;
@@ -406,16 +435,21 @@ try {
           font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
           font-size: 14px;
           line-height: 1.65;
-          resize: vertical;
+          resize: none;
           outline: none;
+          overflow: auto;
         }
         .preview-container {
-          min-height: 120px;
+          flex: 1;
+          min-height: 140px;
           padding: 0;
+          display: flex;
+          flex-direction: column;
         }
         .preview-iframe {
           width: 100%;
-          min-height: 120px;
+          flex: 1;
+          min-height: 140px;
           border: none;
           display: block;
         }

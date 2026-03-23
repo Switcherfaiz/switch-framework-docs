@@ -1,4 +1,4 @@
-import { SwitchComponent, navigate, goBack, getActiveRoute } from '/switch-framework/index.js';
+import { SwitchComponent, navigate, goBack, getActiveRoute } from 'switch-framework';
 
 export default class extends SwitchComponent {
   static screenName = '+not-found';

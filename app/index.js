@@ -428,25 +428,6 @@ export class Counter extends SwitchComponent {
 
         .main-scroll {
           overflow-y: auto;
-          scrollbar-width: thin;
-          scrollbar-color: var(--border_color) transparent;
-        }
-
-        .main-scroll::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .main-scroll::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        .main-scroll::-webkit-scrollbar-thumb {
-          background: var(--border_color);
-          border-radius: 4px;
-        }
-
-        .main-scroll::-webkit-scrollbar-thumb:hover {
-          background: var(--muted_text);
         }
 
         /* Hero Section */
@@ -461,21 +442,21 @@ export class Counter extends SwitchComponent {
           align-items: center;
           text-align: center;
           overflow: hidden;
-          background: linear-gradient(180deg, transparent 0%, var(--surface_2) 100%);
+          background: linear-gradient(180deg, var(--page_background) 0%, var(--surface_2) 100%);
         }
 
         .bg-blob {
           position: absolute;
           border-radius: 50%;
           filter: blur(120px);
-          opacity: 0.1;
+          opacity: 0.12;
           pointer-events: none;
         }
 
         .blob-1 {
           width: 800px;
           height: 800px;
-          background: #3713ec;
+          background: var(--primary);
           bottom: -200px;
           right: -200px;
         }
@@ -483,16 +464,16 @@ export class Counter extends SwitchComponent {
         .blob-2 {
           width: 600px;
           height: 600px;
-          background: #3713ec;
+          background: var(--primary);
           top: 50%;
           left: -200px;
-          opacity: 0.05;
+          opacity: 0.06;
         }
 
         .blob-3 {
           width: 500px;
           height: 300px;
-          background: #3713ec;
+          background: var(--primary);
           top: 160px;
           right: 25%;
         }
@@ -510,8 +491,8 @@ export class Counter extends SwitchComponent {
           align-items: center;
           gap: 8px;
           padding: 4px 12px;
-          background: rgba(55, 19, 236, 0.1);
-          border: 1px solid rgba(55, 19, 236, 0.2);
+          background: var(--primary_light);
+          border: 1px solid var(--border_color);
           border-radius: 9999px;
           margin-bottom: 32px;
         }
@@ -550,7 +531,7 @@ export class Counter extends SwitchComponent {
         }
 
         .hero-title-highlight {
-          color: #3713ec;
+          color: var(--primary);
         }
 
         .hero-subtitle {
@@ -575,8 +556,8 @@ export class Counter extends SwitchComponent {
           gap: 8px;
           padding: 12px 32px;
           height: 48px;
-          background: #111827;
-          color: white;
+          background: var(--main_text);
+          color: var(--page_background);
           border: none;
           border-radius: 9999px;
           font-size: 16px;
@@ -584,12 +565,12 @@ export class Counter extends SwitchComponent {
           font-family: 'Montserrat', sans-serif;
           cursor: pointer;
           transition: all 0.2s;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+          box-shadow: var(--shadow_md);
         }
 
         .btn-primary:hover {
-          background: #000000;
-          box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+          background: var(--sub_text);
+          box-shadow: var(--shadow_lg);
         }
 
         .btn-secondary {
@@ -597,9 +578,9 @@ export class Counter extends SwitchComponent {
           align-items: center;
           padding: 12px 32px;
           height: 48px;
-          background: #f3f4f6;
-          color: #111827;
-          border: none;
+          background: var(--surface_2);
+          color: var(--main_text);
+          border: 1px solid var(--border_color);
           border-radius: 9999px;
           font-size: 16px;
           font-weight: 700;
@@ -609,7 +590,7 @@ export class Counter extends SwitchComponent {
         }
 
         .btn-secondary:hover {
-          background: #e5e7eb;
+          background: var(--surface_hover);
         }
 
         .command-hint {
@@ -628,10 +609,10 @@ export class Counter extends SwitchComponent {
           align-items: center;
           gap: 0;
           padding: 4px 16px 4px 4px;
-          background: #111827;
-          border: 1px solid #374151;
-          border-radius: 8px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+          background: var(--surface_1);
+          border: 1px solid var(--border_color);
+          border-radius: var(--radius_md);
+          box-shadow: var(--shadow_md);
           margin-bottom: 48px;
           max-width: 100%;
           overflow: hidden;
@@ -641,11 +622,11 @@ export class Counter extends SwitchComponent {
           display: flex;
           align-items: center;
           padding: 8px 12px;
-          border-right: 1px solid #374151;
+          border-right: 1px solid var(--border_color);
         }
 
         .prompt-symbol {
-          color: #3713ec;
+          color: var(--primary);
           font-family: monospace;
           font-size: 16px;
         }
@@ -653,7 +634,7 @@ export class Counter extends SwitchComponent {
         .command-text {
           font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
           font-size: 14px;
-          color: #f3f4f6;
+          color: var(--main_text);
           padding: 8px 12px;
           white-space: nowrap;
           overflow: hidden;
@@ -665,7 +646,7 @@ export class Counter extends SwitchComponent {
           padding: 6px;
           background: transparent;
           border: none;
-          color: #9ca3af;
+          color: var(--muted_text);
           cursor: pointer;
           transition: all 0.2s;
           display: flex;
@@ -674,8 +655,8 @@ export class Counter extends SwitchComponent {
         }
 
         .copy-btn:hover {
-          color: white;
-          background: rgba(255, 255, 255, 0.1);
+          color: var(--primary);
+          background: var(--surface_hover);
           border-radius: 4px;
         }
 
@@ -832,7 +813,7 @@ export class Counter extends SwitchComponent {
         }
 
         .section-label {
-          color: #3713ec;
+          color: var(--primary);
           font-size: 14px;
           font-weight: 700;
           text-transform: uppercase;
@@ -987,11 +968,11 @@ export class Counter extends SwitchComponent {
 
         .cta-card {
           position: relative;
-          background: #3713ec;
+          background: var(--primary);
           border-radius: 24px;
           padding: 64px 48px;
           overflow: hidden;
-          box-shadow: 0 20px 60px rgba(55, 19, 236, 0.3);
+          box-shadow: var(--shadow_lg);
         }
 
         .cta-blob {
@@ -1046,8 +1027,8 @@ export class Counter extends SwitchComponent {
 
         .cta-btn-primary {
           padding: 14px 32px;
-          background: white;
-          color: #3713ec;
+          background: var(--surface_1);
+          color: var(--primary);
           border: none;
           border-radius: 8px;
           font-size: 18px;
@@ -1059,14 +1040,14 @@ export class Counter extends SwitchComponent {
         }
 
         .cta-btn-primary:hover {
-          background: #f9fafb;
+          background: var(--surface_2);
         }
 
         .cta-btn-secondary {
           padding: 14px 32px;
-          background: rgba(99, 102, 241, 1);
+          background: rgba(255, 255, 255, 0.15);
           color: white;
-          border: 1px solid rgba(147, 197, 253, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.35);
           border-radius: 8px;
           font-size: 18px;
           font-weight: 700;
@@ -1076,7 +1057,7 @@ export class Counter extends SwitchComponent {
         }
 
         .cta-btn-secondary:hover {
-          background: rgba(79, 70, 229, 1);
+          background: rgba(255, 255, 255, 0.25);
         }
 
         /* Footer */
@@ -1114,7 +1095,7 @@ export class Counter extends SwitchComponent {
         .footer-logo-icon {
           width: 24px;
           height: 24px;
-          background: #3713ec;
+          background: var(--primary);
           color: white;
           border-radius: 4px;
           display: flex;

@@ -26,6 +26,7 @@ export class DocsSearch extends SwitchComponent {
   static { this.useState('search-open'); }
 
   onMount() {
+    this.style.pointerEvents = getState('search-open') === true ? 'auto' : '';
     this.focusInputIfOpen();
     this.subscribeToSearchQuery();
     this.bindResultClickEvents();
@@ -176,7 +177,7 @@ export class DocsSearch extends SwitchComponent {
           position: fixed;
           inset: 0;
           background: rgba(0,0,0,0.4);
-          z-index: 1000;
+          z-index: 13000;
           display: none;
           align-items: flex-start;
           justify-content: center;

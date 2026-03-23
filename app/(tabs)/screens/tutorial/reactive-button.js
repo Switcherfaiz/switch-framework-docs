@@ -6,7 +6,7 @@ if (!customElements.get('sw-live-code-preview')) customElements.define('sw-live-
 const DOC_STYLES = `
   :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
   * { box-sizing: border-box; }
-  .doc-section { padding: 32px; max-width: 900px; margin: 0 auto; }
+  .doc-section { padding: 32px; max-width: 920px; margin: 0 auto; }
   .section-title { font-size: 32px; font-weight: 800; color: var(--main_text); margin: 0 0 16px; letter-spacing: -0.02em; }
   .section-desc { font-size: 15px; line-height: 1.7; color: var(--sub_text); margin: 0 0 20px; }
   .subsection { font-size: 18px; font-weight: 700; color: var(--main_text); margin: 28px 0 12px; }
@@ -14,8 +14,7 @@ const DOC_STYLES = `
   .feature-list li { font-size: 14px; line-height: 1.6; color: var(--sub_text); padding-left: 20px; position: relative; margin-bottom: 8px; }
   .feature-list li::before { content: '•'; position: absolute; left: 0; color: var(--primary); font-weight: bold; }
   code { background: var(--surface_2); padding: 2px 6px; border-radius: 4px; font-family: 'Monaco', monospace; font-size: 13px; color: var(--main_text); }
-  .tutorial-split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 24px 0; }
-  @media (max-width: 768px) { .tutorial-split { grid-template-columns: 1fr; } }
+  sw-live-code-preview { display: block; width: 100%; margin: 8px 0 24px; }
 `;
 
 export class SwDocsTutorialReactiveButtonScreen extends SwitchComponent {

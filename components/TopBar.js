@@ -1,66 +1,29 @@
-import { SwitchComponent, updateState, getState } from '/switch-framework';
-import { navigate as swNavigate } from '/switch-framework/router/index.js';
-import { getTheme, changeTheme } from '/switch-framework/themes/index.js';
+import { SwitchComponent, updateState, getState } from 'switch-framework';
+import { navigate as swNavigate } from 'switch-framework/router';
+import { getTheme, changeTheme } from 'switch-framework/themes';
 
 export class TopBar extends SwitchComponent {
   static tag = 'sw-topbar';
-  static { this.useState('search-open'); }
 
   onMount() {
     this.bindTopBarEvents();
-    this.bindSearchTrigger();
     this.setupThemeSubscription();
     this.setupGlobalKeys();
     this.updateThemeIcon();
   }
 
-  bindSearchTrigger() {
-    const openSearch = (e) => {
-      e?.preventDefault?.();
-      updateState('search-open', true);
-    };
-    const btn = this.shadowRoot?.querySelector('#search-trigger');
-    if (btn) {
-      btn.addEventListener('click', openSearch);
-      btn.addEventListener('pointerup', openSearch);
-      btn.addEventListener('touchend', openSearch, { passive: true });
-      btn.addEventListener('touchstart', openSearch, { passive: true });
-    }
-    this._searchCaptureHandler = (e) => {
-      const trigger = this.shadowRoot?.querySelector('#search-trigger');
-      if (trigger?.contains(e.target)) updateState('search-open', true);
-    };
-    document.addEventListener('touchend', this._searchCaptureHandler, { capture: true });
-    this.addOnDestroy(() => {
-      document.removeEventListener('touchend', this._searchCaptureHandler, { capture: true });
-    });
-  }
-
   bindTopBarEvents() {
-    if (this._topBarEventsBound) return;
-    this._topBarEventsBound = true;
-    const handleClick = (e) => {
-      const searchTrigger = e.target?.closest?.('#search-trigger');
-      if (searchTrigger) {
-        e.preventDefault();
-        updateState('search-open', true);
-        return;
-      }
+    this.listener('a[data-route]', 'click', (e) => {
       const link = e.target?.closest?.('a[data-route]');
-      if (link) {
-        e.preventDefault();
-        swNavigate(link.getAttribute('data-route'));
-        return;
-      }
-      const themeBtn = e.target?.closest?.('#theme-toggle');
-      if (themeBtn) {
-        e.preventDefault();
-        changeTheme(getTheme() === 'dark' ? 'light' : 'dark');
-        this.updateThemeIcon();
-      }
-    };
-    this.shadowRoot.addEventListener('click', handleClick);
-    this.shadowRoot.addEventListener('touchend', handleClick);
+      if (!link) return;
+      e.preventDefault();
+      swNavigate(link.getAttribute('data-route'));
+    });
+    this.listener('#theme-toggle', 'click', (e) => {
+      e.preventDefault();
+      changeTheme(getTheme() === 'dark' ? 'light' : 'dark');
+      this.updateThemeIcon();
+    });
   }
 
   setupThemeSubscription() {
@@ -77,19 +40,23 @@ export class TopBar extends SwitchComponent {
     if (this._keysBound) return;
     this._keysBound = true;
     this._keyHandler = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        updateState('search-open', (v) => !v);
+      try {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          updateState('search-open', (v) => !v);
+        }
+        if (e.key === 'Escape') updateState('search-open', false);
+      } catch (_) {
+        /* state may be missing if wrong framework bundle was loaded */
       }
-      if (e.key === 'Escape') updateState('search-open', false);
     };
     document.addEventListener('keydown', this._keyHandler);
     this.addOnDestroy(() => document.removeEventListener('keydown', this._keyHandler));
   }
 
   updateThemeIcon() {
-    const sun = this.shadowRoot?.querySelectorAll('.icon-sun');
-    const moon = this.shadowRoot?.querySelectorAll('.icon-moon');
+    const sun = this.selectAll('.icon-sun');
+    const moon = this.selectAll('.icon-moon');
     const isDark = getTheme() === 'dark';
     sun?.forEach((el) => { el.style.display = isDark ? 'none' : 'block'; });
     moon?.forEach((el) => { el.style.display = isDark ? 'block' : 'none'; });
@@ -127,14 +94,7 @@ export class TopBar extends SwitchComponent {
           </nav>
         </div>
         <div class="right-section">
-          <button id="search-trigger" class="search-trigger" type="button" aria-label="Search">
-            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"/>
-              <path d="M20 20L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <span class="search-trigger-text">Search...</span>
-            <kbd class="search-trigger-kbd">Ctrl+K</kbd>
-          </button>
+          <sw-docs-search-bar></sw-docs-search-bar>
           <div class="button-group">
             <a href="https://github.com/Switcherfaiz/switch-framework" target="_blank" rel="noopener noreferrer" class="btn-icon btn-github" aria-label="GitHub">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -153,8 +113,6 @@ export class TopBar extends SwitchComponent {
           </div>
         </div>
       </header>
-
-      <sw-docs-search></sw-docs-search>
     `;
   }
 
@@ -262,48 +220,6 @@ export class TopBar extends SwitchComponent {
           min-width: 0;
         }
 
-        .search-trigger {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          flex: 1;
-          min-width: 0;
-          max-width: 600px;
-          background: var(--surface_2);
-          border: 1px solid var(--border_color);
-          border-radius: 8px;
-          padding: 10px 12px;
-          height: 40px;
-          cursor: pointer;
-          font-size: 14px;
-          font-family: 'Montserrat', sans-serif;
-          color: var(--muted_text);
-          transition: border-color 0.2s;
-          text-align: left;
-        }
-
-        .search-trigger:hover {
-          border-color: var(--primary);
-          color: var(--sub_text);
-        }
-
-        .search-trigger .search-icon {
-          color: var(--muted_text);
-          flex-shrink: 0;
-        }
-
-        .search-trigger span { flex: 1; }
-
-        .search-trigger kbd {
-          font-size: 11px;
-          color: var(--muted_text);
-          border: 1px solid var(--border_color);
-          background: transparent;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-family: sans-serif;
-        }
-
         .button-group {
           display: flex;
           align-items: center;
@@ -375,34 +291,6 @@ export class TopBar extends SwitchComponent {
         @media (max-width: 640px) {
           .topbar { padding: 12px 16px; }
           .right-section { flex: none; gap: 8px; }
-          .search-trigger {
-            flex: none;
-            width: 48px;
-            height: 48px;
-            max-width: 48px;
-            min-width: 48px;
-            padding: 0;
-            border: none;
-            border-radius: 9999px;
-            justify-content: center;
-            background: transparent;
-            color: var(--main_text);
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            position: relative;
-            z-index: 10;
-          }
-          .search-trigger:hover,
-          .search-trigger:active {
-            background: var(--surface_hover);
-            border-color: transparent;
-            color: var(--main_text);
-          }
-          .search-trigger .search-icon {
-            color: inherit;
-          }
-          .search-trigger .search-trigger-text,
-          .search-trigger .search-trigger-kbd { display: none; }
         }
       </style>
     `;
