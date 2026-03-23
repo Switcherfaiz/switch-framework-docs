@@ -28,6 +28,9 @@ export class SwStackLayout extends StackLayout {
     createState('liveview-tutorial', { count: 0 });
     createState('live-edit-mode', 'view');
     createState('docs-active-route', '');
+    createState('icon-sheet', { open: false, iconKey: null, index: 0, filteredKeys: [] });
+    createState('icons-filter', { query: '', displayCount: 96 });
+    createState('mobile-sidebar-open', false);
     await new Promise((resolve) => setTimeout(resolve, 3000));
     return { splash: 'sw-starter-splash', initialRoute: 'index' };
   }

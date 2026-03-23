@@ -8,15 +8,44 @@ export class TopBar extends SwitchComponent {
 
   onMount() {
     this.bindTopBarEvents();
+    this.bindSearchTrigger();
     this.setupThemeSubscription();
     this.setupGlobalKeys();
     this.updateThemeIcon();
   }
 
+  bindSearchTrigger() {
+    const openSearch = (e) => {
+      e?.preventDefault?.();
+      updateState('search-open', true);
+    };
+    const btn = this.shadowRoot?.querySelector('#search-trigger');
+    if (btn) {
+      btn.addEventListener('click', openSearch);
+      btn.addEventListener('pointerup', openSearch);
+      btn.addEventListener('touchend', openSearch, { passive: true });
+      btn.addEventListener('touchstart', openSearch, { passive: true });
+    }
+    this._searchCaptureHandler = (e) => {
+      const trigger = this.shadowRoot?.querySelector('#search-trigger');
+      if (trigger?.contains(e.target)) updateState('search-open', true);
+    };
+    document.addEventListener('touchend', this._searchCaptureHandler, { capture: true });
+    this.addOnDestroy(() => {
+      document.removeEventListener('touchend', this._searchCaptureHandler, { capture: true });
+    });
+  }
+
   bindTopBarEvents() {
     if (this._topBarEventsBound) return;
     this._topBarEventsBound = true;
-    this.shadowRoot.addEventListener('click', (e) => {
+    const handleClick = (e) => {
+      const searchTrigger = e.target?.closest?.('#search-trigger');
+      if (searchTrigger) {
+        e.preventDefault();
+        updateState('search-open', true);
+        return;
+      }
       const link = e.target?.closest?.('a[data-route]');
       if (link) {
         e.preventDefault();
@@ -28,14 +57,10 @@ export class TopBar extends SwitchComponent {
         e.preventDefault();
         changeTheme(getTheme() === 'dark' ? 'light' : 'dark');
         this.updateThemeIcon();
-        return;
       }
-      const trigger = e.target?.closest?.('#search-trigger');
-      if (trigger) {
-        e.preventDefault();
-        updateState('search-open', true);
-      }
-    });
+    };
+    this.shadowRoot.addEventListener('click', handleClick);
+    this.shadowRoot.addEventListener('touchend', handleClick);
   }
 
   setupThemeSubscription() {
@@ -102,13 +127,13 @@ export class TopBar extends SwitchComponent {
           </nav>
         </div>
         <div class="right-section">
-          <button id="search-trigger" class="search-trigger" type="button">
+          <button id="search-trigger" class="search-trigger" type="button" aria-label="Search">
             <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"/>
               <path d="M20 20L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            <span>Search...</span>
-            <kbd>Ctrl+K</kbd>
+            <span class="search-trigger-text">Search...</span>
+            <kbd class="search-trigger-kbd">Ctrl+K</kbd>
           </button>
           <div class="button-group">
             <a href="https://github.com/Switcherfaiz/switch-framework" target="_blank" rel="noopener noreferrer" class="btn-icon btn-github" aria-label="GitHub">
@@ -141,6 +166,8 @@ export class TopBar extends SwitchComponent {
         :host {
           display: block;
           width: 100%;
+          position: relative;
+          z-index: 60;
         }
 
         * {
@@ -347,7 +374,35 @@ export class TopBar extends SwitchComponent {
 
         @media (max-width: 640px) {
           .topbar { padding: 12px 16px; }
-          .search-trigger span { display: none; }
+          .right-section { flex: none; gap: 8px; }
+          .search-trigger {
+            flex: none;
+            width: 48px;
+            height: 48px;
+            max-width: 48px;
+            min-width: 48px;
+            padding: 0;
+            border: none;
+            border-radius: 9999px;
+            justify-content: center;
+            background: transparent;
+            color: var(--main_text);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            position: relative;
+            z-index: 10;
+          }
+          .search-trigger:hover,
+          .search-trigger:active {
+            background: var(--surface_hover);
+            border-color: transparent;
+            color: var(--main_text);
+          }
+          .search-trigger .search-icon {
+            color: inherit;
+          }
+          .search-trigger .search-trigger-text,
+          .search-trigger .search-trigger-kbd { display: none; }
         }
       </style>
     `;

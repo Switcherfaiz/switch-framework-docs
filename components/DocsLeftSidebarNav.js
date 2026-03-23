@@ -64,6 +64,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       if (!link) return;
       e.preventDefault();
       navigate(link.getAttribute('data-route'));
+      updateState('mobile-sidebar-open', false);
     });
   }
 
