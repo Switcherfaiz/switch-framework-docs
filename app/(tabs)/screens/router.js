@@ -21,7 +21,7 @@ export class SwDocsRouterScreen extends SwitchComponent {
     const codeGetRoute = encodeData({
       title: 'Path params (:id) and query params (?name=)',
       language: 'javascript',
-      code: `import { useParams, useSearchParams, getActiveRoute } from 'switch-framework/router';
+      code: `import { useParams, useSearchParams, getActiveRoute, getActivePath } from 'switch-framework/router';
 
 // Path params from /user/:id  ->  useParams() returns { id: '42' }
 // Query params from ?name=Jane&age=30  ->  useSearchParams() returns { name: 'Jane', age: '30' }
@@ -30,6 +30,7 @@ connected() {
   const params = useParams();      // { id: '42' }
   const search = useSearchParams(); // { name: 'Jane', age: '30' }
   const route = getActiveRoute();   // 'user/42'
+  const path = getActivePath();     // 'http://localhost:3000/user/42' (same as window.location.href)
 }`
     });
 
@@ -90,7 +91,8 @@ export class UserScreen extends SwitchComponent {
           <li><code>replace(route, params)</code> – Replace current history entry instead of pushing</li>
           <li><code>useParams()</code> – Get path params (e.g. <code>{ id: '42' }</code>)</li>
           <li><code>useSearchParams()</code> – Get query params (e.g. <code>{ name: 'Jane' }</code> from <code>?name=Jane</code>)</li>
-          <li><code>getActiveRoute()</code> – Get current route string</li>
+          <li><code>getActivePath()</code> – Get full current URL path (e.g. <code>'http://localhost:3000/docs/introduction'</code>)</li>
+          <li><code>getActiveRoute()</code> – Get current route only (no leading <code>/</code>)</li>
           <li><code>useRouteChangesSubscriber(callback)</code> – Subscribe to route changes</li>
         </ul>
         <sw-docs-pagination></sw-docs-pagination>

@@ -185,8 +185,6 @@ export class LiveCodePreview extends SwitchComponent {
   };
 })();
 try {
-  const { createState } = await import('switch-framework');
-  createState('counter', 0);
   const code = ${JSON.stringify(codeToRun)};
   const blob = new Blob([code], { type: 'application/javascript' });
   const url = URL.createObjectURL(blob);

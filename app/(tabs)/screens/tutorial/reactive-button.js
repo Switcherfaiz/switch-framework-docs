@@ -1,7 +1,5 @@
 import { SwitchComponent, encodeData } from 'switch-framework';
-import { LiveCodePreview } from '../../../../components/LiveCodePreview.js';
 
-if (!customElements.get('sw-live-code-preview')) customElements.define('sw-live-code-preview', LiveCodePreview);
 
 const DOC_STYLES = `
   :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
@@ -28,51 +26,56 @@ export class SwDocsTutorialReactiveButtonScreen extends SwitchComponent {
     const counterCode = {
       title: 'components/Counter.js',
       language: 'javascript',
-      code: `import { SwitchComponent, getState, updateState } from 'switch-framework';
+      code: `import { SwitchComponent, getState, updateState,createState } from 'switch-framework';
 
-export class Counter extends SwitchComponent {
-  static tag = 'sw-counter';
-  static { this.useState('counter'); }
+      export class Counter extends SwitchComponent {
+        static tag = 'sw-counter';
+        static {createState('counter',0);}
+        static { this.useState('counter'); }
 
-  onMount() {
-    this.listener('#inc', 'click', () => {
-      const next = (getState('counter') ?? 0) + 1;
-      updateState('counter', next);
-      console.log('Count:', next);
-    });
-  }
-
-  render() {
-    const count = getState('counter') ?? 0;
-    return \`<button id="inc">Count: \${count}</button>\`;
-  }
-
-  styleSheet() {
-    return \`
-      <style>
-        :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
-        * { box-sizing: border-box; }
-        #inc {
-          padding: 14px 32px;
-          font-size: 18px;
-          font-weight: 700;
-          border: none;
-          border-radius: 12px;
-          cursor: pointer;
-          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-          color: white;
-          box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
-          transition: transform 0.2s, box-shadow 0.2s;
+        onMount() {
+          this.listener('#inc', 'click',()=>{this.updateCounter()});
         }
-        #inc:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+
+      updateCounter(){
+      const count = getState('counter');
+            updateState('counter', parseInt(count )+1);
+            console.log('Count:',count);
+          
+
+      }
+
+        render() {
+      const count = getState('counter');
+          return \`<button id="inc">Count: \${count}</button>\`;
         }
-        #inc:active { transform: translateY(0); }
-      </style>
-    \`;
-  }
-}`
+
+        styleSheet() {
+          return \`
+            <style>
+              :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
+              * { box-sizing: border-box; }
+              #inc {
+                padding: 14px 32px;
+                font-size: 18px;
+                font-weight: 700;
+                border: none;
+                border-radius: 12px;
+                cursor: pointer;
+                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                color: white;
+                box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+                transition: transform 0.2s, box-shadow 0.2s;
+              }
+              #inc:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+              }
+              #inc:active { transform: translateY(0); }
+            </style>
+          \`;
+        }
+      }`
     };
 
     return `

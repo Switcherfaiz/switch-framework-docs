@@ -1,4 +1,5 @@
-import { SwitchComponent, navigate, goBack, getActiveRoute } from 'switch-framework';
+import { SwitchComponent, navigate, goBack } from 'switch-framework';
+import { getActivePath } from 'switch-framework/router';
 
 export default class extends SwitchComponent {
   static screenName = '+not-found';
@@ -12,17 +13,13 @@ export default class extends SwitchComponent {
   }
 
   _bindEvents() {
-    this.shadowRoot.getElementById('home')?.addEventListener('click', () => {
-      navigate('index');
-    });
-    this.shadowRoot.getElementById('back')?.addEventListener('click', () => {
-      goBack();
-    });
+    this.listener('#home', 'click', () => navigate('index'));
+    this.listener('#back', 'click', () => goBack());
   }
 
   render() {
-    const attemptedRoute = getActiveRoute() || '';
-    const safePath = this._escapeHtml(attemptedRoute);
+    const path = getActivePath() ;
+    const safePath = this._escapeHtml(path);
     return `
       <div class="wrap">
         <div class="card">

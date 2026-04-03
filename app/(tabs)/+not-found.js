@@ -7,18 +7,15 @@ export class SwUserNotFoundScreen extends SwitchComponent {
   static tag = 'sw-user-not-found-screen';
   static layout = 'stack';
 
-  connected() {
+  onMount() {
     this._bindEvents();
   }
 
-  _bindEvents() {
-    this.shadowRoot.getElementById('home')?.addEventListener('click', () => {
-      navigate('index');
-    });
+  
 
-    this.shadowRoot.getElementById('back')?.addEventListener('click', () => {
-      goBack();
-    });
+  _bindEvents() {
+    this.listener('#home', 'click', () => navigate('index'));
+    this.listener('#back', 'click', () => goBack());
   }
 
   render() {
