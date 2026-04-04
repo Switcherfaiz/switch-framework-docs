@@ -53,7 +53,7 @@ export class SwDocsTutorialReactiveButtonScreen extends SwitchComponent {
         styleSheet() {
           return \`
             <style>
-              :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
+              :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif;display:flex;justify-content:center; }
               * { box-sizing: border-box; }
               #inc {
                 padding: 14px 32px;

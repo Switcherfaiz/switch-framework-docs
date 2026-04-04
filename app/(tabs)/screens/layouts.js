@@ -1,4 +1,5 @@
 import { SwitchComponent, encodeData } from 'switch-framework';
+import { layoutsStackCode, layoutsGlobalStatesCode, layoutsTabCode } from '/codes/index.js';
 
 const DOC_STYLES = `
   :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
@@ -21,52 +22,6 @@ export class SwDocsLayoutsScreen extends SwitchComponent {
   static layout = 'tabs';
 
   render() {
-    const stackCode = {
-      title: 'app/_layout.js',
-      language: 'javascript',
-      code: `import { StackLayout, createState } from 'switch-framework';
-
-export class SwStackLayout extends StackLayout {
-  static stackScreens = [SwIndexScreen, SwChangelogsScreen, NotFoundScreen];
-  static tabsLayout = SwTabsLayout;
-  static initialRoute = 'index';
-
-  static async init({ globalStates, renderSplashscreen }) {
-    renderSplashscreen('sw-splash');
-    createState([], 'patient-list');
-    createState(0, 'docs-helpful-count');
-    createState(false, 'search-open');
-    await new Promise((r) => setTimeout(r, 2000));
-    return { splash: 'sw-splash', initialRoute: 'index' };
-  }
-}
-
-export default SwStackLayout.getAppLayout();`
-    };
-
-    const globalStatesCode = {
-      title: 'globalStates – static app data',
-      language: 'javascript',
-      code: `// globalStates holds static data that stays constant (navigate, go_back, tabsLayout, etc.)
-// Use getState/setState for framework-internal keys:
-
-globalStates.getState('activeRoute');    // current route string
-globalStates.getState('routeParams');    // { id: '42' } from path params
-globalStates.getState('searchParams');   // { name: 'Jane' } from ?name=Jane
-globalStates.getState('navigate');      // function to navigate
-globalStates.setState({ key: value });   // merge into global state (triggers subscribers)`
-    };
-
-    const tabCode = {
-      title: 'TabLayout',
-      language: 'javascript',
-      code: `export class SwTabsLayout extends TabLayout {
-  static screens = [SwDocsIntroScreen, SwDocsStateScreen];
-  static tabs = [{ name: 'docs', path: '/docs/:id', match: ['docs'] }];
-  static initialTab = 'docs';
-}` 
-    };
-
     return `
       <div class="doc-section">
         <h2 class="section-title" id="overview">Layouts</h2>
@@ -77,17 +32,17 @@ globalStates.setState({ key: value });   // merge into global state (triggers su
         <p class="section-desc">
           Stack screens are rendered one at a time. Navigating to a new route pushes it onto the stack; <code>goBack()</code> pops. Use for: home, auth, modals, full-page flows.
         </p>
-        <sw-codeblock data="${encodeData(stackCode)}"></sw-codeblock>
+        <sw-codeblock data="${encodeData(layoutsStackCode)}"></sw-codeblock>
         <h3 class="subsection" id="globalstates">globalStates – static app data</h3>
         <p class="section-desc">
           <code>globalStates</code> holds static data that stays constant across the app – things like <code>navigate</code>, <code>go_back</code>, <code>tabsLayout</code>, <code>activeRoute</code>, <code>routeParams</code>, <code>searchParams</code>. Use <code>getState(key)</code> to read and <code>setState(obj)</code> to merge updates. This is separate from <code>createState</code>/<code>updateState</code> (SwitchStateManager) which you use for reactive app state.
         </p>
-        <sw-codeblock data="${encodeData(globalStatesCode)}"></sw-codeblock>
+        <sw-codeblock data="${encodeData(layoutsGlobalStatesCode)}"></sw-codeblock>
         <h3 class="subsection" id="tabs">TabLayout</h3>
         <p class="section-desc">
           Tab screens share a container. The active tab is determined by the current route. Use for: docs, dashboards, multi-section apps.
         </p>
-        <sw-codeblock data="${encodeData(tabCode)}"></sw-codeblock>
+        <sw-codeblock data="${encodeData(layoutsTabCode)}"></sw-codeblock>
         <sw-docs-pagination></sw-docs-pagination>
       </div>
     `;

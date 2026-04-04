@@ -15,7 +15,7 @@ export class SwDocsComponentsScreen extends SwitchComponent {
           All screens and UI components extend <strong>SwitchComponent</strong>. It provides shadow DOM, a render lifecycle, and <code>useEffect</code> for reactive updates. No <code>customElements.define</code> needed – use <code>registerComponents([...])</code> in your layout and the framework auto-registers classes with a static <code>tag</code>.
         </p>
         <h3 class="subsection" id="writing-components">Writing a component</h3>
-        <p class="section-desc">Override <code>render()</code> and optionally <code>styleSheet()</code>. Use <code>connected()</code> and <code>disconnected()</code> for lifecycle logic (equivalent to connectedCallback/disconnectedCallback).</p>
+        <p class="section-desc">Override <code>render()</code> and optionally <code>styleSheet()</code>. Use <code>onMount()</code> for lifecycle logic with <code>this.listener()</code> for events, and <code>static { this.useState('key'); }</code> for reactive updates.</p>
         <sw-codeblock data="${encodeData({
           title: 'Basic component',
           language: 'javascript',
@@ -23,6 +23,11 @@ export class SwDocsComponentsScreen extends SwitchComponent {
 
 export class MyButton extends SwitchComponent {
   static tag = 'sw-my-button';
+
+  onMount() {
+    // Delegated event listener - safe to call on every render
+    this.listener('.btn', 'click', () => console.log('Clicked!'));
+  }
 
   render() {
     return \`<button class="btn">Click me</button>\`;
@@ -39,58 +44,76 @@ export class MyButton extends SwitchComponent {
         })}"></sw-codeblock>
         <h3 class="subsection" id="reactivity">Reactivity with createState and useState</h3>
         <p class="section-desc">
-          Use <code>createState(initialValue, identifier)</code> to create shared state (typically in layout <code>init</code>). Use <code>useState(identifier, callback)</code> in components to subscribe and react. When state changes, your callback runs – update the DOM or call <code>this._renderToShadow()</code> to re-render.
+          Use <code>createState(identifier, initialValue)</code> to create shared state. Use <code>static { this.useState('key'); }</code> in your component to subscribe to state changes for automatic re-rendering. No manual unsubscribe needed.
         </p>
+
         <sw-codeblock data="${encodeData({
           title: 'Reactive component with useState',
           language: 'javascript',
-          code: `import { SwitchComponent, useState, updateState } from 'switch-framework';
+          code: `import { SwitchComponent, createState, getState, updateState } from 'switch-framework';
 
-export class CounterDisplay extends SwitchComponent {
-  static tag = 'sw-counter-display';
+// Create state outside component or in static block
+createState('my-counter', 0);
 
-  connected() {
-    const [count, unsub] = useState('my-counter', (newCount) => {
-      const el = this.shadowRoot?.querySelector('#count');
-      if (el) el.textContent = newCount;
+export class Counter extends SwitchComponent {
+  static tag = 'sw-counter';
+  
+  // Subscribe to state for auto re-render
+  static { this.useState('my-counter'); }
+
+  onMount() {
+    // Add click listener to increment
+    this.listener('#inc', 'click', () => {
+      updateState('my-counter', (n) => (n ?? 0) + 1);
     });
-    this._unsub = unsub;
-  }
-
-  disconnected() {
-    if (this._unsub) this._unsub();
   }
 
   render() {
-    return \`<span id="count">0</span>\`;
+    const count = getState('my-counter') ?? 0;
+    return \`<button id="inc">Count: \${count}</button>\`;
   }
 }`
         })}"></sw-codeblock>
-        <h3 class="subsection" id="use-effect">useEffect for globalStates</h3>
+
+        <h3 class="subsection" id="use-effect">useEffect for reactive updates</h3>
         <p class="section-desc">
-          <code>useEffect(callback, deps)</code> subscribes to <code>globalStates</code> keys (e.g. <code>activeRoute</code>, <code>routeParams</code>). When any watched key changes, the callback runs. Import and call directly – use it to re-render when the route changes.
+          <code>useEffect(callback, deps)</code> subscribes to state keys (e.g. <code>['activeRoute', 'routeParams']</code>). When any watched key changes, the callback runs. Use it in <code>onMount()</code> and store the unsubscriber via <code>this.addOnDestroy()</code>.
         </p>
+
         <sw-codeblock data="${encodeData({
           title: 'useEffect example',
           language: 'javascript',
           code: `import { SwitchComponent, useEffect } from 'switch-framework';
 
-connected() {
-  this._effectUnsub = useEffect(() => this._renderToShadow(), ['activeRoute', 'routeParams']);
-}
+export class MyScreen extends SwitchComponent {
+  static tag = 'sw-my-screen';
 
-disconnected() {
-  if (this._effectUnsub) this._effectUnsub();
+  onMount() {
+    // Subscribe to route changes
+    const unsub = this.useEffect(() => {
+      this.rerender();
+    }, ['activeRoute', 'routeParams']);
+    
+    // Auto-cleanup on destroy
+    this.addOnDestroy(unsub);
+  }
+
+  render() {
+    return \`<div>Content</div>\`;
+  }
 }`
         })}"></sw-codeblock>
+
         <h3 class="subsection" id="not-found-screen">Not Found Screen</h3>
         <p class="section-desc">
           If the framework finds a <code>+not-found.js</code> file, it expects a component with <code>path: '/+not-found'</code>. That screen is used instead of the framework's default not-found. The router auto-detects it by path – add it to <code>stackScreens</code> in your layout.
         </p>
-        <sw-codeblock data="${encodeData({
+
+        <sw-codeblock class="not_found" data="${encodeData({
           title: '+not-found.js',
           language: 'javascript',
-          code: `import { SwitchComponent, navigate, goBack, getActiveRoute } from 'switch-framework';
+          code: `import { SwitchComponent, navigate, goBack } from 'switch-framework';
+import { getActivePath } from 'switch-framework/router';
 
 export default class extends SwitchComponent {
   static screenName = '+not-found';
@@ -99,29 +122,86 @@ export default class extends SwitchComponent {
   static tag = 'sw-not-found-screen';
   static layout = 'stack';
 
-  connected() {
+  onMount() {
     this._bindEvents();
   }
 
   _bindEvents() {
-    this.shadowRoot.getElementById('home')?.addEventListener('click', () => {
-      navigate('index');
-    });
-    this.shadowRoot.getElementById('back')?.addEventListener('click', () => {
-      goBack();
-    });
+    this.listener('#home', 'click', () => navigate('index'));
+    this.listener('#back', 'click', () => goBack());
   }
 
   render() {
-    const attemptedRoute = getActiveRoute() || '';
-    const safePath = this._escapeHtml(attemptedRoute);
+    const path = getActivePath();
+    const safePath = this._escapeHtml(path);
     return \`
-      <div class="container">
-        <h1>404 - Not Found</h1>
-        <p>No screen is registered for: <strong>\${safePath}</strong></p>
-        <button id="home">Go Home</button>
-        <button id="back">Go Back</button>
+      <div class="wrap">
+        <div class="card">
+          <div class="code">404</div>
+          <div class="h">This screen does not exist</div>
+          <div class="p">No screen is registered for:</div>
+          <div class="path">\${safePath}</div>
+          <div class="row">
+            <button class="btn" id="home">Go to Home</button>
+            <button class="btn secondary" id="back">Go Back</button>
+          </div>
+        </div>
       </div>
+    \`;
+  }
+
+  styleSheet() {
+    return \`
+      <style>
+        :host {
+          display: block;
+          width: 100%;
+          min-height: 100dvh;
+          font-family: var(--font);
+        }
+        * { box-sizing: border-box; font-family: inherit; }
+        .wrap {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 18px;
+        }
+        .card {
+          width: min(680px, 100%);
+          background: transparent;
+          border: none;
+          border-radius: 18px;
+          padding: 18px;
+          box-shadow: none;
+        }
+        .code { font-weight: 1000; font-size: 44px; line-height: 1; color: var(--main_text); }
+        .h { margin-top: 10px; font-weight: 1000; font-size: 20px; color: var(--main_text); }
+        .p { margin-top: 6px; color: var(--sub_text); font-weight: 800; }
+        .path {
+          margin-top: 10px;
+          padding: 10px 12px;
+          border-radius: 14px;
+          background: var(--surface_2);
+          border: 1px solid var(--border_light);
+          font-weight: 900;
+          color: var(--main_text);
+          word-break: break-word;
+        }
+        .row { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn {
+          border: none;
+          background: linear-gradient(135deg, #0091ff 0%, #0073e6 100%);
+          color: #fff;
+          font-weight: 1000;
+          border-radius: 999px;
+          padding: 10px 14px;
+          cursor: pointer;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn.secondary { background: var(--surface_2); color: var(--main_text); }
+        .btn.secondary:hover { background: var(--surface_3); }
+      </style>
     \`;
   }
 
@@ -133,20 +213,9 @@ export default class extends SwitchComponent {
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#039;');
   }
-
-  styleSheet() {
-    return \`
-      <style>
-        :host { display: block; width: 100%; min-height: 100vh; }
-        .container { padding: 40px 20px; text-align: center; }
-        h1 { font-size: 48px; margin: 0 0 20px; color: var(--main_text); }
-        p { font-size: 16px; color: var(--sub_text); margin: 0 0 30px; }
-        button { margin: 10px; padding: 10px 20px; border-radius: 8px; cursor: pointer; background: var(--primary); color: white; border: none; font-weight: 600; }
-      </style>
-    \`;
-  }
 }`
         })}"></sw-codeblock>
+
         <sw-codeblock data="${encodeData({
           title: '_layout.js – add to stackScreens',
           language: 'javascript',
@@ -157,32 +226,38 @@ export class SwStackLayout extends StackLayout {
   // ...
 }`
         })}"></sw-codeblock>
+
         <p class="section-desc"><strong>Key points:</strong></p>
         <ul class="feature-list">
           <li>Use <code>export default class</code> – the framework detects not-found by <code>path: '/+not-found'</code></li>
           <li>You can name the class anything; the layout imports it with any variable name</li>
-          <li>Import <code>navigate</code>, <code>goBack</code>, and <code>getActiveRoute</code> from the framework</li>
-          <li>Use <code>getActiveRoute()</code> to show the attempted route – no attributes needed</li>
+          <li>Import <code>navigate</code> and <code>goBack</code> from the framework</li>
+          <li>Use <code>getActivePath()</code> from <code>switch-framework/router</code> to show the attempted route</li>
+          <li>Use <code>this.listener()</code> for delegated event handling – safe to call in onMount on every render</li>
           <li>Add the screen to <code>stackScreens</code> in your layout</li>
           <li>The router updates history with the attempted route, then renders the not-found screen</li>
         </ul>
         <h3 class="subsection" id="statics">Static properties</h3>
         <ul class="feature-list">
-          <li><code>screenName</code> – Route identifier (e.g. <code>'docs/introduction'</code>)</li>
-          <li><code>path</code> – URL path (e.g. <code>'/docs/introduction'</code>)</li>
-          <li><code>title</code> – Display title</li>
-          <li><code>layout</code> – <code>'stack'</code> or <code>'tabs'</code></li>
-          <li><code>tag</code> – Custom element tag (e.g. <code>'sw-docs-intro-screen'</code>)</li>
+          <li><code>static tag</code> – Custom element tag (e.g. <code>'sw-my-component'</code>)</li>
+          <li><code>static screenName</code> – Route identifier for screens (e.g. <code>'home'</code>)</li>
+          <li><code>static path</code> – URL path for screens (e.g. <code>'/home'</code>)</li>
+          <li><code>static title</code> – Display title for screens</li>
+          <li><code>static layout</code> – <code>'stack'</code> or <code>'tabs'</code></li>
+          <li><code>static { this.useState('key'); }</code> – Subscribe to state for auto re-render</li>
         </ul>
         <h3 class="subsection" id="methods">Methods</h3>
         <ul class="feature-list">
-          <li><code>render()</code> – Return HTML string. Override in subclasses.</li>
-          <li><code>styleSheet()</code> – Return CSS string. Override for component styles.</li>
-          <li><code>connected()</code> – Called when element is connected. Override for setup.</li>
-          <li><code>disconnected()</code> – Called when element is disconnected. Override for cleanup.</li>
-          <li><code>useEffect(callback, deps)</code> – Import from framework; subscribe to globalStates keys. Callback runs when deps change. Call in <code>connected()</code>, unsubscribe in <code>disconnected()</code>.</li>
-          <li><code>_renderToShadow()</code> – Re-render. Call when state changes to refresh the DOM.</li>
-          <li><code>static getScreenConfig()</code> – Returns <code>{ name, path, title, tag, layout }</code> for screens.</li>
+          <li><code>render()</code> – Return HTML string. Called automatically when subscribed state changes.</li>
+          <li><code>styleSheet()</code> – Return CSS string for component styles.</li>
+          <li><code>onMount()</code> – Called when element is connected. Use for setup and listeners.</li>
+          <li><code>onDestroy()</code> – Called when element is disconnected. Use for cleanup.</li>
+          <li><code>this.listener(selector, event, handler)</code> – Delegated event listener. Safe to call in onMount.</li>
+          <li><code>this.useEffect(callback, deps)</code> – Subscribe to state keys. Returns unsubscriber.</li>
+          <li><code>this.addOnDestroy(fn)</code> – Register cleanup function called on destroy.</li>
+          <li><code>this.rerender()</code> – Manually trigger re-render.</li>
+          <li><code>this.select(selector)</code> – Query element in shadow DOM.</li>
+          <li><code>this.selectAll(selector)</code> – Query all elements in shadow DOM.</li>
         </ul>
         <sw-docs-pagination></sw-docs-pagination>
       </div>
@@ -194,6 +269,7 @@ export class SwStackLayout extends StackLayout {
       <style>
         :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
         * { box-sizing: border-box; }
+        .not_found{margin-bottom:20px;}
         .doc-section { padding: 32px; max-width: 900px; margin: 0 auto; }
         .section-title { font-size: 32px; font-weight: 800; color: var(--main_text); margin: 0 0 16px; letter-spacing: -0.02em; }
         .section-desc { font-size: 15px; line-height: 1.7; color: var(--sub_text); margin: 0 0 20px; }

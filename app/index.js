@@ -227,7 +227,7 @@ export class Counter extends SwitchComponent {
             </div>
           </section>
 
-          <section class="trusted-section">
+          <section class="trusted-section" style="display:none;">
             <p class="trusted-label">Trusted by development teams at</p>
             <div class="trusted-logos">
               <div class="logo-item">
@@ -386,7 +386,6 @@ export class Counter extends SwitchComponent {
   styleSheet() {
     return `
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
         @import '/assets/icons/style.css';
 
         :host {

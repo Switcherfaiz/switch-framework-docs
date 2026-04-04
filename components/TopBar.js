@@ -57,9 +57,13 @@ export class TopBar extends SwitchComponent {
   updateThemeIcon() {
     const sun = this.selectAll('.icon-sun');
     const moon = this.selectAll('.icon-moon');
+    const logoLight = this.selectAll('.logo-light');
+    const logoDark = this.selectAll('.logo-dark');
     const isDark = getTheme() === 'dark';
     sun?.forEach((el) => { el.style.display = isDark ? 'none' : 'block'; });
     moon?.forEach((el) => { el.style.display = isDark ? 'block' : 'none'; });
+    logoLight?.forEach((el) => { el.style.display = isDark ? 'none' : 'block'; });
+    logoDark?.forEach((el) => { el.style.display = isDark ? 'block' : 'none'; });
   }
 
   getNavLinks() {
@@ -79,11 +83,8 @@ export class TopBar extends SwitchComponent {
         <div class="left-section">
           <a href="#" data-route="index" class="logo-section logo-link">
             <div class="logo-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M17 7H7C5.34315 7 4 8.34315 4 10C4 11.6569 5.34315 13 7 13H17C18.6569 13 20 14.3431 20 16C20 17.6569 18.6569 19 17 19H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="7" cy="10" r="2" fill="currentColor"/>
-                <circle cx="17" cy="16" r="2" fill="currentColor"/>
-              </svg>
+              <img class="logo-light" src="/assets/files/Switch_framework_logo_purple.svg" alt="Switch Framework" width="20" height="20" />
+              <img class="logo-dark" src="/assets/files/Switch_framework_logo_white.svg" alt="Switch Framework" width="20" height="20" style="display:none" />
             </div>
             <h2 class="logo-text">Switch Framework</h2>
           </a>
@@ -119,8 +120,6 @@ export class TopBar extends SwitchComponent {
   styleSheet() {
     return `
       <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
-
         :host {
           display: block;
           width: 100%;
@@ -176,12 +175,15 @@ export class TopBar extends SwitchComponent {
         .logo-icon {
           width: 32px;
           height: 32px;
-          background: #3713ec;
-          color: white;
-          border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
+        }
+
+        .logo-icon img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
         }
 
         .logo-text {

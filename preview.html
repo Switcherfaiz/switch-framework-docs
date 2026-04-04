@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Preview</title>
+  <link rel="stylesheet" href="/assets/styles/styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "switch-framework": "/switch-framework/index.js",
+      "switch-framework/router": "/switch-framework/router/index.js"
+    }
+  }
+  </script>
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      min-height: 100vh;
+      background: var(--page_background, #fff);
+    }
+    #preview-root {
+      width: 100%;
+      min-height: calc(100vh - 32px);
+    }
+    .preview-error {
+      color: #ef4444;
+      font-size: 12px;
+      white-space: pre-wrap;
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="preview-root"></div>
+  <script type="module">
+    // Override console.log to send to parent
+    const _log = console.log;
+    console.log = function(...args) {
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      try { window.parent?.postMessage?.({ type: 'live-preview-log', payload: msg }, '*'); } catch(e){}
+      _log.apply(console, args);
+    };
+
+    // Get code from URL hash
+    const hash = window.location.hash.slice(1);
+    let code = '';
+    try {
+      code = decodeURIComponent(atob(hash));
+    } catch(e) {
+      code = '';
+    }
+
+    if (!code) {
+      document.getElementById('preview-root').innerHTML = '<div class="preview-error">No code provided</div>';
+    } else {
+      try {
+        const blob = new Blob([code], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        const mod = await import(url);
+        URL.revokeObjectURL(url);
+        
+        // Find exported component class
+        const Export = mod.Counter || mod.UserList || mod.PhotoGrid || mod.InfiniteFeed || 
+                       mod.default || Object.values(mod).find(v => typeof v === 'function');
+        
+        if (Export?.tag) {
+          if (!customElements.get(Export.tag)) customElements.define(Export.tag, Export);
+          document.getElementById('preview-root').innerHTML = '<' + Export.tag + '></' + Export.tag + '>';
+        } else {
+          document.getElementById('preview-root').innerHTML = '<div class="preview-error">No component found. Make sure your class extends SwitchComponent or FlatList and has a static tag property.</div>';
+        }
+      } catch (err) {
+        document.getElementById('preview-root').innerHTML = '<div class="preview-error">' + err.message + '</div>';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import { SwitchComponent, encodeData } from 'switch-framework';
+import { hooksUseStateCode, hooksUseEffectCode } from '/codes/index.js';
 
 const DOC_STYLES = `
   :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
@@ -21,24 +22,6 @@ export class SwDocsHooksScreen extends SwitchComponent {
   static layout = 'tabs';
 
   render() {
-    const useStateCode = {
-      title: 'useState',
-      language: 'javascript',
-      code: `const [value, unsub] = useState('my-state', (newValue) => {
-  // Runs when state changes
-  this._renderToShadow();
-});
-// Call unsub() in disconnected()`
-    };
-
-    const useEffectCode = {
-      title: 'useEffect',
-      language: 'javascript',
-      code: `connected() {
-  this.useEffect(() => this._renderToShadow(), ['activeRoute', 'routeParams']);
-}`
-    };
-
     return `
       <div class="doc-section">
         <h2 class="section-title" id="overview">Hooks</h2>
@@ -49,12 +32,12 @@ export class SwDocsHooksScreen extends SwitchComponent {
         <p class="section-desc">
           Subscribe to a state key. When the state changes, your callback runs. Return an unsubscribe function – call it in <code>disconnected()</code> to avoid leaks.
         </p>
-        <sw-codeblock data="${encodeData(useStateCode)}"></sw-codeblock>
+        <sw-codeblock data="${encodeData(hooksUseStateCode)}"></sw-codeblock>
         <h3 class="subsection" id="useeffect">useEffect</h3>
         <p class="section-desc">
           Subscribe to <code>globalStates</code> keys. Useful for re-rendering when the route or route params change. The callback runs when any watched key updates.
         </p>
-        <sw-codeblock data="${encodeData(useEffectCode)}"></sw-codeblock>
+        <sw-codeblock data="${encodeData(hooksUseEffectCode)}"></sw-codeblock>
         <h3 class="subsection" id="router-hooks">Router hooks</h3>
         <p class="section-desc">
           From <code>switch-framework/router</code>: <code>useParams()</code>, <code>useSearchParams()</code>, <code>getActiveRoute()</code>, <code>useRouteChangesSubscriber()</code>.

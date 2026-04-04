@@ -44,7 +44,13 @@ export class LiveCodePreview extends SwitchComponent {
 
   onMount() {
     this.bindEvents();
-    this._runPreview();
+    // Re-bind events after re-renders (e.g. live-edit-mode toggle)
+    this.useEffect(() => {
+      queueMicrotask(() => this.bindEvents());
+    }, ['live-edit-mode']);
+
+    this._hasRun = false;
+    this._setupAutoRun();
     if (!this._logHandlerBound) {
       this._logHandlerBound = true;
       this._logHandler = (e) => {
@@ -59,18 +65,42 @@ export class LiveCodePreview extends SwitchComponent {
   }
 
   bindEvents() {
-    this.shadowRoot.querySelector('.copy-btn')?.addEventListener('click', () => this.copyToClipboard());
-    this.shadowRoot.querySelector('.run-btn')?.addEventListener('click', () => this.runPreview());
-    const textarea = this.shadowRoot.querySelector('.code-textarea');
-    if (textarea) textarea.addEventListener('input', () => this.syncCodeFromEdit());
-    this.shadowRoot.querySelectorAll('.mode-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
+    const copyBtn = this.shadowRoot?.querySelector('.copy-btn');
+    if (copyBtn) copyBtn.onclick = () => this.copyToClipboard();
+
+    const runBtn = this.shadowRoot?.querySelector('.run-btn');
+    if (runBtn) runBtn.onclick = () => this.runPreview();
+
+    const inspectBtn = this.shadowRoot?.querySelector('.inspect-btn');
+    if (inspectBtn) {
+      inspectBtn.onclick = () => {
+        const wrap = this.shadowRoot?.querySelector('.preview-logs-wrap');
+        wrap?.classList.toggle('open');
+      };
+    }
+
+    const fsBtn = this.shadowRoot?.querySelector('.fullscreen-btn');
+    if (fsBtn) {
+      fsBtn.onclick = async () => {
+        const panel = this.shadowRoot?.querySelector('.preview-panel');
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+          else await panel?.requestFullscreen?.();
+        } catch (_) {}
+      };
+    }
+
+    const textarea = this.shadowRoot?.querySelector('.code-textarea');
+    if (textarea) textarea.oninput = () => this.syncCodeFromEdit();
+
+    this.shadowRoot?.querySelectorAll('.mode-btn')?.forEach((btn) => {
+      btn.onclick = () => {
         const mode = btn.getAttribute('data-mode');
         const ta = this.shadowRoot?.querySelector('.code-textarea');
         if (ta) this._editedCode = ta.value;
         else if (mode === 'edit') this._editedCode = this._editedCode ?? this.decodeData()?.code;
         updateState('live-edit-mode', mode);
-      });
+      };
     });
   }
 
@@ -84,7 +114,47 @@ export class LiveCodePreview extends SwitchComponent {
   }
 
   runPreview() {
+    this._hasRun = true;
     this._runPreview(this.getCurrentCode());
+  }
+
+  _setupAutoRun() {
+    const data = this.decodeData();
+    const { preview = 'liveview', language = 'javascript' } = data || {};
+    if (preview !== 'liveview' || language !== 'javascript') return;
+    if (this._hasRun) return;
+
+    const container = this.shadowRoot?.querySelector('.preview-panel');
+    if (!container) return;
+
+    if (this._autoRunObserver) {
+      try { this._autoRunObserver.disconnect(); } catch (_) {}
+      this._autoRunObserver = null;
+    }
+
+    if (typeof IntersectionObserver === 'undefined') {
+      this._hasRun = true;
+      this._runPreview();
+      return;
+    }
+
+    this._autoRunObserver = new IntersectionObserver((entries) => {
+      const entry = entries?.[0];
+      if (!entry?.isIntersecting) return;
+      if (this._hasRun) return;
+      this._hasRun = true;
+      this._runPreview();
+      try { this._autoRunObserver.disconnect(); } catch (_) {}
+      this._autoRunObserver = null;
+    }, { root: null, threshold: 0.15 });
+
+    this._autoRunObserver.observe(container);
+    this.addOnDestroy(() => {
+      if (this._autoRunObserver) {
+        try { this._autoRunObserver.disconnect(); } catch (_) {}
+        this._autoRunObserver = null;
+      }
+    });
   }
 
   appendLog(msg) {
@@ -100,8 +170,12 @@ export class LiveCodePreview extends SwitchComponent {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'data' && oldValue !== newValue) {
       this._editedCode = null;
+      this._hasRun = false;
       this.rerender();
-      this._runPreview();
+      queueMicrotask(() => {
+        this.bindEvents();
+        this._setupAutoRun();
+      });
     }
   }
 
@@ -160,50 +234,13 @@ export class LiveCodePreview extends SwitchComponent {
     const logsEl = this.shadowRoot?.querySelector('.preview-logs');
     if (logsEl) logsEl.innerHTML = '';
 
+    // Encode code and set iframe src to preview.html with code in hash
+    const encodedCode = btoa(encodeURIComponent(codeToRun));
     const base = window.location.origin;
-    const importMap = JSON.stringify({
-      imports: {
-        'switch-framework': `${base}/switch-framework/index.js`,
-        'switch-framework/router': `${base}/switch-framework/router/index.js`
-      }
-    });
-
-    const html = `<!DOCTYPE html>
-<html><head>
-<meta charset="utf-8">
-<script type="importmap">${importMap}</script>
-<style>body{margin:0;padding:16px;font-family:system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;}</style>
-</head><body>
-<div id="preview-root"></div>
-<script type="module">
-(function(){
-  const _log = console.log;
-  console.log = function(...args) {
-    const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
-    try { window.parent?.postMessage?.({ type: 'live-preview-log', payload: msg }, '*'); } catch(e){}
-    _log.apply(console, args);
-  };
-})();
-try {
-  const code = ${JSON.stringify(codeToRun)};
-  const blob = new Blob([code], { type: 'application/javascript' });
-  const url = URL.createObjectURL(blob);
-  const mod = await import(url);
-  URL.revokeObjectURL(url);
-  const Export = mod.Counter || mod.default || Object.values(mod).find(v => typeof v === 'function');
-  if (Export?.tag) {
-    if (!customElements.get(Export.tag)) customElements.define(Export.tag, Export);
-    document.getElementById('preview-root').innerHTML = '<' + Export.tag + '></' + Export.tag + '>';
-  }
-} catch (err) {
-  document.getElementById('preview-root').innerHTML = '<pre style="color:#ef4444;font-size:12px;white-space:pre-wrap;">' + err.message + '</pre>';
-}
-</script>
-</body></html>`;
-
     const iframe = this.shadowRoot?.querySelector('.preview-iframe');
     if (iframe) {
-      iframe.srcdoc = html;
+      const runId = Date.now();
+      iframe.src = `${base}/preview.html?run=${runId}#${encodedCode}`;
     }
   }
 
@@ -249,10 +286,37 @@ try {
         <div class="preview-panel">
           <div class="preview-header">
             <span>Live Preview</span>
-            <button class="run-btn" type="button" aria-label="Run">Run</button>
+            <div class="preview-actions">
+              <button class="run-btn" type="button" aria-label="Run">
+                <span class="btn-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 5v14l11-7L8 5Z" fill="currentColor"/>
+                  </svg>
+                </span>
+              </button>
+              <button class="inspect-btn" type="button" aria-label="Inspect">
+                <span class="btn-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 5h16v14H4V5Z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M8 9h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M8 13h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </span>
+              </button>
+              <button class="fullscreen-btn" type="button" aria-label="Fullscreen">
+                <span class="btn-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 3H5a2 2 0 0 0-2 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M15 3h4a2 2 0 0 1 2 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M9 21H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M15 21h4a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </span>
+              </button>
+            </div>
           </div>
           <div class="preview-container">
-            <iframe class="preview-iframe" title="Live preview" sandbox="allow-scripts allow-same-origin"></iframe>
+            <iframe class="preview-iframe" title="Live preview" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
           </div>
           <div class="preview-logs-wrap">
             <div class="preview-logs-header">Console (F12 → select iframe to see in DevTools)</div>
@@ -409,8 +473,18 @@ try {
           color: var(--codeblock_muted, #94a3b8);
           font-family: monospace;
         }
+        .preview-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .btn-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
         .run-btn {
-          padding: 6px 14px;
+          padding: 6px 10px;
           background: var(--primary, #6366f1);
           color: white;
           border: none;
@@ -421,6 +495,26 @@ try {
           transition: opacity 0.2s;
         }
         .run-btn:hover { opacity: 0.9; }
+        .inspect-btn {
+          padding: 6px 10px;
+          background: var(--codeblock_border, #334155);
+          color: var(--codeblock_text, #f8fafc);
+          border: 1px solid var(--codeblock_border, #334155);
+          border-radius: 6px;
+          cursor: pointer;
+          transition: opacity 0.2s;
+        }
+        .inspect-btn:hover { opacity: 0.9; }
+        .fullscreen-btn {
+          padding: 6px 10px;
+          background: var(--codeblock_border, #334155);
+          color: var(--codeblock_text, #f8fafc);
+          border: 1px solid var(--codeblock_border, #334155);
+          border-radius: 6px;
+          cursor: pointer;
+          transition: opacity 0.2s;
+        }
+        .fullscreen-btn:hover { opacity: 0.9; }
         .code-textarea {
           width: 100%;
           flex: 1;
@@ -453,8 +547,12 @@ try {
         }
         .preview-logs-wrap {
           border-top: 1px solid var(--codeblock_border, #334155);
-          max-height: 100px;
+          max-height: 0;
           overflow: hidden;
+          transition: max-height 0.2s ease;
+        }
+        .preview-logs-wrap.open {
+          max-height: 180px;
         }
         .preview-logs-header {
           padding: 6px 16px;
