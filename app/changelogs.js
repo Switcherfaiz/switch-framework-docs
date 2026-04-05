@@ -19,6 +19,27 @@ export class SwChangelogsScreen extends SwitchComponent {
             <p class="section-desc">
               Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
             </p>
+            <h3 class="subsection" id="v0-2-2">v0.2.3 – April 5, 2026</h3>
+            <p class="section-desc"><strong>Features</strong></p>
+            <ul class="feature-list">
+              <li><strong>StackLayout</strong> now supports custom <code>render()</code> and <code>styleSheet()</code> methods for building complex app shells with global UI elements</li>
+              <li>Global popups in StackLayout (search modals, bottom sheets) now persist visibility across layout switches – any content inside a container with <code>data-popups</code> attribute is automatically extracted to the app shell level</li>
+              <li><sw-docs-changelog-link text="FlatList" route="docs/components/flatlist"></sw-docs-changelog-link> improvements: optimized scroll performance, better grid layout calculations, and enhanced state-driven re-rendering</li>
+            </ul>
+            <p class="section-desc"><strong>Improvements</strong></p>
+            <ul class="feature-list">
+              <li>Updated <sw-docs-changelog-link text="Layouts" route="docs/layouts"></sw-docs-changelog-link> documentation with comprehensive StackLayout API reference</li>
+              <li>FlatList now properly handles dynamic data updates with <code>updateState</code> without full re-renders</li>
+              <li>Docs sidebar navigation now works correctly in both desktop and mobile tab layouts</li>
+              <li>Theme-aware logos and splash screen with rotating animations and gradient loaders</li>
+            </ul>
+            <p class="section-desc"><strong>Bug Fixes</strong></p>
+            <ul class="feature-list">
+              <li>Fixed pointer-events blocking in sw-stack-shell when tabs layout is active</li>
+              <li>Resolved z-index layering issues between tab content and sidebars</li>
+              <li>Fixed popup visibility being lost when navigating between stack and tabs layouts</li>
+            </ul>
+
             <h3 class="subsection" id="v0-2-1">v0.2.1 – March 17, 2026</h3>
             <p class="section-desc"><strong>Features</strong></p>
             <ul class="feature-list">

@@ -19,7 +19,7 @@ export class SwStackLayout extends StackLayout {
   static tag = 'sw-stack-layout';
   static stackScreens = [SwIndexScreen, SwChangelogsScreen, SwAuthorsScreen, SwAboutScreen, SwPrivacyPolicyScreen, SwTermsOfServiceScreen, SwLicenseScreen, NotFoundScreen];
   static tabsLayout = SwTabsLayout;
-  static popups = ['sw-docs-search', 'sw-icons-bottom-sheet'];
+
   static splash = 'sw-starter-splash';
   static initialRoute = 'index';
 

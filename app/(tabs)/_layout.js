@@ -179,6 +179,29 @@ export class SwTabsLayout extends TabLayout {
           min-height: 0;
           display: flex;
           flex-direction: column;
+          grid-column: 1;
+          grid-row: 1;
+          position: relative;
+          z-index: 2;
+        }
+
+        .mobile-sidebar-backdrop {
+          display: none;
+          pointer-events: none;
+          grid-column: 1 / -1;
+          grid-row: 1;
+        }
+
+        .tab-content-area {
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+          overflow: hidden;
+          background: var(--page_background);
+          grid-column: 2;
+          grid-row: 1;
+          position: relative;
+          z-index: 1;
         }
 
         .right-sidebar {
@@ -188,16 +211,8 @@ export class SwTabsLayout extends TabLayout {
           min-height: 0;
           display: flex;
           flex-direction: column;
-        }
-
-        .tab-content-area {
-          display: flex;
-          flex-direction: column;
-          min-height: 0;
-          overflow: hidden;
-          background: var(--page_background);
-          position: relative;
-          z-index: 1;
+          grid-column: 3;
+          grid-row: 1;
         }
 
         .tabcontainer {
