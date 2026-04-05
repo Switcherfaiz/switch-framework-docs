@@ -292,7 +292,20 @@ export class TopBar extends SwitchComponent {
 
         @media (max-width: 640px) {
           .topbar { padding: 12px 16px; }
-          .right-section { flex: none; gap: 8px; }
+          .left-section { flex: 1; min-width: 0; gap: 12px; }
+          .logo-section { min-width: 0; gap: 10px; }
+          .logo-text {
+            font-size: 16px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+          }
+          .right-section { flex: none; flex-shrink: 0; gap: 8px; }
+        }
+
+        @media (max-width: 420px) {
+          .logo-text { display: none; }
         }
       </style>
     `;

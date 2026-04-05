@@ -133,10 +133,6 @@ export class SwTabsLayout extends TabLayout {
             <sw-docs-right-sidebar-nav></sw-docs-right-sidebar-nav>
           </div>
         </div>
-        <div class="popups">
-          <sw-docs-search></sw-docs-search>
-          <sw-icons-bottom-sheet></sw-icons-bottom-sheet>
-        </div>
       </div>
     `;
   }
@@ -242,18 +238,6 @@ export class SwTabsLayout extends TabLayout {
 
         .mobile-sidebar-close {
           display: none;
-        }
-
-        .popups {
-          position: fixed;
-          inset: 0;
-          z-index: 10000;
-          pointer-events: none;
-        }
-
-        /* Sheets disable hit-test when closed; they set pointer-events:auto on host when open */
-        .popups > * {
-          pointer-events: none;
         }
 
         @media (max-width: 1024px) {
