@@ -19,7 +19,7 @@ export class SwChangelogsScreen extends SwitchComponent {
             <p class="section-desc">
               Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
             </p>
-            <h3 class="subsection" id="v0-2-2">v0.2.4 – April 8, 2026</h3>
+            <h3 class="subsection" id="v0-2-2">v0.2.5 – April 8, 2026</h3>
             <p class="section-desc"><strong>Features</strong></p>
             <ul class="feature-list">
               <li><sw-docs-changelog-link text="StackLayout" route="docs/components/layouts"></sw-docs-changelog-link>StackLayout now supports <code> static render()</code> <code> static styleSheet()</code> for rendering popups or elements that will come with stackLayout without waiting for initialscreen to be rendered,good for those who want global popups and toasts arround stack layout</li>
