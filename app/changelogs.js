@@ -19,11 +19,10 @@ export class SwChangelogsScreen extends SwitchComponent {
             <p class="section-desc">
               Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
             </p>
-            <h3 class="subsection" id="v0-2-2">v0.2.3 – April 5, 2026</h3>
+            <h3 class="subsection" id="v0-2-2">v0.2.4 – April 8, 2026</h3>
             <p class="section-desc"><strong>Features</strong></p>
             <ul class="feature-list">
-              <li><strong>StackLayout</strong> now supports custom <code>render()</code> and <code>styleSheet()</code> methods for building complex app shells with global UI elements</li>
-              <li>Global popups in StackLayout (search modals, bottom sheets) now persist visibility across layout switches – any content inside a container with <code>data-popups</code> attribute is automatically extracted to the app shell level</li>
+              <li><sw-docs-changelog-link text="StackLayout" route="docs/components/layouts"></sw-docs-changelog-link>StackLayout now supports <code> static render()</code> <code> static styleSheet()</code> for rendering popups or elements that will come with stackLayout without waiting for initialscreen to be rendered,good for those who want global popups and toasts arround stack layout</li>
               <li><sw-docs-changelog-link text="FlatList" route="docs/components/flatlist"></sw-docs-changelog-link> improvements: optimized scroll performance, better grid layout calculations, and enhanced state-driven re-rendering</li>
             </ul>
             <p class="section-desc"><strong>Improvements</strong></p>

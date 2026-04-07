@@ -23,46 +23,18 @@ export class SwStackLayout extends StackLayout {
   static splash = 'sw-starter-splash';
   static initialRoute = 'index';
 
-  render() {
+  static render() {
     return `
-      <div class="stack">
-        <div id="content" class="stack-content"></div>
         <div class="popups" data-popups>
           <sw-docs-search></sw-docs-search>
           <sw-icons-bottom-sheet></sw-icons-bottom-sheet>
         </div>
-      </div>
     `;
   }
 
-  styleSheet() {
+  static styleSheet() {
     return `
       <style>
-        :host {
-          position: fixed;
-          inset: 0;
-          display: block;
-          width: 100%;
-          height: 100dvh;
-          overflow: hidden;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-
-        .stack {
-          position: relative;
-          height: 100%;
-          width: 100%;
-        }
-
-        .stack-content {
-          height: 100%;
-          width: 100%;
-          overflow: auto;
-          overflow-x: hidden;
-        }
 
         .popups {
           position: fixed;
