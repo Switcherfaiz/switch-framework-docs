@@ -98,7 +98,7 @@ export class LiveCodePreview extends SwitchComponent {
         const mode = btn.getAttribute('data-mode');
         const ta = this.shadowRoot?.querySelector('.code-textarea');
         if (ta) this._editedCode = ta.value;
-        else if (mode === 'edit') this._editedCode = this._editedCode ?? this.decodeData()?.code;
+        else if (mode === 'edit') this._editedCode = this._editedCode ?? this.getData()?.code;
         updateState('live-edit-mode', mode);
       };
     });
@@ -106,7 +106,7 @@ export class LiveCodePreview extends SwitchComponent {
 
   getCurrentCode() {
     const ta = this.shadowRoot?.querySelector('.code-textarea');
-    return ta ? ta.value : (this.decodeData()?.code || '');
+    return ta ? ta.value : (this.getData()?.code || '');
   }
 
   syncCodeFromEdit() {
@@ -119,7 +119,7 @@ export class LiveCodePreview extends SwitchComponent {
   }
 
   _setupAutoRun() {
-    const data = this.decodeData();
+    const data = this.getData();
     const { preview = 'liveview', language = 'javascript' } = data || {};
     if (preview !== 'liveview' || language !== 'javascript') return;
     if (this._hasRun) return;
@@ -179,7 +179,7 @@ export class LiveCodePreview extends SwitchComponent {
     }
   }
 
-  decodeData() {
+  getData() {
     const raw = this.getAttribute('data');
     if (!raw) return null;
     try {
@@ -203,7 +203,7 @@ export class LiveCodePreview extends SwitchComponent {
   }
 
   async copyToClipboard() {
-    const data = this.decodeData();
+    const data = this.getData();
     const code = this.getCurrentCode() || data?.code || '';
     const btn = this.shadowRoot.querySelector('.copy-btn');
     if (!btn) return;
@@ -225,7 +225,7 @@ export class LiveCodePreview extends SwitchComponent {
   }
 
   async _runPreview(overrideCode) {
-    const data = this.decodeData();
+    const data = this.getData();
     const { code = '', preview = 'liveview', language = 'javascript' } = data || {};
     const container = this.shadowRoot?.querySelector('.preview-container');
     if (!container || preview !== 'liveview' || language !== 'javascript') return;
@@ -245,7 +245,7 @@ export class LiveCodePreview extends SwitchComponent {
   }
 
   render() {
-    this.data = this.decodeData();
+    this.data = this.getData();
     const { title = 'app.js', fileName, code = '', language = 'javascript', preview = 'liveview' } = this.data || {};
     const displayTitle = title || fileName || 'app.js';
     const isLiveEditable = preview === 'liveview' && language === 'javascript';

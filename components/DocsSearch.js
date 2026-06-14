@@ -1,5 +1,6 @@
 import { SwitchComponent, updateState, getState, useState } from 'switch-framework';
 import { navigate as swNavigate } from 'switch-framework/router';
+import { navigateDoc, isDocRoute } from '/utils/doc-nav.js';
 import { searchRoutes } from '/data/search-routes.js';
 
 const STORAGE_KEY = 'switch-docs-search-history';
@@ -101,7 +102,9 @@ export class DocsSearch extends SwitchComponent {
       const route = item.getAttribute('data-route');
       if (route) {
         saveSearchQuery(getState('search-query'));
-        swNavigate(route.startsWith('/') ? route : '/' + route);
+        const normalized = route.replace(/^\//, '');
+        if (isDocRoute(normalized)) navigateDoc(normalized);
+        else swNavigate(normalized);
         updateState('search-open', false);
         updateState('search-query', '');
       }

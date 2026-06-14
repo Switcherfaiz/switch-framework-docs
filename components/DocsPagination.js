@@ -1,5 +1,6 @@
 import { SwitchComponent } from 'switch-framework';
-import { navigate, getActiveRoute, useRouteChangesSubscriber } from 'switch-framework/router';
+import { getActiveRoute, useRouteChangesSubscriber } from 'switch-framework/router';
+import { navigateDoc } from '/utils/doc-nav.js';
 import { DOC_ORDER } from '/data/search-routes.js';
 
 export class DocsPagination extends SwitchComponent {
@@ -24,7 +25,7 @@ export class DocsPagination extends SwitchComponent {
       const action = btn.getAttribute('data-action');
       const { prev, next } = this.getPrevNext();
       const target = action === 'prev' ? prev : next;
-      if (target) navigate(target.route);
+      if (target) navigateDoc(target.route);
     });
   }
 

@@ -61,7 +61,6 @@ export class SwStackLayout extends StackLayout {
     createState('icon-sheet', { open: false, iconKey: null, index: 0, filteredKeys: [] });
     createState('icons-filter', { query: '', displayCount: 96 });
     createState('mobile-sidebar-open', false);
-    await new Promise((resolve) => setTimeout(resolve, 3000));
     return { splash: 'sw-starter-splash', initialRoute: 'index' };
   }
   

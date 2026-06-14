@@ -1,5 +1,6 @@
 import { TabLayout, registerComponents, updateState, getState } from 'switch-framework';
-import { CodeBlock } from '/components/CodeBlock.js';
+import { getActiveRoute, useRouteChangesSubscriber, replace } from 'switch-framework/router';
+import { CodeBlock } from '/components/CodeBlock/index.js';
 import { DocsChangelogLink } from '/components/DocsChangelogLink.js';
 import { DocsLeftSidebarNav } from '/components/DocsLeftSidebarNav.js';
 import { DocsRightSidebarNav } from '/components/DocsRightSidebarNav.js';
@@ -14,8 +15,41 @@ import { IconsBottomSheet } from '/components/IconsBottomSheet.js';
 import { LiveView } from '/components/LiveView.js';
 import { LiveCodePreview } from '/components/LiveCodePreview.js';
 import { SwProfiles } from '/components/SwProfiles.js';
+import {
+  DocHeading,
+  DocSubheading,
+  DocSectionHeading,
+  DocParagraph,
+  DocCallout,
+  DocListItem,
+  DocLoader
+} from '/components/DocContent.js';
+import { DocsPageMenu } from '/components/DocsPageMenu.js';
 
-registerComponents([CodeBlock, DocsChangelogLink, LiveView, LiveCodePreview, DocsLeftSidebarNav, DocsRightSidebarNav, DocsParamsTable, DocsPagination, DocsFeedback, DocsSearch, DocsSearchBar, TopBar, IconsBottomSheet, SwProfiles]);
+registerComponents([
+  CodeBlock,
+  DocsChangelogLink,
+  LiveView,
+  LiveCodePreview,
+  DocsLeftSidebarNav,
+  DocsRightSidebarNav,
+  DocsParamsTable,
+  DocsPagination,
+  DocsFeedback,
+  DocsSearch,
+  DocsSearchBar,
+  TopBar,
+  IconsBottomSheet,
+  SwProfiles,
+  DocHeading,
+  DocSubheading,
+  DocSectionHeading,
+  DocParagraph,
+  DocCallout,
+  DocListItem,
+  DocLoader,
+  DocsPageMenu
+]);
 import { SwDocsIntroScreen } from './screens/introduction.js';
 import { SwDocsInstallScreen } from './screens/installation/web.js';
 import { SwDocsQuickstartScreen } from './screens/quickstart.js';
@@ -34,10 +68,33 @@ import { SwDocsFolderStructureScreen } from './screens/folder-structure.js';
 import { SwDocsLayoutsScreen } from './screens/layouts.js';
 import { SwDocsInstallationDesktopScreen } from './screens/installation/desktop.js';
 import { SwDocsHooksScreen } from './screens/hooks.js';
-import { SwDocsRedirectScreen } from './screens/docs-redirect.js';
 import { SwDocsServerIntroScreen } from './screens/server/introduction.js';
 import { SwDocsServerWebScreen } from './screens/server/web.js';
 import { SwDocsServerDesktopScreen } from './screens/server/desktop.js';
+
+registerComponents([
+  SwDocsIntroScreen,
+  SwDocsTutorialReactiveButtonScreen,
+  SwDocsThinkingScreen,
+  SwDocsGoalsScreen,
+  SwDocsInstallScreen,
+  SwDocsInstallationDesktopScreen,
+  SwDocsQuickstartScreen,
+  SwDocsCliScreen,
+  SwDocsRouterScreen,
+  SwDocsFolderStructureScreen,
+  SwDocsLayoutsScreen,
+  SwDocsStateScreen,
+  SwDocsThemingScreen,
+  SwDocsAnimationsScreen,
+  SwDocsSwitchIconsScreen,
+  SwDocsComponentsScreen,
+  SwDocsComponentsFlatListScreen,
+  SwDocsHooksScreen,
+  SwDocsServerIntroScreen,
+  SwDocsServerWebScreen,
+  SwDocsServerDesktopScreen,
+]);
 
 export class SwTabsLayout extends TabLayout {
   static tag = 'sw-tabs-layout';
@@ -47,15 +104,12 @@ export class SwTabsLayout extends TabLayout {
       name: 'docs',
       title: 'Docs',
       icon: 'description',
-      path: '/docs/:id',
-      screen: 'sw-docs-intro-screen',
       match: ['docs'],
       initialRoute: 'docs/introduction'
     }
   ];
   static options = { position: 'bottom' };
   static screens = [
-    SwDocsRedirectScreen,
     SwDocsServerIntroScreen,
     SwDocsServerWebScreen,
     SwDocsServerDesktopScreen,
@@ -80,9 +134,36 @@ export class SwTabsLayout extends TabLayout {
   ];
 
   onMount() {
+    this._redirectBareDocsRoute();
+    requestAnimationFrame(() => this._ensureDocRouteRendered());
+    if (!this._docsRouteSub) {
+      this._docsRouteSub = useRouteChangesSubscriber(() => {
+        this._redirectBareDocsRoute();
+        requestAnimationFrame(() => this._ensureDocRouteRendered());
+      });
+      this.addOnDestroy(() => { this._docsRouteSub?.(); });
+    }
     this._bindMobileSidebar();
     this._syncMobileSidebarUI();
     this.useEffect(() => this._syncMobileSidebarUI(), ['mobile-sidebar-open']);
+  }
+
+  _redirectBareDocsRoute() {
+    const path = (window.location.pathname || '').replace(/^\//, '').replace(/\/$/, '');
+    const route = getActiveRoute();
+    if (path === 'docs' || route === 'docs') {
+      replace('docs/introduction');
+    }
+  }
+
+  _ensureDocRouteRendered() {
+    const route = getActiveRoute();
+    if (!route || !String(route).startsWith('docs/')) return;
+    const tab = this.getContentContainer();
+    if (!tab) return;
+    if (!tab.firstElementChild) {
+      replace(route);
+    }
   }
 
   _syncMobileSidebarUI() {

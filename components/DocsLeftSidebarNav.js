@@ -1,12 +1,13 @@
 import { SwitchComponent, updateState, getState } from 'switch-framework';
-import { navigate, useRouteChangesSubscriber, getActiveRoute } from 'switch-framework/router';
+import { useRouteChangesSubscriber, getActiveRoute } from 'switch-framework/router';
+import { navigateDoc } from '/utils/doc-nav.js';
 
 export class DocsLeftSidebarNav extends SwitchComponent {
   static tag = 'sw-docs-left-sidebar-nav';
 
   constructor() {
     super();
-    this._expanded = { 'quick-start': true };
+    this._expanded = {};
   }
 
   getExpandedStateForRoute(activeRoute) {
@@ -28,6 +29,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
 
   onMount() {
     this._lastRoute = getActiveRoute();
+    this._expanded = this.getExpandedStateForRoute(this._lastRoute);
     updateState('docs-active-route', this._lastRoute);
     this.setupRouteSubscription();
     this.bindNavEvents();
@@ -43,7 +45,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       const route = getActiveRoute();
       if (route === this._lastRoute) return;
       this._lastRoute = route;
-      this._expanded = { ...this._expanded, ...this.getExpandedStateForRoute(route) };
+      this._expanded = this.getExpandedStateForRoute(route);
       updateState('docs-active-route', route);
       this.syncExpandDOM();
     });
@@ -63,7 +65,10 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       const link = e.target?.closest?.('a[data-route]');
       if (!link) return;
       e.preventDefault();
-      navigate(link.getAttribute('data-route'));
+      const route = link.getAttribute('data-route');
+      this._expanded = this.getExpandedStateForRoute(route);
+      this.syncExpandDOM();
+      navigateDoc(route);
       updateState('mobile-sidebar-open', false);
     });
   }

@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const fs = require('node:fs');
+const path = require('node:path');
 const switchFrameworkBackend = require('switch-framework-backend');
 
 switchFrameworkBackend.config({
@@ -20,6 +22,7 @@ app.initServer((server) => {
     next();
   });
 
+
   const restrictConfig = {
     public: ['/', '/login'],
     rules: [
@@ -29,4 +32,21 @@ app.initServer((server) => {
     ]
   };
   server.use(switchFrameworkBackend.checkRestrict(restrictConfig));
+
+  server.get('/docs', (req, res) => {
+    res.redirect(301, '/docs/introduction');
+  });
+
+  const codeHighlighter = require('./routes/codeHighlighter.js');
+  server.use('/codehighlighter', codeHighlighter);
+
+  server.use((req, res, next) => {
+    if (req.method !== 'GET' || !req.path.startsWith('/docs/') || !req.path.endsWith('.md')) {
+      return next();
+    }
+    const rel = req.path.slice('/docs/'.length);
+    const filePath = path.join(__dirname, 'docs', rel);
+    if (!fs.existsSync(filePath)) return next();
+    return res.type('text/plain; charset=utf-8').send(fs.readFileSync(filePath, 'utf8'));
+  });
 });

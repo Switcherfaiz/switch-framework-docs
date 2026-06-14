@@ -1,5 +1,6 @@
 import { SwitchComponent } from '/switch-framework/index.js';
 import { navigate } from '/switch-framework/router/index.js';
+import { navigateDoc, isDocRoute } from '/utils/doc-nav.js';
 
 export class SwTabBar extends SwitchComponent {
   static tag = 'sw-tab-bar';
@@ -15,7 +16,8 @@ export class SwTabBar extends SwitchComponent {
       const btn = e.target?.closest?.('button[data-route]');
       if (!btn) return;
       const route = btn.getAttribute('data-route');
-      navigate(route);
+      if (isDocRoute(route)) navigateDoc(route);
+      else navigate(route);
     });
   }
 

@@ -1,4 +1,5 @@
-import { SwitchComponent, encodeData, updateState, useState } from 'switch-framework';
+import { SwitchComponent, updateState, useState } from 'switch-framework';
+import { loadDocContent, renderDocShell, docPageFromScreenName } from '/utils/doc-loader.js';
 import { icons } from '/data/icons-map.js';
 import { iconsFilterHandlers } from '/data/icons-filter-handlers.js';
 
@@ -90,47 +91,33 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
     this.listener('#icons-search-input', 'input', this.handleSearchInput.bind(this));
     this.listener('#icons-load-more', 'click', this.handleLoadMore.bind(this));
     this.listener('.icon-tile', 'click', (e) => this.handleIconTileClick(e));
+    this.loadContent();
+  }
+
+  async loadContent() {
+    await loadDocContent(this);
   }
 
   render() {
     const visibleKeys = ICON_KEYS.slice(0, INITIAL_COUNT);
     const hasMore = ICON_KEYS.length > INITIAL_COUNT;
     this._filteredKeys = ICON_KEYS;
+    const page = docPageFromScreenName(this.constructor.screenName);
 
     return `
       <div class="icons-screen">
-        <div class="icons-header">
-          <h2 class="icons-title">Switch Icons</h2>
-          <p class="icons-desc">
-            Switch Framework includes an icon font from <code>/assets/icons/style.css</code>. Icons are used via CSS classes in the format <code>switch_icon_&lt;name&gt;</code>. Search and click an icon to view details and copy code.
-          </p>
+        <div class="doc-page-toolbar">
+          <sw-docs-page-menu page="${page}"></sw-docs-page-menu>
         </div>
-
-        <h3 class="icons-subsection">Usage</h3>
-        <p class="icons-desc">
-          Import the icon stylesheet in your component's <code>styleSheet()</code>, then add a span with the icon class:
-        </p>
-        <sw-codeblock data="${encodeData({
-          title: 'Using Switch Icons',
-          language: 'html',
-          code: `@import '/assets/icons/style.css';
-
-/* In your template: */
-<span class="switch_icon_github"></span>
-<span class="switch_icon_chevron_right"></span>`
-        })}"></sw-codeblock>
-
-        <h3 class="icons-subsection">All Icons</h3>
+        <div id="doc-mount" class="doc-mount is-loading">
+          <sw-doc-loader></sw-doc-loader>
+        </div>
         <div class="icons-all-row">
-          <p class="icons-desc icons-all-desc">
-            Click an icon to open its detail panel. Use the search bar to filter.
-          </p>
           <div class="icons-search-wrap">
             <span class="switch_icon_search icons-search-icon"></span>
             <input id="icons-search-input" type="text" placeholder="Search ${ICON_KEYS.length} icons..." class="icons-search-input" autocomplete="off" />
           </div>
         </div>
-
         <div id="icons-grid" class="icons-grid">
           ${visibleKeys.map((key) => `
             <div class="icon-tile" data-icon="${this.escapeAttr(key)}">
@@ -139,11 +126,9 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
             </div>
           `).join('')}
         </div>
-
         <div id="icons-load-more-wrap" class="icons-load-more-wrap" style="${!hasMore ? 'display:none' : ''}">
           <button id="icons-load-more" type="button" class="icons-load-more-btn">Load more</button>
         </div>
-
         <sw-docs-pagination></sw-docs-pagination>
       </div>
     `;
@@ -178,38 +163,29 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
           margin: 0 auto;
         }
 
-        .icons-header {
-          margin-bottom: 32px;
+        .doc-page-toolbar {
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: 8px;
+        }
+
+        .doc-mount.is-loading {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: min(75vh, calc(100dvh - 140px));
+          width: 100%;
+          padding: 24px 16px;
+          box-sizing: border-box;
         }
 
         .icons-all-row {
           display: flex;
           flex-wrap: wrap;
-          justify-content: space-between;
+          justify-content: flex-end;
           align-items: center;
           gap: 16px;
           margin-bottom: 16px;
-        }
-
-        .icons-all-desc {
-          flex: 1;
-          min-width: 200px;
-          margin: 0 !important;
-        }
-
-        .icons-title {
-          font-size: 32px;
-          font-weight: 800;
-          color: var(--main_text);
-          margin: 0 0 12px;
-          letter-spacing: -0.02em;
-        }
-
-        .icons-desc {
-          font-size: 15px;
-          line-height: 1.7;
-          color: var(--sub_text);
-          margin: 0 0 16px;
         }
 
         .icons-search-wrap {
@@ -249,20 +225,8 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
           color: var(--muted_text);
         }
 
-        .icons-subsection {
-          font-size: 18px;
-          font-weight: 700;
-          color: var(--main_text);
-          margin: 28px 0 12px;
-        }
-
-        code {
-          background: var(--surface_2);
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-family: 'Monaco', monospace;
-          font-size: 13px;
-          color: var(--main_text);
+        sw-doc-subheading, sw-doc-section-heading, sw-doc-paragraph {
+          display: block;
         }
 
         .icons-grid {
@@ -342,10 +306,6 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
         }
 
         @media (max-width: 768px) {
-          .icons-all-row {
-            flex-direction: column;
-            align-items: stretch;
-          }
           .icons-search-wrap {
             width: 100%;
           }

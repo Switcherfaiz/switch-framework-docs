@@ -9,8 +9,10 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
+    "esbuild": "^0.28.0",
     "express": "^4.19.2",
     "express-session": "^1.18.1",
+    "highlight.js": "^11.11.1",
     "switch-framework":"^0.2.5",
     "switch-framework-backend": "^0.2.0"
   },

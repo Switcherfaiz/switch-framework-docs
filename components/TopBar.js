@@ -1,5 +1,6 @@
 import { SwitchComponent, updateState, getState } from 'switch-framework';
 import { navigate as swNavigate } from 'switch-framework/router';
+import { navigateDoc, isDocRoute } from '/utils/doc-nav.js';
 import { getTheme, changeTheme } from 'switch-framework/themes';
 
 export class TopBar extends SwitchComponent {
@@ -17,7 +18,9 @@ export class TopBar extends SwitchComponent {
       const link = e.target?.closest?.('a[data-route]');
       if (!link) return;
       e.preventDefault();
-      swNavigate(link.getAttribute('data-route'));
+      const route = link.getAttribute('data-route');
+      if (isDocRoute(route)) navigateDoc(route);
+      else swNavigate(route);
     });
     this.listener('#theme-toggle', 'click', (e) => {
       e.preventDefault();

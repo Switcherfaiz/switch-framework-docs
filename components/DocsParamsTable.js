@@ -1,4 +1,4 @@
-import { SwitchComponent, decodeData } from '/switch-framework/index.js';
+import { SwitchComponent, decodeData } from 'switch-framework';
 
 export class DocsParamsTable extends SwitchComponent {
   static tag = 'sw-docs-params-table';
@@ -10,7 +10,7 @@ export class DocsParamsTable extends SwitchComponent {
     }
   }
 
-  decodeData() {
+  getData() {
     const raw = this.getAttribute('data');
     if (!raw) return null;
     try {
@@ -27,7 +27,7 @@ export class DocsParamsTable extends SwitchComponent {
   }
 
   render() {
-    const _data = this.decodeData();
+    const _data = this.getData();
     const { headers = [], rows = [], htmlColumns = [] } = _data || {};
     const htmlSet = new Set(htmlColumns);
 
