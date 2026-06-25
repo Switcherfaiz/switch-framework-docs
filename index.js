@@ -3,7 +3,7 @@ import { initTheme } from 'switch-framework/themes';
 import { replace } from 'switch-framework/router';
 import layout from './app/_layout.js';
 
-initTheme();
+initTheme(); 
 startApp(layout);
 
 document.addEventListener('app:ready', () => {

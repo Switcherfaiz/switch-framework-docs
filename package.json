@@ -13,7 +13,7 @@
     "express": "^4.19.2",
     "express-session": "^1.18.1",
     "highlight.js": "^11.11.1",
-    "switch-framework":"^0.2.5",
+    "switch-framework": "^0.2.5",
     "switch-framework-backend": "^0.2.0"
   },
   "switchFramework": {
