@@ -21,7 +21,7 @@ static async init({ globalStates, renderSplashscreen }) {
 
 ### What is static state?
 
-**Static state** means you declare `static { this.useState('counter'); }` at class level. The framework subscribes your component to that state key. When *any* component calls `updateState('counter', ...)`, your component automatically re-renders.
+**Static state** means you declare `static { this.useState('counter'); }` at class level. The framework subscribes your component to that state key. When any component calls `updateState('counter', ...)`, your component automatically re-renders.
 
 ### useState in static (full re-render)
 

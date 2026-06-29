@@ -4,6 +4,7 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
+    "change-mode": "node scripts/change-mode.js",
     "dev": "node server.js",
     "start": "node server.js"
   },
@@ -13,6 +14,14 @@
     "express": "^4.19.2",
     "express-session": "^1.18.1",
     "highlight.js": "^11.11.1",
+    "switch-framework-backend": "^0.2.0",
+    "switch-framework": "^0.2.5"
+  },
+  "switch-framework-dev-dep": {
+    "switch-framework": "*",
+    "switch-framework-backend": "*"
+  },
+  "switch-framework-prod-dep": {
     "switch-framework": "^0.2.5",
     "switch-framework-backend": "^0.2.0"
   },

@@ -31,6 +31,7 @@ app.initServer((server) => {
       { path: '/login', roles: ['*'] }
     ]
   };
+  
   server.use(switchFrameworkBackend.checkRestrict(restrictConfig));
 
   server.get('/docs', (req, res) => {

@@ -1,6 +1,5 @@
 import { SwitchComponent, updateState, getState } from 'switch-framework';
-import { useRouteChangesSubscriber, getActiveRoute } from 'switch-framework/router';
-import { navigateDoc } from '/utils/doc-nav.js';
+import { useRouteChangesSubscriber, getActiveRoute, navigate } from 'switch-framework/router';
 
 export class DocsLeftSidebarNav extends SwitchComponent {
   static tag = 'sw-docs-left-sidebar-nav';
@@ -68,7 +67,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       const route = link.getAttribute('data-route');
       this._expanded = this.getExpandedStateForRoute(route);
       this.syncExpandDOM();
-      navigateDoc(route);
+      navigate(route);
       updateState('mobile-sidebar-open', false);
     });
   }
