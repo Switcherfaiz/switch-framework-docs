@@ -47,7 +47,7 @@ app.initServer((server) => {
     }
     const rel = req.path.slice('/docs/'.length);
     const filePath = path.join(__dirname, 'docs', rel);
-    if (!fs.existsSync(filePath)) return next();
+    if (!fs.existsSync(filePath)) return res.status(404).send('File not found');
     return res.type('text/plain; charset=utf-8').send(fs.readFileSync(filePath, 'utf8'));
   });
 });
