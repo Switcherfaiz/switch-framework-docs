@@ -19,6 +19,7 @@ import {
   DocHeading,
   DocSubheading,
   DocSectionHeading,
+  DocSubsectionHeading,
   DocParagraph,
   DocCallout,
   DocListItem,
@@ -44,6 +45,7 @@ registerComponents([
   DocHeading,
   DocSubheading,
   DocSectionHeading,
+  DocSubsectionHeading,
   DocParagraph,
   DocCallout,
   DocListItem,
@@ -58,6 +60,7 @@ import { SwDocsRouterScreen } from './screens/router.js';
 import { SwDocsStateScreen } from './screens/state.js';
 import { SwDocsComponentsScreen } from './screens/components.js';
 import { SwDocsComponentsFlatListScreen } from './screens/components-flatlist.js';
+import { SwDocsComponentsElectronTitleBarScreen } from './screens/components-electron-titlebar.js';
 import { SwDocsThemingScreen } from './screens/theming.js';
 import { SwDocsAnimationsScreen } from './screens/animations.js';
 import { SwDocsSwitchIconsScreen } from './screens/switch-icons.js';
@@ -90,6 +93,7 @@ registerComponents([
   SwDocsSwitchIconsScreen,
   SwDocsComponentsScreen,
   SwDocsComponentsFlatListScreen,
+  SwDocsComponentsElectronTitleBarScreen,
   SwDocsHooksScreen,
   SwDocsServerIntroScreen,
   SwDocsServerWebScreen,
@@ -130,6 +134,7 @@ export class SwTabsLayout extends TabLayout {
     SwDocsSwitchIconsScreen,
     SwDocsComponentsScreen,
     SwDocsComponentsFlatListScreen,
+    SwDocsComponentsElectronTitleBarScreen,
     SwDocsHooksScreen
   ];
 
@@ -343,6 +348,13 @@ export class SwTabsLayout extends TabLayout {
 
           .left-sidebar:not(.mobile-open) {
             display: none;
+          }
+
+          .tab-content-area {
+            grid-column: 1;
+            grid-row: 1;
+            width: 100%;
+            min-width: 0;
           }
 
           .right-sidebar {

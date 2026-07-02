@@ -31,6 +31,7 @@ export async function loadDocContent(host) {
   try {
     const md = await readDoc(`/docs/${page}.md`);
     mount.innerHTML = parse(md);
+    mount.dispatchEvent(new CustomEvent('doc-content-loaded', { bubbles: true, composed: true }));
   } catch {
     mount.innerHTML = '<p class="doc-load-error">Failed to load documentation.</p>';
   } finally {

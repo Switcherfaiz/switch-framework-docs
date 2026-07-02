@@ -24,8 +24,13 @@ function createDocTextComponent(tag, className, styleBlock) {
     }
 
     render() {
-      const { html = '' } = this.getData();
-      return `<div class="${className}">${html}</div>`;
+      const { html = '', id = '' } = this.getData();
+      return `<div class="${className}"${id ? ` id="${id}"` : ''}>${html}</div>`;
+    }
+
+    onMount() {
+      const { id = '' } = this.getData();
+      if (id) this.id = id;
     }
 
     styleSheet() {
@@ -84,6 +89,24 @@ export const DocSectionHeading = createDocTextComponent('sw-doc-section-heading'
     border-radius: 4px;
     font-family: 'Monaco', monospace;
     font-size: 13px;
+  }
+`);
+
+export const DocSubsectionHeading = createDocTextComponent('sw-doc-subsection-heading', 'doc-subsection-heading', `
+  :host { display: block; }
+  .doc-subsection-heading {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--main_text);
+    margin: 22px 0 10px;
+    letter-spacing: -0.01em;
+  }
+  code {
+    background: var(--surface_2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Monaco', monospace;
+    font-size: 12px;
   }
 `);
 
@@ -172,6 +195,9 @@ export class DocLoader extends SwitchComponent {
           align-items: center;
           justify-content: center;
           width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
         }
 
         .doc-loader {
@@ -181,6 +207,9 @@ export class DocLoader extends SwitchComponent {
           justify-content: center;
           gap: 16px;
           padding: 24px;
+          width: 100%;
+          max-width: 100%;
+          text-align: center;
         }
 
         .spinner {

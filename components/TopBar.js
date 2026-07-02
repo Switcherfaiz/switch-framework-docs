@@ -1,17 +1,23 @@
-import { SwitchComponent, updateState, getState } from 'switch-framework';
-import { navigate as swNavigate } from 'switch-framework/router';
+import { SwitchComponent, updateState, createState, getState } from 'switch-framework';
+import { navigate as navigate,getActiveRoute,useRouteChangesSubscriber } from 'switch-framework/router';
 import { navigateDoc, isDocRoute } from '/utils/doc-nav.js';
 import { getTheme, changeTheme } from 'switch-framework/themes';
 
 export class TopBar extends SwitchComponent {
   static tag = 'sw-topbar';
+  //creating and using the route changes state
+  static {createState('activeRoute', null);}
+  static {this.useState('activeRoute')}
 
   onMount() {
     this.bindTopBarEvents();
+    //subscribe to route changes then update the state by getting active route from router
+    useRouteChangesSubscriber(() => updateState('activeRoute', getActiveRoute()));
     this.setupThemeSubscription();
     this.setupGlobalKeys();
     this.updateThemeIcon();
   }
+
 
   bindTopBarEvents() {
     this.listener('a[data-route]', 'click', (e) => {
@@ -20,7 +26,7 @@ export class TopBar extends SwitchComponent {
       e.preventDefault();
       const route = link.getAttribute('data-route');
       if (isDocRoute(route)) navigateDoc(route);
-      else swNavigate(route);
+      else navigate(route);
     });
     this.listener('#theme-toggle', 'click', (e) => {
       e.preventDefault();
@@ -80,7 +86,9 @@ export class TopBar extends SwitchComponent {
 
   render() {
     const navLinks = this.getNavLinks();
-
+    //getting the active route from the state
+    const activeRoute = getState('activeRoute');
+    
     return `
       <header class="topbar">
         <div class="left-section">
@@ -93,7 +101,7 @@ export class TopBar extends SwitchComponent {
           </a>
           <nav class="nav-links">
             ${navLinks.map(({ label, to }) => `
-              <a href="#" data-route="${to}" class="nav-link">${label}</a>
+              <a href="#" data-route="${to}" class="nav-link ${activeRoute === to ? 'active' : ''}">${label}</a>
             `).join('')}
           </nav>
         </div>
@@ -212,7 +220,7 @@ export class TopBar extends SwitchComponent {
           cursor: pointer;
         }
 
-        .nav-link:hover {
+        .nav-link:hover,.nav-link.active {
           color: var(--primary);
         }
 

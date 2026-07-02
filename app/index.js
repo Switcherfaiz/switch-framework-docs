@@ -53,16 +53,14 @@ export class SwIndexScreen extends SwitchComponent {
 
   render() {
     const codeData = {
-      title: 'app/index.js',
+      title: 'components/Counter.js',
       language: 'javascript',
-      code: `// 1. Create state (in layout init or anywhere)
-createState('counter', 0);
-
-// 2. Reactive counter component
-import { SwitchComponent, updateState, getState } from 'switch-framework';
+      preview: 'liveview',
+      code: `import { SwitchComponent, getState, updateState, createState } from 'switch-framework';
 
 export class Counter extends SwitchComponent {
   static tag = 'sw-counter';
+  static { createState('counter', 0); }
   static { this.useState('counter'); }
 
   onMount() {
@@ -77,12 +75,27 @@ export class Counter extends SwitchComponent {
   }
 
   styleSheet() {
-    return \`
-      <style>
-        :host { display: block; width: 100%; font-family: 'Montserrat', sans-serif; }
-        * { box-sizing: border-box; }
-      </style>
-    \`;
+    return \`<style>
+      :host {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 120px;
+        font-family: 'Montserrat', sans-serif;
+      }
+      #inc {
+        padding: 14px 32px;
+        font-size: 18px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        font-weight: 700;
+        font-family: inherit;
+      }
+    </style>\`;
   }
 }`
     };
@@ -114,7 +127,7 @@ export class Counter extends SwitchComponent {
               </h1>
 
               <p class="hero-subtitle">
-                Transform your documentation into a connected knowledge system — one that learns, optimizes, and improves itself intelligently
+                A lightweight web framework for building fast, reactive apps with Web Components — no build step, familiar routing patterns, and state management built in.
               </p>
 
               <div class="hero-actions">
@@ -192,7 +205,7 @@ export class Counter extends SwitchComponent {
                   </aside>
                   <main class="mac-main">
                     <div class="mac-toolbar">
-                      <span class="toolbar-path">app/index.js</span>
+                      <span class="toolbar-path">components/Counter.js</span>
                     </div>
                     <div class="mac-editor">
                       <sw-codeblock data="${encodeData(codeData)}"></sw-codeblock>
@@ -272,7 +285,7 @@ export class Counter extends SwitchComponent {
               <div class="cta-blob cta-blob-2"></div>
               <div class="cta-content">
                 <h2 class="cta-title">Ready to start building?</h2>
-                <p class="cta-subtitle">Join thousands of developers building the future with Switch Framework today.</p>
+                <p class="cta-subtitle">Scaffold a new app with one command, explore the docs, and start building with Switch Framework.</p>
                 <div class="cta-actions">
                   <button id="cta_get_started" class="cta-btn-primary">Open Docs →</button>
                   <button id="cta_read_docs" class="cta-btn-secondary">Read Documentation</button>
@@ -664,6 +677,7 @@ export class Counter extends SwitchComponent {
           z-index: 10;
           width: 100%;
           max-width: 1000px;
+          text-align: left;
         }
 
         .mac-window {
@@ -785,10 +799,12 @@ export class Counter extends SwitchComponent {
           flex: 1;
           padding: 16px;
           overflow: auto;
+          text-align: left;
         }
 
         .mac-editor sw-codeblock {
           --codeblock-radius: 8px;
+          text-align: left;
         }
 
         /* Features Section */

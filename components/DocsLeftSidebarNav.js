@@ -15,7 +15,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       'quick-start': ['docs/introduction', 'docs/tutorial/reactive-button', 'docs/thinking', 'docs/goals'],
       installation: ['docs/cli', 'docs/installation/web', 'docs/installation/desktop'],
       'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations', 'docs/switch-icons'],
-      components: ['docs/components', 'docs/components/flatlist', 'docs/hooks'],
+      components: ['docs/components', 'docs/components/flatlist', 'docs/components/electron-titlebar', 'docs/hooks'],
       backend: ['docs/server/introduction', 'docs/server/web', 'docs/server/desktop']
     };
     const updates = {};
@@ -173,6 +173,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
             children: [
               { label: 'Component Setup', to: 'docs/components' },
               { label: 'Flatlists', to: 'docs/components/flatlist' },
+              { label: 'ElectronTitleBar', to: 'docs/components/electron-titlebar' },
               { label: 'Hooks', to: 'docs/hooks' }
             ]
           }

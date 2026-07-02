@@ -24,12 +24,34 @@ function escapeHtml(text) {
     .replace(/"/g, '&quot;');
 }
 
+function escapeAttr(text) {
+  return String(text || '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;');
+}
+
 function inlineText(text) {
   const src = String(text || '');
   let out = '';
   let i = 0;
 
   while (i < src.length) {
+    if (src.startsWith('[[', i)) {
+      const end = src.indexOf(']]', i + 2);
+      if (end !== -1) {
+        const inner = src.slice(i + 2, end);
+        const pipe = inner.indexOf('|');
+        if (pipe > 0) {
+          const label = inner.slice(0, pipe).trim();
+          const route = inner.slice(pipe + 1).trim();
+          out += `<sw-docs-changelog-link text="${escapeAttr(label)}" route="${escapeAttr(route)}"></sw-docs-changelog-link>`;
+          i = end + 2;
+          continue;
+        }
+      }
+    }
+
     if (src[i] === '`') {
       const end = src.indexOf('`', i + 1);
       if (end === -1) {
@@ -86,8 +108,16 @@ function dataAttr(payload) {
   return encodeData(payload);
 }
 
-function textComponent(tag, html) {
-  return `<${tag} data="${dataAttr({ html })}"></${tag}>`;
+function headingId(text) {
+  return String(text || '')
+    .replace(/<[^>]+>/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function textComponent(tag, html, id) {
+  return `<${tag} data="${dataAttr({ html, id: id || headingId(html) })}"></${tag}>`;
 }
 
 const rules = [
@@ -102,9 +132,14 @@ const rules = [
     render: ({ text }) => textComponent('sw-doc-subheading', inlineText(text)),
   },
   {
-    test:   (line) => /^### /.test(norm(line)),
+    test:   (line) => /^### [^#]/.test(norm(line)),
     token:  (line) => ({ type: 'h3', text: norm(line).slice(4).trim() }),
     render: ({ text }) => textComponent('sw-doc-section-heading', inlineText(text)),
+  },
+  {
+    test:   (line) => /^#### /.test(norm(line)),
+    token:  (line) => ({ type: 'h4', text: norm(line).slice(5).trim() }),
+    render: ({ text }) => textComponent('sw-doc-subsection-heading', inlineText(text)),
   },
   {
     test:      (line) => /^```params-table/.test(fenceLine(line)),

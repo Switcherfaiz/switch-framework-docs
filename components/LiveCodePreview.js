@@ -1,5 +1,6 @@
 import { SwitchComponent, decodeData, getState, updateState } from 'switch-framework';
 import { copyText } from '/utils/clipboard.js';
+import { buildComponentPreviewUrl } from '/utils/livePreview.js';
 
 const CHECK_ICON = '<span class="switch_icon_check copy-check-icon"></span>';
 
@@ -234,14 +235,8 @@ export class LiveCodePreview extends SwitchComponent {
     const logsEl = this.shadowRoot?.querySelector('.preview-logs');
     if (logsEl) logsEl.innerHTML = '';
 
-    // Encode code and set iframe src to preview.html with code in hash
-    const encodedCode = btoa(encodeURIComponent(codeToRun));
-    const base = window.location.origin;
     const iframe = this.shadowRoot?.querySelector('.preview-iframe');
-    if (iframe) {
-      const runId = Date.now();
-      iframe.src = `${base}/preview.html?run=${runId}#${encodedCode}`;
-    }
+    if (iframe) iframe.src = buildComponentPreviewUrl(codeToRun);
   }
 
   render() {

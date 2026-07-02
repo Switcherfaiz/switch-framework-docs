@@ -5,6 +5,7 @@ import { openFullscreenPortal, closeFullscreenPortal } from './fullscreenPortal.
 import { copyText } from '/utils/clipboard.js';
 import { formatHighlighted, langToHljs } from './highlightUtils.js';
 import { ensureCodeAssetsInHead, whenCodeAssetsReady } from './codeFonts.js';
+import { buildComponentPreviewUrl } from '/utils/livePreview.js';
 
 export const CODE_BLOCK_TAG = 'sw-codeblock';
 
@@ -35,10 +36,22 @@ export function getCodeBlockLanguage(block) {
   return String(block?.language || block?.lang || 'text').trim() || 'text';
 }
 
-export function isLiveViewBlock(block) {
-  const preview = String(block?.preview || '').toLowerCase();
+const LIVEVIEW_LANGS = ['javascript', 'js', 'jsx', 'typescript', 'tsx'];
+
+export function isSwitchComponentCode(code) {
+  const src = String(code || '');
+  return /\bextends\s+(SwitchComponent|FlatList)\b/.test(src) && /\bstatic\s+tag\s*=/.test(src);
+}
+
+export function isLiveViewBlock(block, codeOverride) {
   const lang = getCodeBlockLanguage(block).toLowerCase();
-  return preview === 'liveview' && ['javascript', 'js', 'jsx', 'typescript', 'tsx'].includes(lang);
+  if (!LIVEVIEW_LANGS.includes(lang)) return false;
+
+  const preview = String(block?.preview || '').toLowerCase();
+  if (preview === 'liveview') return true;
+
+  const code = codeOverride ?? block?.code ?? block?.content ?? block?.text ?? '';
+  return isSwitchComponentCode(code);
 }
 
 export function getLanguageLabel(lang) {
@@ -65,18 +78,13 @@ export function buildPreviewHtml(lang, code) {
   return `<pre>${escaped}</pre>`;
 }
 
-export function buildComponentPreviewUrl(code) {
-  const encodedCode = btoa(encodeURIComponent(String(code ?? '')));
-  const base = window.location.origin;
-  const runId = Date.now();
-  return `${base}/preview.html?run=${runId}#${encodedCode}`;
-}
+export { buildComponentPreviewUrl } from '/utils/livePreview.js';
 
 export function renderCodeBlockShell(block) {
   const lang = getCodeBlockLanguage(block);
   const label = getLanguageLabel(lang);
   const hljsLang = langToHljs(lang);
-  const runnable = isRunnableLanguage(lang) || isLiveViewBlock(block);
+  const runnable = isRunnableLanguage(lang) || isLiveViewBlock(block, getCodeBlockText(block));
   const title = block?.title ? String(block.title) : '';
 
   return `
@@ -201,7 +209,7 @@ export function createCodeBlockFunctionality(host, hljs) {
     if (!iframe) return;
     persistEditText();
     const code = getText();
-    if (isLiveViewBlock(block)) {
+    if (isLiveViewBlock(block, code)) {
       iframe.removeAttribute('srcdoc');
       iframe.src = buildComponentPreviewUrl(code);
     } else {
@@ -218,7 +226,7 @@ export function createCodeBlockFunctionality(host, hljs) {
     fsPortal?.querySelector('#code-fs-lang-open')?.replaceChildren(document.createTextNode(label));
     const runBtn = host.shadowRoot?.querySelector('#code-run');
     const block = getBlock();
-    const runnable = isRunnableLanguage(lang) || isLiveViewBlock(block);
+    const runnable = isRunnableLanguage(lang) || isLiveViewBlock(block, getText());
     if (runBtn) runBtn.style.display = runnable ? '' : 'none';
     applyHighlight();
     closeCodeLangSheet();
@@ -316,7 +324,7 @@ export function createCodeBlockFunctionality(host, hljs) {
     const lang = getCodeBlockLanguage(block);
     const label = getLanguageLabel(uiLanguage || lang);
     const hljsLang = langToHljs(uiLanguage || lang);
-    const liveView = isLiveViewBlock(block);
+    const liveView = isLiveViewBlock(block, getText());
     const runnable = isRunnableLanguage(lang) || liveView;
 
     closeCodeLangSheet();

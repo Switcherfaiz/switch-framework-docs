@@ -1,25 +1,81 @@
-import { SwitchComponent } from 'switch-framework';
+import { SwitchComponent, decodeData } from 'switch-framework';
 import { useRouteChangesSubscriber } from 'switch-framework/router';
+
+const HEADING_TAGS = [
+  { tag: 'sw-doc-heading', level: 1, inner: '.doc-heading' },
+  { tag: 'sw-doc-subheading', level: 2, inner: '.doc-subheading' },
+  { tag: 'sw-doc-section-heading', level: 3, inner: '.doc-section-heading' },
+  { tag: 'sw-doc-subsection-heading', level: 4, inner: '.doc-subsection-heading' }
+];
 
 export class DocsRightSidebarNav extends SwitchComponent {
   static tag = 'sw-docs-right-sidebar-nav';
 
-  connected() {
-    this._ob = null;
-    this._unsubRoute = useRouteChangesSubscriber(() => {
-      setTimeout(() => this.buildToc(), 50);
-    });
-    setTimeout(() => this.buildToc(), 50);
-    this.shadowRoot.addEventListener('click', (e) => this.handleClick(e));
+  onMount() {
+    this._activeId = '';
+    this._bindTocClicks();
+    this._setupRouteWatch();
+    this._watchDocMount();
+    this.buildToc();
   }
 
-  disconnected() {
-    if (this._ob) this._ob.disconnect();
-    if (this._unsubRoute) this._unsubRoute();
+  onDestroy() {
+    this._unsubRoute?.();
+    this._unsubRoute = null;
+    this._mountOb?.disconnect();
+    this._mountOb = null;
+    this._ob?.disconnect();
+    this._ob = null;
+  }
+
+  _bindTocClicks() {
+    this.listener('a.toc-link[data-id]', 'click', (e) => {
+      e.preventDefault();
+      const link = e.target.closest('a.toc-link[data-id]');
+      const id = link?.getAttribute('data-id');
+      if (!id) return;
+      this._setActiveLink(id);
+      this._scrollToHeading(id);
+    });
+  }
+
+  _setActiveLink(id) {
+    this._activeId = id;
+    this.selectAll('.toc-link').forEach((a) => {
+      a.classList.toggle('active', a.getAttribute('data-id') === id);
+    });
+  }
+
+  _scrollToHeading(id) {
+    const container = this.getScrollContainer();
+    const target = this._findHeadingById(id);
+    if (!container || !target) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const top = container.scrollTop + (targetRect.top - containerRect.top) - 88;
+
+    container.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+
+  _setupRouteWatch() {
+    if (this._routeWatchBound) return;
+    this._routeWatchBound = true;
+    this._unsubRoute = useRouteChangesSubscriber(() => {
+      this._mountOb?.disconnect();
+      this._mountOb = null;
+      this._activeId = '';
+      setTimeout(() => {
+        this._watchDocMount();
+        this.buildToc();
+      }, 50);
+    });
   }
 
   getScrollContainer() {
-    const content = this.parentElement?.parentElement;
+    const layoutHost = this.getRootNode()?.host;
+    const content = layoutHost?.shadowRoot?.querySelector('.content')
+      ?? this.parentElement?.parentElement;
     return content?.querySelector('.tabcontainer') ?? null;
   }
 
@@ -28,77 +84,138 @@ export class DocsRightSidebarNav extends SwitchComponent {
     return container?.firstElementChild ?? null;
   }
 
-  getHeadings() {
+  getDocMount() {
     const screen = this.getScreenElement();
-    if (!screen?.shadowRoot) return [];
-    const section = screen.shadowRoot.querySelector('.doc-section');
-    if (!section) return [];
-    const nodes = section.querySelectorAll('h1[id], h2[id], h3[id]');
-    return Array.from(nodes).map((el) => ({
-      id: el.id,
-      text: el.textContent?.trim() || el.id,
-      level: parseInt(el.tagName.charAt(1), 10)
-    }));
+    return screen?.shadowRoot?.querySelector('#doc-mount') ?? null;
+  }
+
+  _watchDocMount() {
+    const mount = this.getDocMount();
+    if (!mount || this._mountOb) return;
+
+    this._mountOb = new MutationObserver(() => {
+      clearTimeout(this._tocTimer);
+      this._tocTimer = setTimeout(() => this.buildToc(), 120);
+    });
+    this._mountOb.observe(mount, { childList: true, subtree: true });
+  }
+
+  _findHeadingById(id) {
+    const mount = this.getDocMount();
+    if (!mount || !id) return null;
+
+    for (const { tag } of HEADING_TAGS) {
+      for (const el of mount.querySelectorAll(tag)) {
+        if (this._headingId(el) === id) return el;
+      }
+    }
+    return mount.querySelector(`#${CSS.escape(id)}`);
+  }
+
+  _headingId(el) {
+    if (el.id) return el.id;
+    const raw = el.getAttribute('data');
+    if (!raw) return '';
+    try {
+      return decodeData(raw)?.id || '';
+    } catch {
+      return '';
+    }
+  }
+
+  _headingText(el, innerSelector) {
+    const inner = el.shadowRoot?.querySelector(innerSelector);
+    if (inner?.textContent?.trim()) return inner.textContent.trim();
+
+    const raw = el.getAttribute('data');
+    if (raw) {
+      try {
+        const html = decodeData(raw)?.html || '';
+        return html.replace(/<[^>]+>/g, '').trim();
+      } catch {
+        /* ignore */
+      }
+    }
+    return this._headingId(el);
+  }
+
+  getHeadings() {
+    const mount = this.getDocMount();
+    if (!mount) return [];
+
+    const headings = [];
+    for (const { tag, level, inner } of HEADING_TAGS) {
+      mount.querySelectorAll(tag).forEach((el) => {
+        const id = this._headingId(el);
+        if (!id) return;
+        headings.push({
+          id,
+          text: this._headingText(el, inner),
+          level,
+          el
+        });
+      });
+    }
+
+    return headings.sort((a, b) => {
+      const pos = a.el.compareDocumentPosition(b.el);
+      if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+      if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+      return 0;
+    });
   }
 
   buildToc() {
     const headings = this.getHeadings();
-    const list = this.shadowRoot.querySelector('.toc-list');
+    const list = this.select('.toc-list');
     if (!list) return;
 
     list.innerHTML = headings.length
       ? headings
           .map(
             (h) =>
-              `<li><a href="#${h.id}" class="toc-link" data-id="${h.id}">${h.text}</a></li>`
+              `<li class="toc-level-${h.level}"><a href="#${h.id}" class="toc-link" data-id="${h.id}">${this._escapeHtml(h.text)}</a></li>`
           )
           .join('')
       : '<li class="toc-empty">No sections</li>';
 
+    if (this._activeId) this._setActiveLink(this._activeId);
     this.setupObserver();
   }
 
-  setupObserver() {
-    if (this._ob) this._ob.disconnect();
-    const container = this.getScrollContainer();
-    const screen = this.getScreenElement();
-    if (!container || !screen?.shadowRoot) return;
+  _escapeHtml(text) {
+    return String(text || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
 
-    const headings = screen.shadowRoot.querySelectorAll(
-      '.doc-section h1[id], .doc-section h2[id], .doc-section h3[id]'
-    );
-    if (!headings.length) return;
+  setupObserver() {
+    this._ob?.disconnect();
+    const container = this.getScrollContainer();
+    const headings = this.getHeadings();
+    if (!container || !headings.length) return;
 
     this._ob = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting);
-        if (visible.length === 0) return;
+        if (!visible.length) return;
         const byTop = visible.sort(
           (a, b) => a.boundingClientRect.top - b.boundingClientRect.top
         );
-        const id = byTop[0].target.id;
-        this.shadowRoot.querySelectorAll('.toc-link').forEach((a) => {
-          a.classList.toggle('active', a.getAttribute('data-id') === id);
-        });
+        this._setActiveLink(byTop[0].target.id || this._headingId(byTop[0].target));
       },
       {
         root: container,
-        rootMargin: '-80px 0px -70% 0px',
-        threshold: 0
+        rootMargin: '-96px 0px -65% 0px',
+        threshold: [0, 0.1, 0.5, 1]
       }
     );
 
-    headings.forEach((el) => this._ob.observe(el));
-  }
-
-  handleClick(e) {
-    const link = e.target?.closest?.('a.toc-link[data-id]');
-    if (!link) return;
-    e.preventDefault();
-    const id = link.getAttribute('data-id');
-    const screen = this.getScreenElement();
-    const target = screen?.shadowRoot?.getElementById(id);
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    headings.forEach(({ el }) => {
+      if (el.id) this._ob.observe(el);
+    });
   }
 
   render() {
@@ -172,6 +289,10 @@ export class DocsRightSidebarNav extends SwitchComponent {
           padding: 0;
           margin: 0;
         }
+
+        .toc-level-2 .toc-link { padding-left: 12px; }
+        .toc-level-3 .toc-link { padding-left: 20px; font-size: 12px; }
+        .toc-level-4 .toc-link { padding-left: 28px; font-size: 12px; }
 
         .toc-link {
           display: block;
