@@ -42,7 +42,8 @@ export class DocsParamsTable extends SwitchComponent {
               const cells = Array.isArray(row) ? row : headers.map((_, i) => row[headers[i]] ?? row[i] ?? '');
               return `<tr>${cells.map((cell, i) => {
                 const content = typeof cell === 'string' ? cell : String(cell ?? '');
-                const html = htmlSet.has(i) ? content : this.escapeHtml(content);
+                const hasHtmlMarkup = /<[a-z][\s\S]*>/i.test(content);
+                const html = htmlSet.has(i) || hasHtmlMarkup ? content : this.escapeHtml(content);
                 return `<td>${html}</td>`;
               }).join('')}</tr>`;
             })

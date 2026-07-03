@@ -2,7 +2,7 @@
 
 Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
 
-## v0.2.6 – July 2, 2026
+## v0.2.6 – July 3, 2026
 
 **Features**
 
@@ -10,21 +10,27 @@ Release notes and version history for Switch Framework. Each version includes ne
 - FlatList imperative scroll APIs via `useRef`: `scrollToIndex`, `scrollToEnd`, `scrollToOffset`, and `scrollBy` — ideal for carousels and album rows
 - FlatList styling scope alias — use `flatlist { }` in extended `styleSheet()` to target scroll area, scrollbar, and inner layout without calling `super.styleSheet()`
 - [[ElectronTitleBar|docs/components/electron-titlebar]] – desktop window chrome for Electron apps with draggable region and minimize, maximize/restore, and close controls using Switch icons
-- Electron title bar auto-mounts in `sw-app-shell` for both tabs and stack layouts; visibility follows the active layout via `installElectronTitleBarRouteSync()`
-- Electron shell helpers (`applyElectronShellLayout`, `syncElectronTitleBarHost`, `getWindowControls`) and `titlebar` styling scope alias for custom chrome
+- **React-style `useEffect`** – call `useEffect(callback, deps)` inside `effects()` (not `onMount`). Supports `[]` run-once, dependency arrays, cleanup returns, and **multiple `useEffect` calls** per component
+- **`useScreenFocus`** router helper – fetch or refresh when a screen becomes active without putting loading/data keys in the effect deps (avoids infinite re-renders)
+- Electron title bar **`${tag}-visible`** state — show or hide the bar from anywhere with `updateState`, or via ref methods `show()`, `hide()`, `setVisible()`, and `toggleVisible()`
+- CLI docs note which **Electron version matches your installed Node.js** when building desktop apps
 
 **Improvements**
 
 - `SwitchComponent` now merges `styleSheet()` rules from the full inheritance chain automatically — extended FlatList and ElectronTitleBar classes only add their own rules
 - State manager reports clearer duplicate `createState` errors with owner hints from the call stack
 - Stack and tab shells reserve title bar height in Electron via `--electron-titlebar-h` so content no longer sits under window controls
-- FlatList and ElectronTitleBar docs with live preview examples; code blocks auto-detect Switch components and mount them on Run
-- CLI templates (web and Electron) updated with Montserrat fonts, themed splash screen, and improved server bootstrap
+- **Single title bar** in `sw-app-shell` — one default bar at the top for tabs and stack layouts (no duplicate chrome)
+- `static useState` subscriptions run before the first render so loader/fetch UIs update reliably
+- `useEffect` deps support router keys like `activeRoute` from `globalStates`
+- FlatList and ElectronTitleBar docs with live preview examples; [[Hooks|docs/hooks]] docs expanded with `effects()`, fetch examples, and multiple `useEffect` usage
+- CLI templates pin **`switch-framework@^0.2.6`** (`switch-framework-backend` unchanged at `^0.2.0`)
 
 **Bug Fixes**
 
 - Fixed state subscription rerenders — components now update reliably when watched keys change
-- Fixed Electron title bar host switching when navigating between tabs and stack routes
+- Fixed duplicate Electron title bars appearing at the same time
+- Fixed title bar `hidden` / `display` not fully collapsing when visibility state is `false`
 - Fixed docs search (`Ctrl+K`) state not updating correctly after keyboard shortcut
 - Fixed mobile docs layout — main content and loading spinner no longer offset to the right when sidebars collapse
 - Fixed live code preview shell — import map, icon stylesheet, and component mounting for FlatList and other Switch component examples

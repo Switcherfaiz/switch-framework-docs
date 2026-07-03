@@ -2,7 +2,17 @@
 
 **FlatList** is a performant list component inspired by React Native's FlatList. It provides efficient rendering of scrollable lists with built-in support for infinite scrolling, grid layouts, pull-to-refresh, and state-driven updates.
 
-> **Key Concept:** FlatList extends `SwitchComponent` and uses **states** (re-rendering) and **refs** (DOM manipulation without re-render) for optimal performance.
+> **Key Concept:** FlatList extends `SwitchComponent`. Base list setup runs **automatically** — no `super.onMount()`. Use **`static { this.useState('key'); }`**, read **`getState('key')`** in `render()` / `renderItem()`, and call scroll APIs via **`useRef(this)`** in `onMount()` or **action states** from anywhere.
+
+### Default states
+
+For `static tag = 'sw-user-list'`, `registerStates` (via `registerComponents`) creates:
+
+```params-table
+{"headers":["State key","Initial","Purpose"],"htmlColumns":[0,1,2],"rows":[["<code>sw-user-list-data</code>","<code>[]</code>","List items — set <code>static dataState</code> to this key"],["<code>sw-user-list-loading</code>","<code>false</code>","Loading flag"],["<code>sw-user-list-refreshing</code>","<code>false</code>","Pull-to-refresh flag"],["<code>sw-user-list-error</code>","<code>null</code>","Error object/message"],["<code>sw-user-list-action-scroll-end</code>","<code>0</code>","Bump to <code>scrollToEnd()</code>"],["<code>sw-user-list-action-scroll-index</code>","<code>null</code>","Set <code>{ index, animated?, viewPosition? }</code> to scroll"],["<code>sw-user-list-action-flash-scroll</code>","<code>0</code>","Bump to flash scroll indicators"]]}
+```
+
+Subscribe with `static { this.useState('sw-user-list-data'); }` for keys that should re-render the list.
 
 ### Basic Usage
 
@@ -60,8 +70,7 @@ export class UserList extends FlatList {
   }
 
   onMount() {
-    super.onMount();
-    this.listener('.user-card', 'click', (e) => {
+('.user-card', 'click', (e) => {
       const card = e.target.closest('.user-card');
       const index = card?.dataset.index;
       const data = getState('sw-user-list-data');
@@ -387,8 +396,7 @@ export class ToggleLayoutList extends FlatList {
   }
 
   onMount() {
-    super.onMount();
-    this.listener('[data-action="flip"]', 'click', () => {
+('[data-action="flip"]', 'click', () => {
       updateState('sw-toggle-layout-horizontal', (v) => !v);
     });
   }
@@ -499,7 +507,6 @@ export class EffectLayoutList extends FlatList {
   }
 
   onMount() {
-    super.onMount();
 
     this.useEffect(null, ['sw-effect-layout-data', 'sw-effect-layout-horizontal']);
 
@@ -568,7 +575,7 @@ export class EffectLayoutList extends FlatList {
 Full-bleed photo slides with scroll snap. Center the host; constrain scroll area with `flatlist` width and max-height.
 
 ```javascript title:components/ImageCarousel.js preview:liveview
-import { FlatList, createState } from 'switch-framework';
+import { FlatList, createState, useRef } from 'switch-framework';
 
 export class ImageCarousel extends FlatList {
   static tag = 'sw-image-carousel';
@@ -588,7 +595,6 @@ export class ImageCarousel extends FlatList {
   }
 
   static { this.useState('sw-image-carousel-data'); }
-  static { this.useRef('flatlistRef'); }
 
   renderItem({ item }) {
     return `
@@ -619,8 +625,7 @@ export class ImageCarousel extends FlatList {
   }
 
   onMount() {
-    super.onMount();
-    const ref = this.constructor.flatlistRef;
+    const ref = useRef(this);
     this.listener('.carousel-nav.prev', 'click', () => {
       ref.scrollBy({ x: -(this._containerRef?.clientWidth ?? 320), animated: true });
     });
@@ -723,7 +728,7 @@ export class ImageCarousel extends FlatList {
 Horizontal album cards with left/right nav buttons using **switch icons**. Pexels cover art, dark theme, edge fade.
 
 ```javascript title:components/AlbumCarousel.js preview:liveview
-import { FlatList, createState } from 'switch-framework';
+import { FlatList, createState, useRef } from 'switch-framework';
 
 export class AlbumCarousel extends FlatList {
   static tag = 'sw-album-carousel';
@@ -745,7 +750,6 @@ export class AlbumCarousel extends FlatList {
   }
 
   static { this.useState('sw-album-carousel-data'); }
-  static { this.useRef('flatlistRef'); }
 
   renderHeader() {
     return `
@@ -789,8 +793,7 @@ export class AlbumCarousel extends FlatList {
   }
 
   onMount() {
-    super.onMount();
-    const ref = this.constructor.flatlistRef;
+    const ref = useRef(this);
     const step = () => Math.round((this._containerRef?.clientWidth ?? 320) * 0.72);
 
     this.listener('.carousel-nav.prev', 'click', () => {
@@ -1325,7 +1328,6 @@ export class InfiniteFeed extends FlatList {
   }
 
   onMount() {
-    super.onMount();
     if ((getState('sw-infinite-feed-data') ?? []).length === 0) this._loadMore();
   }
 
@@ -1464,36 +1466,37 @@ Alternatively, subscribe in `onMount` with `this.useEffect(null, ['my-list-data'
 
 ### useRef — imperative scroll control
 
-Use **`useRef`** to call FlatList scroll methods from `onMount`, listeners, or effects — similar to React Native refs.
-
-**Static ref** (class-level, bound to the list instance on mount):
+Call **`useRef(this)`** inside `onMount` (or listeners) — same pattern as ElectronTitleBar:
 
 ```javascript
-static { this.useRef('flatlistRef'); }
+import { FlatList, useRef } from 'switch-framework';
 
 onMount() {
-  super.onMount();
-  this.constructor.flatlistRef.scrollToIndex({ index: 2, animated: true, viewPosition: 0 });
-}
-```
-
-**Instance ref** inside methods:
-
-```javascript
-onMount() {
-  super.onMount();
   const listRef = useRef(this);
+  listRef.scrollToIndex({ index: 2, animated: true, viewPosition: 0 });
   listRef.scrollToEnd({ animated: true });
 }
 ```
 
+### Scroll action states
+
+Trigger scroll without a ref — bump or set action states from anywhere:
+
+```javascript
+import { updateState } from 'switch-framework';
+
+updateState('sw-user-list-action-scroll-end', (n) => (n ?? 0) + 1);
+updateState('sw-user-list-action-scroll-index', { index: 3, animated: true, viewPosition: 0.5 });
+updateState('sw-user-list-action-flash-scroll', (n) => (n ?? 0) + 1);
+```
+
 ```params-table
-{"headers":["Method","Parameters","Description"],"htmlColumns":[1,1],"rows":[["<code>scrollToIndex</code>","<code>{ index, animated?, viewOffset?, viewPosition? }</code>","Scroll to item index. <code>viewPosition</code>: 0 = start, 0.5 = center, 1 = end of viewport."],["<code>scrollToEnd</code>","<code>{ animated? }</code>","Scroll to the last item (bottom or far right)."],["<code>scrollToOffset</code>","<code>{ offset, animated? }</code>","Scroll to exact pixel offset along the scroll axis."],["<code>scrollBy</code>","<code>{ x?, y?, animated? }</code>","Relative scroll — e.g. carousel nav: <code>scrollBy({ x: 200, animated: true })</code>."],["<code>flashScrollIndicators</code>","none","Briefly flash scroll indicators."]]}
+{"headers":["Ref method","Parameters","Description"],"htmlColumns":[0,1,2],"rows":[["<code>scrollToIndex</code>","<code>{ index, animated?, viewOffset?, viewPosition? }</code>","Scroll to item index"],["<code>scrollToEnd</code>","<code>{ animated? }</code>","Scroll to last item"],["<code>scrollToOffset</code>","<code>{ offset, animated? }</code>","Scroll to pixel offset"],["<code>scrollBy</code>","<code>{ x?, y?, animated? }</code>","Relative scroll by pixels"],["<code>flashScrollIndicators</code>","none","Briefly flash scrollbars"]]}
 ```
 
 ### Public API Methods
 
-These methods are also available directly on the FlatList instance (and via `useRef` handles above):
+These methods are available on the list instance and via `useRef(this)`:
 
 - `scrollToIndex({ index, animated, viewOffset, viewPosition })` - Scroll to specific item index.
 - `scrollToEnd({ animated })` - Scroll to bottom/end of list.
@@ -1504,5 +1507,6 @@ These methods are also available directly on the FlatList instance (and via `use
 
 ### Lifecycle
 
-- `onMount()` - Call `super.onMount()` first, then add listeners via `this.listener()`.
-- `onDestroy()` - Cleanup registered automatically. Use `this.addOnDestroy(fn)` for custom cleanup.
+- **Base setup** — automatic (DOM bind, scroll listeners, state subscriptions, action watchers).
+- **Your `onMount`** — listeners only; use `useRef(this)`, no `super.onMount()`.
+- **Re-render** — `static { this.useState('your-data-key'); }` when list data or config changes.
