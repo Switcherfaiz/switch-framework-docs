@@ -75,6 +75,97 @@ export class MyScreen extends SwitchComponent {
 }
 ```
 
+### Props with createProps and getProps
+
+Pass props to a child component by encoding them into its `data` attribute with `createProps(props)`. The child reads them with `this.getProps()` – the framework handles decoding and caching internally. Props must be JSON-safe: plain values, arrays, objects, and state-key strings. For the full guide including the `createProps` API reference and callback patterns, see [[Props|docs/data-flow/props]].
+
+```javascript title:Parent passing props
+import { SwitchComponent, createState, createProps, getState } from 'switch-framework';
+
+export class SettingsPage extends SwitchComponent {
+  static tag = 'sw-settings-page';
+
+  static {
+    createState('board-value', 'Home decor');
+    createState('board-on-change', null);
+  }
+
+  render() {
+    const props = createProps({
+      label: 'Default board',
+      options: [
+        { label: 'Home decor', value: 'Home decor' },
+        { label: 'Travel', value: 'Travel' }
+      ],
+      valueState: 'board-value',
+      onChangeState: 'board-on-change'
+    });
+
+    return \`<sw-dropdown data="\${props}"></sw-dropdown>\`;
+  }
+}
+```
+
+```javascript title:Child reading props
+import { SwitchComponent, getState, updateState, useEffect } from 'switch-framework';
+
+export class Dropdown extends SwitchComponent {
+  static tag = 'sw-dropdown';
+
+  render() {
+    const { label = 'Select', options = [], valueState } = this.getProps();
+    const selected = getState(valueState);
+    return \`...\`;
+  }
+
+  onMount() {
+    const { valueState, onChangeState } = this.getProps();
+    useEffect(null, [valueState]);
+
+    this.listener('#dropdown', 'change', (e) => {
+      updateState(valueState, e.target.value);
+
+      // Resolve the callback at event time so the parent can replace it later
+      const onChange = getState(onChangeState);
+      if (typeof onChange === 'function') onChange(e.target.value);
+    });
+  }
+}
+```
+
+**Callbacks through state keys.** Functions cannot be JSON-encoded, so never put them in props – `createProps` warns and drops them. Instead the parent stores the callback in a state and passes the state-key string. Assign a callback with an updater (the outer arrow is the updater, the inner arrow is the stored callback):
+
+```javascript title:Storing a callback in state
+updateState('board-on-change', () => (value) => {
+  console.log('Child selected:', value);
+});
+```
+
+**Props reactivity.** Every `SwitchComponent` observes its `data` attribute – when the parent renders the child with different props, the child re-renders automatically. The framework never removes or modifies the attribute, so the DOM always shows the props each instance received.
+
+**Rules for reusable components:**
+
+- Props carry JSON-safe values and state-key strings, never raw functions
+- The parent creates all required states before rendering the child
+- The child resolves callback states with `getState(key)` at action time, not at mount time
+- Give each component instance uniquely namespaced state keys (e.g. `billing-country`, `shipping-country`)
+- Document every accepted prop and its state contract so others can reuse your component
+
+### Registering components
+
+Components self-register at the bottom of their own file with `registerComponent(Cls)` – it needs a `static tag` and safely skips tags that are already defined. Screens that use a component just import its file, so layouts never need long registration lists. `registerComponents([...])` still works for registering several classes at once.
+
+```javascript title:Self-registering component
+import { SwitchComponent, registerComponent } from 'switch-framework';
+
+export class MyBadge extends SwitchComponent {
+  static tag = 'sw-my-badge';
+  render() { return \`<span>New</span>\`; }
+}
+
+registerComponent(MyBadge);
+```
+
 ### Not Found Screen
 
 If the framework finds a `+not-found.js` file, it expects a component with `path: '/+not-found'`. That screen is used instead of the framework's default not-found. The router auto-detects it by path – add it to `stackScreens` in your layout.

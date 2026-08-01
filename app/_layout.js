@@ -5,6 +5,7 @@ import { DocsSearch } from '/components/DocsSearch.js';
 import { IconsBottomSheet } from '/components/IconsBottomSheet.js';
 
 registerComponents([SwStarterSplashScreen, SwTabBar, DocsSearch, IconsBottomSheet]);
+
 import { SwIndexScreen } from './index.js';
 import NotFoundScreen from './+not-found.js';
 import { SwChangelogsScreen } from './changelogs.js';

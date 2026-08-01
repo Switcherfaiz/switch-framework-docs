@@ -15,6 +15,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       'quick-start': ['docs/introduction', 'docs/tutorial/reactive-button', 'docs/thinking', 'docs/goals'],
       installation: ['docs/cli', 'docs/installation/web', 'docs/installation/desktop'],
       'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations', 'docs/switch-icons'],
+      'data-flow': ['docs/data-flow/props'],
       components: ['docs/components', 'docs/components/flatlist', 'docs/components/electron-titlebar', 'docs/hooks'],
       backend: ['docs/server/introduction', 'docs/server/web', 'docs/server/desktop']
     };
@@ -159,6 +160,14 @@ export class DocsLeftSidebarNav extends SwitchComponent {
               { label: 'Theming', to: 'docs/theming' },
               { label: 'Animations', to: 'docs/animations' },
               { label: 'Switch Icons', to: 'docs/switch-icons' }
+            ]
+          },
+          {
+            label: 'Data Flow',
+            expandable: true,
+            key: 'data-flow',
+            children: [
+              { label: 'Props', to: 'docs/data-flow/props' }
             ]
           }
         ]

@@ -71,6 +71,7 @@ import { SwDocsFolderStructureScreen } from './screens/folder-structure.js';
 import { SwDocsLayoutsScreen } from './screens/layouts.js';
 import { SwDocsInstallationDesktopScreen } from './screens/installation/desktop.js';
 import { SwDocsHooksScreen } from './screens/hooks.js';
+import { SwDocsDataFlowPropsScreen } from './screens/data-flow/props.js';
 import { SwDocsServerIntroScreen } from './screens/server/introduction.js';
 import { SwDocsServerWebScreen } from './screens/server/web.js';
 import { SwDocsServerDesktopScreen } from './screens/server/desktop.js';
@@ -95,6 +96,7 @@ registerComponents([
   SwDocsComponentsFlatListScreen,
   SwDocsComponentsElectronTitleBarScreen,
   SwDocsHooksScreen,
+  SwDocsDataFlowPropsScreen,
   SwDocsServerIntroScreen,
   SwDocsServerWebScreen,
   SwDocsServerDesktopScreen,
@@ -135,7 +137,8 @@ export class SwTabsLayout extends TabLayout {
     SwDocsComponentsScreen,
     SwDocsComponentsFlatListScreen,
     SwDocsComponentsElectronTitleBarScreen,
-    SwDocsHooksScreen
+    SwDocsHooksScreen,
+    SwDocsDataFlowPropsScreen
   ];
 
   onMount() {

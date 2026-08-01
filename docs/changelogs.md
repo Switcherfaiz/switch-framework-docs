@@ -2,6 +2,31 @@
 
 Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
 
+## v0.2.7 – August 1, 2026
+
+**Features**
+
+- [[Props|docs/data-flow/props]] management: `createProps(props)` encodes JSON-safe props for a child component's `data` attribute; the child reads them with `this.getProps()` — no manual `encodeData`/`decodeData` or `getAttribute` calls
+- `SwitchComponent.getProps()` – built-in instance method that decodes the `data` attribute with per-attribute-value caching, so calling it in `render()`, `onMount()`, and event handlers costs nothing extra
+- Props reactivity built into the base class – every `SwitchComponent` observes its `data` attribute and re-renders automatically when the parent replaces the encoded props (the attribute is never removed or modified by the framework)
+- State-key props pattern for reusable [[Components|docs/components]] – pass parent-created state keys inside props (`valueState`, `onChangeState`, action states); the child resolves callbacks with `getState(key)` at event time, so parents can replace callbacks anytime
+- Auto-boot by convention – when a page contains `<sw-app-initial>` and `/app/_layout.js` exports a `StackLayout` subclass (with no default export), the framework starts the app by itself: no `startApp()`, `initTheme()`, or `getAppLayout()` in user code, and `index.html` can point its module script directly at `/app/_layout.js`
+- `StackLayout.startApp(registers)` static – boots the whole app from the layout class (theme init, self-registration of layout, tabs layout and all screens, then start)
+- `registerComponent(Cls)` for component-level self-registration – call it at the bottom of the component's own file (requires `static tag`); screens that use a component simply import its file, keeping layout registration pools empty
+
+**Improvements**
+
+- `createProps` warns in the console when a prop value is a function – JSON encoding drops functions, so store callbacks in a state (`createState`/`updateState`) and pass the state-key string instead
+- `hasAppStarted()` guard – manual `startApp()` boots and auto-boot never run twice; apps exporting a default layout config keep full manual control and are never auto-started
+- Layouts already self-register through `getAppLayout()` (stack layout, tabs layout, and every screen) – combined with `registerComponent`, apps need no central registration lists at all
+
+**Deprecations**
+
+- `export default MyLayout.getAppLayout()` + manual `startApp(layout)` boot – still fully supported for apps that need custom boot order (like loading assets before start), but superseded by auto-boot for standard apps
+- Manual `if (!customElements.get(tag)) customElements.define(tag, Cls)` guards in component files – use `registerComponent(Cls)` with a `static tag` instead
+- Reading props manually with `decodeData(this.getAttribute('data'))` inside components – use `this.getProps()`
+- Duplicating `static observedAttributes = ['data']` + `attributeChangedCallback` in every component for props reactivity – the `SwitchComponent` base class now handles it
+
 ## v0.2.6 – July 2, 2026
 
 **Features**
