@@ -1,11 +1,10 @@
-import { SwitchComponent } from '/switch-framework/index.js';
+﻿import { SwitchComponent } from '/switch-framework/index.js';
 
 export class SwAboutScreen extends SwitchComponent {
   static screenName = 'about';
   static path = '/about';
   static title = 'About';
   static tag = 'sw-about-screen';
-  static layout = 'stack';
 
   render() {
     return `

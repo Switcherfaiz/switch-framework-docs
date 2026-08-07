@@ -1,4 +1,4 @@
-import { SwitchComponent } from 'switch-framework';
+﻿import { SwitchComponent } from 'switch-framework';
 import { loadDocContent, renderDocShell, docPageFromScreenName } from '/utils/doc-loader.js';
 import { DOC_STYLES } from '/utils/doc-styles.js';
 
@@ -7,7 +7,6 @@ export class SwDocsComponentsScreen extends SwitchComponent {
   static path = '/docs/components';
   static title = 'Components';
   static tag = 'sw-docs-components-screen';
-  static layout = 'tabs';
 
   onMount() {
     this.loadContent();

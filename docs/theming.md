@@ -30,9 +30,11 @@ body[data-theme="dark"] {
 
 ### Initialize on app start
 
-Call `initTheme()` before `startApp` so the app loads with the correct theme. It checks `localStorage` first; if no stored theme, it uses the system preference.
+`StackLayout.startApp()` (called automatically by the framework) runs `initTheme()` for you. Theme is applied from `localStorage` first, then system preference.
 
-```javascript title:index.js
+For custom entry setups that call `startApp()` manually, call `initTheme()` first:
+
+```javascript title:Custom boot only
 import { startApp } from 'switch-framework';
 import { initTheme } from 'switch-framework/themes';
 
@@ -56,5 +58,5 @@ changeTheme(getTheme() === 'dark' ? 'light' : 'dark');
 - `getSystemTheme()` – returns `'dark'` or `'light'` from `prefers-color-scheme`
 - `getTheme()` – returns current theme (localStorage first, else system)
 - `changeTheme('dark' | 'light')` – sets theme, updates `body[data-theme]`, saves to localStorage, dispatches `theme:change`
-- `initTheme()` – call before startApp; applies stored or system theme
+- `initTheme()` – applies stored or system theme (auto-called by `StackLayout.startApp()`)
 - `useThemesChangesSubscriber(callback)` – subscribe to theme changes; callback receives current theme; returns unsubscribe

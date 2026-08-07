@@ -1,4 +1,4 @@
-import { SwitchComponent, registerComponents } from 'switch-framework';
+﻿import { SwitchComponent, registerComponents } from 'switch-framework';
 import { loadDocContent, renderDocShell } from '/utils/doc-loader.js';
 import { DOC_STYLES } from '/utils/doc-styles.js';
 import { DocsChangelogLink } from '/components/DocsChangelogLink.js';
@@ -58,7 +58,6 @@ export class SwChangelogsScreen extends SwitchComponent {
   static path = '/changelogs';
   static title = 'Changelogs';
   static tag = 'sw-changelogs-screen';
-  static layout = 'stack';
 
   onMount() {
     this.loadContent();

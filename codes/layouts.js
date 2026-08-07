@@ -16,9 +16,7 @@ export class SwStackLayout extends StackLayout {
     await new Promise((r) => setTimeout(r, 2000));
     return { splash: 'sw-splash', initialRoute: 'index' };
   }
-}
-
-export default SwStackLayout.getAppLayout();`
+}`
 };
 
 export const layoutsStackAdvancedCode = {
@@ -100,9 +98,7 @@ export class SwStackLayout extends StackLayout {
     await new Promise((r) => setTimeout(r, 1500));
     return { splash: 'sw-splash' };
   }
-}
-
-export default SwStackLayout.getAppLayout();`
+}`
 };
 
 export const layoutsStackPopupsCode = {

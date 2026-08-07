@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from 'switch-framework';
+﻿import { SwitchComponent, encodeData } from 'switch-framework';
 import { navigate } from 'switch-framework/router';
 import { copyText } from '/utils/clipboard.js';
 
@@ -7,7 +7,6 @@ export class SwIndexScreen extends SwitchComponent {
   static path = '/';
   static title = 'Welcome';
   static tag = 'sw-index-screen';
-  static layout = 'stack';
 
   onMount() {
     this.bindEvents();
@@ -127,7 +126,7 @@ export class Counter extends SwitchComponent {
               </h1>
 
               <p class="hero-subtitle">
-                A lightweight web framework for building fast, reactive apps with Web Components — no build step, familiar routing patterns, and state management built in.
+                A lightweight web framework for building fast, reactive apps with Web Components â€” no build step, familiar routing patterns, and state management built in.
               </p>
 
               <div class="hero-actions">
@@ -142,7 +141,7 @@ export class Counter extends SwitchComponent {
 
               <div class="command-line">
                 <div class="command-prompt">
-                  <span class="prompt-symbol">❯</span>
+                  <span class="prompt-symbol">â¯</span>
                 </div>
                 <code class="command-text">npx create-switch-framework-app my-app</code>
                 <button class="copy-btn command-copy-btn" aria-label="Copy to clipboard">
@@ -163,7 +162,7 @@ export class Counter extends SwitchComponent {
                     <span class="dot yellow"></span>
                     <span class="dot green"></span>
                   </div>
-                  <span class="mac-title">my-app — Switch Framework</span>
+                  <span class="mac-title">my-app â€” Switch Framework</span>
                 </div>
                 <div class="mac-content">
                   <aside class="mac-sidebar">
@@ -171,7 +170,7 @@ export class Counter extends SwitchComponent {
                       <span class="sidebar-title">Favorites</span>
                     </div>
                     <div class="sidebar-item active">
-                      <span class="folder-icon">📁</span>
+                      <span class="folder-icon">ðŸ“</span>
                       <span>my-app</span>
                     </div>
                     <div class="sidebar-divider"></div>
@@ -179,27 +178,27 @@ export class Counter extends SwitchComponent {
                       <span class="sidebar-title">Project</span>
                     </div>
                     <div class="sidebar-item">
-                      <span class="folder-icon">📂</span>
+                      <span class="folder-icon">ðŸ“‚</span>
                       <span>app</span>
                     </div>
                     <div class="sidebar-item indent">
-                      <span class="file-icon">📄</span>
+                      <span class="file-icon">ðŸ“„</span>
                       <span>_layout.js</span>
                     </div>
                     <div class="sidebar-item indent">
-                      <span class="file-icon">📄</span>
+                      <span class="file-icon">ðŸ“„</span>
                       <span>index.js</span>
                     </div>
                     <div class="sidebar-item">
-                      <span class="folder-icon">📂</span>
+                      <span class="folder-icon">ðŸ“‚</span>
                       <span>components</span>
                     </div>
                     <div class="sidebar-item">
-                      <span class="folder-icon">📂</span>
+                      <span class="folder-icon">ðŸ“‚</span>
                       <span>assets</span>
                     </div>
                     <div class="sidebar-item">
-                      <span class="file-icon">📄</span>
+                      <span class="file-icon">ðŸ“„</span>
                       <span>index.js</span>
                     </div>
                   </aside>
@@ -234,7 +233,7 @@ export class Counter extends SwitchComponent {
               ${this.renderFeatureCard('code', 'No Build Step', 'Run directly in the browser. Native ES modules, no bundler, no transpilation. Ideal for prototypes, internal tools, and docs sites.', '#3b82f6')}
               ${this.renderFeatureCard('bolt', 'Lightweight', 'Small runtime. No virtual DOM, no diffing. Components render to shadow DOM. Fast load, fast interaction.', '#14b8a6')}
               ${this.renderFeatureCard('communities', 'Familiar Patterns', 'Stack and tab navigation like mobile apps. State management that feels like React\'s useState. Web Components under the hood.', '#6366f1')}
-              ${this.renderFeatureCard('data_object', 'Flexible', 'Mix reactive state with vanilla DOM. Use as much or as little of the framework as you need. No lock-in – just JavaScript and HTML.', '#ec4899')}
+              ${this.renderFeatureCard('data_object', 'Flexible', 'Mix reactive state with vanilla DOM. Use as much or as little of the framework as you need. No lock-in â€“ just JavaScript and HTML.', '#ec4899')}
               ${this.renderFeatureCard('accessibility_new', 'Accessible', 'Built with WAI-ARIA patterns. Screen reader support and keyboard navigation right out of the box.', '#a855f7')}
               ${this.renderFeatureCard('palette', 'Themable', 'CSS variables and dark/light mode. Easily customize the look and feel of your app.', '#f97316')}
             </div>
@@ -287,7 +286,7 @@ export class Counter extends SwitchComponent {
                 <h2 class="cta-title">Ready to start building?</h2>
                 <p class="cta-subtitle">Scaffold a new app with one command, explore the docs, and start building with Switch Framework.</p>
                 <div class="cta-actions">
-                  <button id="cta_get_started" class="cta-btn-primary">Open Docs →</button>
+                  <button id="cta_get_started" class="cta-btn-primary">Open Docs â†’</button>
                   <button id="cta_read_docs" class="cta-btn-secondary">Read Documentation</button>
                 </div>
               </div>
@@ -357,7 +356,7 @@ export class Counter extends SwitchComponent {
             </div>
 
             <div class="footer-bottom">
-              <p class="footer-copyright">© 2024 Switch Framework. All rights reserved.</p>
+              <p class="footer-copyright">Â© 2024 Switch Framework. All rights reserved.</p>
               <div class="footer-status">
                 <span class="status-dot"></span>
                 <span>All systems operational</span>

@@ -1,4 +1,4 @@
-import { TabLayout, registerComponents, updateState, getState } from 'switch-framework';
+﻿import { TabLayout, registerComponents, updateState, getState } from 'switch-framework';
 import { getActiveRoute, useRouteChangesSubscriber, replace } from 'switch-framework/router';
 import { CodeBlock } from '/components/CodeBlock/index.js';
 import { DocsChangelogLink } from '/components/DocsChangelogLink.js';

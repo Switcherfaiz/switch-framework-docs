@@ -1,4 +1,5 @@
-import { StackLayout, createState, registerComponents } from 'switch-framework';
+﻿import { StackLayout, createState, registerComponents, setGlobalComponentSheet } from 'switch-framework';
+import { replace } from 'switch-framework/router';
 import { SwStarterSplashScreen } from '/components/SwStarterSplashScreen.js';
 import { SwTabBar } from '/components/SwTabBar.js';
 import { DocsSearch } from '/components/DocsSearch.js';
@@ -64,7 +65,21 @@ export class SwStackLayout extends StackLayout {
     createState('mobile-sidebar-open', false);
     return { splash: 'sw-starter-splash', initialRoute: 'index' };
   }
-  
 }
 
-export default SwStackLayout.getAppLayout();
+async function loadGlobalIconSheet() {
+  try {
+    const res = await fetch('/assets/icons/style.css');
+    if (!res.ok) return;
+    let css = await res.text();
+    css = css.replace(/url\((['"]?)fonts\//g, "url($1/assets/icons/fonts/");
+    await setGlobalComponentSheet(css);
+  } catch (_) {}
+}
+
+loadGlobalIconSheet();
+
+document.addEventListener('app:ready', () => {
+  const path = window.location.pathname.replace(/^\//, '').replace(/\/$/, '');
+  if (path === 'docs') replace('docs/introduction');
+});

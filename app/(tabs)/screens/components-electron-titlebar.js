@@ -1,4 +1,4 @@
-import { SwitchComponent } from 'switch-framework';
+﻿import { SwitchComponent } from 'switch-framework';
 import { loadDocContent, renderDocShell, docPageFromScreenName } from '/utils/doc-loader.js';
 import { DOC_STYLES } from '/utils/doc-styles.js';
 
@@ -12,7 +12,6 @@ export class SwDocsComponentsElectronTitleBarScreen extends SwitchComponent {
   static path = '/docs/components/electron-titlebar';
   static title = 'ElectronTitleBar';
   static tag = 'sw-docs-componentselectrontitlebar-screen';
-  static layout = 'tabs';
 
   onMount() {
     this.loadContent();
@@ -26,7 +25,7 @@ export class SwDocsComponentsElectronTitleBarScreen extends SwitchComponent {
     const page = docPageFromScreenName(this.constructor.screenName);
     return renderDocShell(page, `
       <p class="section-desc">
-        <sw-docs-changelog-link text="← Back to Component Setup" route="docs/components"></sw-docs-changelog-link>
+        <sw-docs-changelog-link text="â† Back to Component Setup" route="docs/components"></sw-docs-changelog-link>
       </p>
       <sw-docs-pagination></sw-docs-pagination>
     `);

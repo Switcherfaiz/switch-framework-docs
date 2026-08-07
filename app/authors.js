@@ -1,4 +1,4 @@
-import { SwitchComponent, encodeData } from 'switch-framework';
+﻿import { SwitchComponent, encodeData } from 'switch-framework';
 
 const AUTHORS = [
   {
@@ -14,7 +14,6 @@ export class SwAuthorsScreen extends SwitchComponent {
   static path = '/authors';
   static title = 'Authors';
   static tag = 'sw-authors-screen';
-  static layout = 'stack';
 
   render() {
     return `

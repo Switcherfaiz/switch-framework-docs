@@ -1,4 +1,4 @@
-import { SwitchComponent, updateState, useState } from 'switch-framework';
+﻿import { SwitchComponent, updateState, useState } from 'switch-framework';
 import { loadDocContent, renderDocShell, docPageFromScreenName } from '/utils/doc-loader.js';
 import { icons } from '/data/icons-map.js';
 import { iconsFilterHandlers } from '/data/icons-filter-handlers.js';
@@ -12,7 +12,6 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
   static path = '/docs/switch-icons';
   static title = 'Switch Icons';
   static tag = 'sw-docs-switch-icons-screen';
-  static layout = 'tabs';
 
   filterKeys(query) {
     const q = String(query || '').trim().toLowerCase();

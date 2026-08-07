@@ -1,4 +1,4 @@
-import { SwitchComponent } from 'switch-framework';
+﻿import { SwitchComponent } from 'switch-framework';
 import { navigate } from 'switch-framework/router';
 
 export class SwTermsOfServiceScreen extends SwitchComponent {
@@ -6,7 +6,6 @@ export class SwTermsOfServiceScreen extends SwitchComponent {
   static path = '/terms-of-service';
   static title = 'Terms of Service';
   static tag = 'sw-terms-of-service-screen';
-  static layout = 'stack';
 
   render() {
     return `

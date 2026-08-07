@@ -1,4 +1,4 @@
-import { SwitchComponent, navigate, goBack } from 'switch-framework';
+﻿import { SwitchComponent, navigate, goBack } from 'switch-framework';
 import { getActivePath } from 'switch-framework/router';
 
 export default class extends SwitchComponent {
@@ -6,7 +6,6 @@ export default class extends SwitchComponent {
   static path = '/+not-found';
   static title = 'Not Found';
   static tag = 'sw-user-not-found-screen';
-  static layout = 'stack';
 
   onMount() {
     this._bindEvents();

@@ -1,11 +1,10 @@
-import { SwitchComponent, navigate, goBack, getActiveRoute } from '/switch-framework/index.js';
+﻿import { SwitchComponent, navigate, goBack, getActiveRoute } from '/switch-framework/index.js';
 
 export class SwUserNotFoundScreen extends SwitchComponent {
   static screenName = '+not-found';
   static path = '/+not-found';
   static title = 'Not Found';
   static tag = 'sw-user-not-found-screen';
-  static layout = 'stack';
 
   onMount() {
     this._bindEvents();

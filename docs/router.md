@@ -1,70 +1,88 @@
 ## Router
 
-Switch Framework's router is **runtime-first** – no webpack, no build step. Just register your screens, and the router handles navigation, deep linking, browser history, and route parameters. It works great with stack and tab layouts.
+Switch Framework's router is **runtime-first** – no webpack, no build step. Register screens in your layout files and the router handles navigation, deep linking, browser history, and route parameters.
 
-### Define routes
+### Register screens
 
-Register screens in your layout's static config. A screen extends SwitchComponent with static `screenName`, `path`, `title`, `tag`. Paths can include parameters like `:id`.
+Screens are registered in layout static arrays — not individually at boot.
 
-```javascript title:Register screens (app/_layout.js)
-import { StackLayout } from 'switch-framework';
-
-const stackScreens = [SwIndexScreen, SwUserNotFoundScreen];
-const layout = SwStackLayout.getAppLayout();
+```javascript title:app/_layout.js — stack screens
+export class MyStackLayout extends StackLayout {
+  static stackScreens = [IndexScreen, LoginScreen, NotFoundScreen];
+  static tabsLayout = MyTabsLayout;
+}
 ```
 
-### Navigate
+```javascript title:app/(tabs)/_layout.js — tab screens
+export class MyTabsLayout extends TabLayout {
+  static screens = [HomeScreen, HomeCategoryScreen, ExploreScreen];
+  static tabs = [
+    { name: 'home', path: '/home', screen: 'my-home-screen', match: ['home'] }
+  ];
+}
+```
 
-Use `navigate(route, params)` to go to a route. For dynamic routes, pass params as the second argument or embed them in the route string.
+### Screen config
+
+Each screen defines its route identity. Layout (`stack` vs `tabs`) is inferred from which array you register it in. Optionally set `static layout` — it must match that array.
+
+```javascript title:Static route — /home
+export class HomeScreen extends SwitchComponent {
+  static screenName = 'home';
+  static path = '/home';
+  static title = 'Home';
+  static tag = 'my-home-screen';
+}
+```
+
+```javascript title:Dynamic route — /home/:id
+export class HomeCategoryScreen extends SwitchComponent {
+  static screenName = 'home/:id';
+  static path = '/home/:id';
+  static title = 'Home';
+  static tag = 'my-home-screen';
+}
+```
+
+```javascript title:Stack route — /login
+export class LoginScreen extends SwitchComponent {
+  static screenName = 'login';
+  static path = '/login';
+  static title = 'Login';
+  static tag = 'my-login-screen';
+}
+```
+
+The router matches `/home` to the exact route first, then `/home/electronics` to the dynamic route — no special syntax needed.
+
+### Navigate
 
 ```javascript title:Navigate to routes
 import { navigate } from 'switch-framework/router';
 
-navigate('docs/introduction');
-navigate('user/42');
+navigate('home');
+navigate('home/electronics');
+navigate('login');
 navigate('docs', { id: 'introduction' });
 ```
 
 ### Route params & state
 
-Access route parameters and search params inside your screen. Use hooks to get the current route and params.
-
 ```javascript title:Path params (:id) and query params (?name=)
 import { useParams, useSearchParams, getActiveRoute, getActivePath } from 'switch-framework/router';
 
-// Path params from /user/:id  ->  useParams() returns { id: '42' }
-// Query params from ?name=Jane&age=30  ->  useSearchParams() returns { name: 'Jane', age: '30' }
-
-connected() {
-  const params = useParams();      // { id: '42' }
-  const search = useSearchParams(); // { name: 'Jane', age: '30' }
-  const route = getActiveRoute();   // 'user/42'
-  const path = getActivePath();     // 'http://localhost:3000/user/42' (same as window.location.href)
-}
-```
-
-### Define screens with params
-
-Use `:param` in your path for dynamic segments. Query params (`?name=value`) are automatically parsed into `searchParams` in globalStates; use `useSearchParams()` to read them.
-
-```javascript title:Define screen with dynamic path
-// Screen for /user/:id
-export class UserScreen extends SwitchComponent {
-  static screenName = 'user/[id]';
-  static path = '/user/:id';
-  static title = 'User';
-  static tag = 'sw-user-screen';
-  static layout = 'tabs';
-  // useParams() will return { id: '42' } when visiting /user/42
+onMount() {
+  const params = useParams();       // { id: '42' } from /user/:id
+  const search = useSearchParams(); // { name: 'Jane' } from ?name=Jane
+  const route = getActiveRoute();   // 'home/electronics'
+  const path = getActivePath();     // full browser URL
 }
 ```
 
 ### Navigation helpers
 
-The router provides helper functions for common navigation patterns.
-
 ```javascript title:previousRoute / nextRoute
-const prev = previousRoute('docs');  // { route, params, title }
+const prev = previousRoute('docs');
 const next = nextRoute('docs');
 if (prev) navigate(prev.route, prev.params);
 ```
@@ -74,9 +92,9 @@ if (prev) navigate(prev.route, prev.params);
 - `navigate(route, params)` – Navigate to a route, update browser history
 - `goBack()` – Go back in browser history
 - `redirect(route, params)` – Same as navigate (alias)
-- `replace(route, params)` – Replace current history entry instead of pushing
+- `replace(route, params)` – Replace current history entry
 - `useParams()` – Get path params (e.g. `{ id: '42' }`)
-- `useSearchParams()` – Get query params (e.g. `{ name: 'Jane' }` from `?name=Jane`)
-- `getActivePath()` – Get full current URL path (e.g. `'http://localhost:3000/docs/introduction'`)
-- `getActiveRoute()` – Get current route only (no leading `/`)
+- `useSearchParams()` – Get query params (e.g. `{ name: 'Jane' }`)
+- `getActivePath()` – Full current URL
+- `getActiveRoute()` – Current route key (no leading `/`)
 - `useRouteChangesSubscriber(callback)` – Subscribe to route changes

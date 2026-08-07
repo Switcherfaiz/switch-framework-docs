@@ -1,4 +1,4 @@
-import { SwitchComponent } from 'switch-framework';
+﻿import { SwitchComponent } from 'switch-framework';
 import { navigate } from 'switch-framework/router';
 
 export class SwLicenseScreen extends SwitchComponent {
@@ -6,7 +6,6 @@ export class SwLicenseScreen extends SwitchComponent {
   static path = '/license';
   static title = 'License';
   static tag = 'sw-license-screen';
-  static layout = 'stack';
 
   onMount() {
     this.shadowRoot.addEventListener('click', (e) => {

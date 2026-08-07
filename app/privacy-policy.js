@@ -1,11 +1,10 @@
-import { SwitchComponent } from 'switch-framework';
+﻿import { SwitchComponent } from 'switch-framework';
 
 export class SwPrivacyPolicyScreen extends SwitchComponent {
   static screenName = 'privacy-policy';
   static path = '/privacy-policy';
   static title = 'Privacy Policy';
   static tag = 'sw-privacy-policy-screen';
-  static layout = 'stack';
 
   render() {
     return `

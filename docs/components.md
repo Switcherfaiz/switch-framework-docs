@@ -179,7 +179,6 @@ export default class extends SwitchComponent {
   static path = '/+not-found';
   static title = 'Not Found';
   static tag = 'sw-not-found-screen';
-  static layout = 'stack';
 
   onMount() {
     this.listener('#home', 'click', () => navigate('index'));
@@ -207,8 +206,9 @@ export default class extends SwitchComponent {
 - `static screenName` – Route identifier for screens (e.g. `'home'`)
 - `static path` – URL path for screens (e.g. `'/home'`)
 - `static title` – Display title for screens
-- `static layout` – `'stack'` or `'tabs'`
 - `static { this.useState('key'); }` – Subscribe to state for auto re-render
+
+Layout (`stack` vs `tabs`) is inferred from where you register the screen — `stackScreens` or `TabLayout.screens`. Optionally set `static layout`; it must match that registration.
 
 ### Methods
 

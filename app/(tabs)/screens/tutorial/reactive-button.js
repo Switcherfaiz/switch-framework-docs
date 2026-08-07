@@ -1,4 +1,4 @@
-import { SwitchComponent } from 'switch-framework';
+﻿import { SwitchComponent } from 'switch-framework';
 import { loadDocContent, renderDocShell, docPageFromScreenName } from '/utils/doc-loader.js';
 import { DOC_STYLES } from '/utils/doc-styles.js';
 
@@ -11,7 +11,6 @@ export class SwDocsTutorialReactiveButtonScreen extends SwitchComponent {
   static path = '/docs/tutorial/reactive-button';
   static title = 'Tutorial: Reactive Button';
   static tag = 'sw-docs-tutorial-reactive-button-screen';
-  static layout = 'tabs';
 
   onMount() {
     this.loadContent();

@@ -11,7 +11,8 @@ You get a declarative routing system (stack screens, tab navigation), Web Compon
 - **Runtime-first** – No bundler required. Use native ES modules. Your `index.html` loads scripts, and you're off to the races.
 - **SwitchComponent** – Base class for screens and components. Shadow DOM, `render()`, `styleSheet()`, `connected()`/`disconnected()`, and `useEffect` for reactive updates.
 - **Reactive state** – `createState` and `useState` for shared, event-driven state. No prop drilling.
-- **StackLayout & TabLayout** – Static config: `stackScreens`, `tabsLayout`, `screens`. Pass screen classes directly; the framework auto-registers them.
+- **StackLayout & TabLayout** – Register screens in `stackScreens` or `TabLayout.screens`. Layout is inferred automatically; `static layout` is optional if you want it explicit.
+- **Auto boot** – Load `app/_layout.js` from `index.html`. When the framework detects your `StackLayout` subclass, it starts the app — no manual `startApp()` call.
 - **Backend integration** – `switch-framework-backend` gives you auth, sessions, and API helpers. Full-stack made easy.
 - **Theming** – Dark/light mode with CSS variables. One line to init, and you're themed.
 
