@@ -51,3 +51,34 @@ app.initServer((server) => {
 ### npm scripts
 
 Add `"dev": "node server.js"` and `"start": "node server.js"` to your package.json. Run `npm run dev` to start the server.
+
+### Separate Mongo API (`backend/`)
+
+For a real database and file uploads, keep root `server.js` as the UI server and put Express + MongoDB in `backend/` with its own port.
+
+```text
+backend/
+├── server.js
+├── models/
+├── routes/
+├── middlewares/
+└── uploads/
+```
+
+Root `server.js` proxies `/api` and `/uploads` to that API:
+
+```javascript title:Proxy /api to the backend
+app.initServer((server) => {
+  server.use('/api', proxyToApi);
+  server.use('/uploads', proxyToApi);
+});
+```
+
+Start both:
+
+```bash
+npm run dev:backend
+npm run dev
+```
+
+Or `npm run dev:all`. The API reads `MONGODB_URI` (default `mongodb://127.0.0.1:27017/switch-pins`) and `PORT` (default `4000`).

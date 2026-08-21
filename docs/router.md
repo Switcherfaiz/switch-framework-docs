@@ -40,9 +40,13 @@ export class HomeCategoryScreen extends SwitchComponent {
   static screenName = 'home/:id';
   static path = '/home/:id';
   static title = 'Home';
-  static tag = 'my-home-screen';
+  static tag = 'my-home-category-screen';
 }
 ```
+
+Each screen needs its **own `static tag`**. If two screens share a tag, the first class wins and the second route will render the wrong screen (pills/active states look stuck).
+
+Screens stay mounted when you leave them (hide/show). Scroll is kept. Use `useScreenFocus` from [[Hooks|docs/hooks]] to fetch only while the screen is visible.
 
 ```javascript title:Stack route — /login
 export class LoginScreen extends SwitchComponent {
@@ -97,4 +101,6 @@ if (prev) navigate(prev.route, prev.params);
 - `useSearchParams()` – Get query params (e.g. `{ name: 'Jane' }`)
 - `getActivePath()` – Full current URL
 - `getActiveRoute()` – Current route key (no leading `/`)
+- `isScreenActive(screenName)` – Whether a screen name matches the current route
+- `useScreenFocus(fn)` – Run `fn` only while this screen is active (call from `effects()`)
 - `useRouteChangesSubscriber(callback)` – Subscribe to route changes

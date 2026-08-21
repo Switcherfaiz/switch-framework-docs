@@ -105,7 +105,7 @@ For `/home` and `/home/:id`, use two screens with distinct `screenName` values (
 {"headers":["screenName","path","Registered in"],"htmlColumns":[0,1,2],"rows":[["<code>home</code>","<code>/home</code>","<code>TabLayout.screens</code>"],["<code>home/:id</code>","<code>/home/:id</code>","<code>TabLayout.screens</code>"]]}
 ```
 
-Add the route prefix to the tab's `match` array: `match: ['home']`.
+Add the route prefix to the tab's `match` array: `match: ['home']`. Give `/home` and `/home/:id` **different `static tag` values** so each custom element is its own class.
 
 ### Tab config reference
 

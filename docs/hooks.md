@@ -309,6 +309,28 @@ effects() {
 - **Infinite loop trap** — do **not** put `quote-loading` or `quote-data` in deps if the effect calls `fetchData()` which updates them. Use `static useState` for redraw instead
 - **Return value** — use `return () => { ... }` **only for cleanup** (unsubscribe, clear timers). Call `fetchData()` at the **top** of the effect, before `return`
 
+### useScreenFocus — run when this screen is showing
+
+Kept-alive screens stay in the DOM when you navigate away. `useEffect(['activeRoute'])` would still run on hidden screens. `useScreenFocus` only runs when **this** screen matches the current route.
+
+`home` matches only `/home`. `home/:id` matches `/home/travel`, not `/home`.
+
+```javascript
+import { useScreenFocus } from 'switch-framework';
+
+effects() {
+  useScreenFocus(() => {
+    this.loadFeed();
+  });
+}
+```
+
+Call it from `effects()`, same as `useEffect`. Hidden screens keep their scroll; this hook is for refetching or syncing when the user comes back.
+
+```params-table
+{"headers":["Helper","Matches"],"htmlColumns":[0,1],"rows":[["<code>isScreenActive('home')</code>","Only route <code>home</code>"],["<code>isScreenActive('home/:id')</code>","<code>home/travel</code>, not <code>home</code>"],["<code>useScreenFocus(fn)</code>","Runs <code>fn</code> when this screen is active, including param changes"]]}
+```
+
 #### Example — color and size box
 
 ```javascript title:components/ColorBox.js
@@ -647,7 +669,7 @@ Think of it like pressing a **remote button** that the list is already listening
 ### Quick reference
 
 ```params-table
-{"headers":["Hook","Where","What it does"],"htmlColumns":[0,1,2],"rows":[["<code>createState</code>","<code>static {}</code> or app startup","Creates a shared value"],["<code>getState</code> / <code>updateState</code>","Anywhere","Read or change a shared value"],["<code>static { this.useState('key') }</code>","Class <code>static {}</code>","Redraw component when key changes"],["<code>useState('key', callback)</code>","<code>onMount</code>","DOM tweaks and animations on change (no auto redraw)"],["<code>useEffect(fn, deps)</code>","<code>effects()</code>","Call multiple times; watch keys, run side effects, optional cleanup return"],["<code>useRef(this)</code>","<code>onMount</code>","FlatList scroll methods (scrollToEnd, scrollToIndex, etc.)"],["<code>this.listener()</code>","<code>onMount</code>","Attach click/input handlers"],["<code>this.addOnDestroy(fn)</code>","<code>onMount</code>","Clean up when component is removed"]]}
+{"headers":["Hook","Where","What it does"],"htmlColumns":[0,1,2],"rows":[["<code>createState</code>","<code>static {}</code> or app startup","Creates a shared value"],["<code>getState</code> / <code>updateState</code>","Anywhere","Read or change a shared value"],["<code>static { this.useState('key') }</code>","Class <code>static {}</code>","Redraw component when key changes"],["<code>useState('key', callback)</code>","<code>onMount</code>","DOM tweaks and animations on change (no auto redraw)"],["<code>useEffect(fn, deps)</code>","<code>effects()</code>","Call multiple times; watch keys, run side effects, optional cleanup return"],["<code>useScreenFocus(fn)</code>","<code>effects()</code>","Run when this screen is the active route (keep-alive safe)"],["<code>useRef(this)</code>","<code>onMount</code>","FlatList scroll methods (scrollToEnd, scrollToIndex, etc.)"],["<code>this.listener()</code>","<code>onMount</code>","Attach click/input handlers"],["<code>this.addOnDestroy(fn)</code>","<code>onMount</code>","Clean up when component is removed"]]}
 ```
 
 ### Remember

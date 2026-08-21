@@ -3,6 +3,27 @@
 Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
 
 
+## v0.2.8 – August 21, 2026
+
+**Features**
+
+- [[Hooks|docs/hooks]] `useScreenFocus(fn)` – run a callback only while this screen is the active route (keep-alive safe). `home` matches `/home` only; `home/:id` matches `/home/travel`
+- `isScreenActive(screenName)` router helper for the same matching rules
+- Screen keep-alive navigation – stack/tab screens are hidden/shown instead of destroyed, and each screen has its own scroll slot so back-navigation restores position
+- Unique `static tag` warning – if two classes share a tag, the console explains that the first class wins
+
+**Improvements**
+
+- `useEffect` now follows React-style hook slots: `[]` runs once per mount, deps re-run when keys change, including router keys on `globalStates`
+- Hidden screens use `inert` + `aria-hidden` so they cannot be focused or clicked
+- [[Router|docs/router]] and [[Layouts|docs/layouts]] docs require a unique tag per screen (`/home` vs `/home/:id`)
+
+**Bug Fixes**
+
+- Empty `useEffect([])` now runs on mount
+- Shared overflow containers no longer reset scroll when returning to a previous screen
+
+
 ## v0.2.7 – August 1, 2026
 
 **Features**

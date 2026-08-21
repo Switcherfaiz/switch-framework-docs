@@ -105,11 +105,28 @@ export class HomeCategoryScreen extends SwitchComponent {
   static screenName = 'home/:id';   // route key (same pattern as boards/:id)
   static path = '/home/:id';
   static title = 'Home';
-  static tag = 'my-home-screen';
+  static tag = 'my-home-category-screen';
 }
 ```
 
-Layout (`stack` vs `tabs`) is inferred from which array you add the screen to.
+Layout (`stack` vs `tabs`) is inferred from which array you add the screen to. Two screens must not share `static tag`.
+
+## App with a Mongo API
+
+Keep `server.js` for the web app. Put Express + MongoDB in a sibling `backend/` folder with its own `server.js`, `routes/`, `middlewares/`, and `models/`.
+
+```text title:Web app + API
+my-app/
+├── server.js              # Serves the UI (port 5173), proxies /api
+├── backend/
+│   ├── server.js          # Express API (port 4000)
+│   ├── models/
+│   ├── routes/
+│   ├── middlewares/
+│   └── uploads/
+├── app/
+└── components/
+```
 
 ## Electron app structure
 
