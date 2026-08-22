@@ -14,12 +14,17 @@ export class DocsPagination extends SwitchComponent {
   setupRouteSubscription() {
     if (this._routeSubbed) return;
     this._routeSubbed = true;
-    this._unsub = useRouteChangesSubscriber(() => this.rerender());
+    this._unsub = useRouteChangesSubscriber(() => {
+      const route = getActiveRoute() || '';
+      if (route === this._lastRoute) return;
+      this._lastRoute = route;
+      this.rerender();
+    });
     this.addOnDestroy(() => { this._unsub?.(); });
   }
 
   bindPaginationEvents() {
-    this.shadowRoot.addEventListener('click', (e) => {
+    this.listener('button[data-action]', 'click', (e) => {
       const btn = e.target?.closest?.('button[data-action]');
       if (!btn || btn.disabled) return;
       const action = btn.getAttribute('data-action');

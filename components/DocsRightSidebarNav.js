@@ -15,6 +15,7 @@ export class DocsRightSidebarNav extends SwitchComponent {
     this._activeId = '';
     this._bindTocClicks();
     this._setupRouteWatch();
+    this._bindDocLoaded();
     this._watchDocMount();
     this.buildToc();
   }
@@ -22,8 +23,12 @@ export class DocsRightSidebarNav extends SwitchComponent {
   onDestroy() {
     this._unsubRoute?.();
     this._unsubRoute = null;
+    this._docLoadedRoot?.removeEventListener('doc-content-loaded', this._onDocLoaded);
+    this._docLoadedRoot = null;
+    this._onDocLoaded = null;
     this._mountOb?.disconnect();
     this._mountOb = null;
+    this._watchedMount = null;
     this._ob?.disconnect();
     this._ob = null;
   }
@@ -64,6 +69,7 @@ export class DocsRightSidebarNav extends SwitchComponent {
     this._unsubRoute = useRouteChangesSubscriber(() => {
       this._mountOb?.disconnect();
       this._mountOb = null;
+      this._watchedMount = null;
       this._activeId = '';
       setTimeout(() => {
         this._watchDocMount();
@@ -72,16 +78,33 @@ export class DocsRightSidebarNav extends SwitchComponent {
     });
   }
 
-  getScrollContainer() {
+  getTabContainer() {
     const layoutHost = this.getRootNode()?.host;
     const content = layoutHost?.shadowRoot?.querySelector('.content')
       ?? this.parentElement?.parentElement;
     return content?.querySelector('.tabcontainer') ?? null;
   }
 
+  getActiveSlot() {
+    const tab = this.getTabContainer();
+    if (!tab) return null;
+    return tab.querySelector('[data-sw-screen][data-sw-active="true"]')
+      ?? tab.querySelector('[data-sw-screen]')
+      ?? tab.firstElementChild
+      ?? null;
+  }
+
+  getScrollContainer() {
+    return this.getActiveSlot() ?? this.getTabContainer();
+  }
+
   getScreenElement() {
-    const container = this.getScrollContainer();
-    return container?.firstElementChild ?? null;
+    const slot = this.getActiveSlot();
+    if (!slot) return null;
+    if (slot.shadowRoot?.querySelector('#doc-mount')) return slot;
+    return slot.querySelector('[data-route-key]')
+      ?? slot.firstElementChild
+      ?? null;
   }
 
   getDocMount() {
@@ -89,10 +112,27 @@ export class DocsRightSidebarNav extends SwitchComponent {
     return screen?.shadowRoot?.querySelector('#doc-mount') ?? null;
   }
 
+  _bindDocLoaded() {
+    if (this._onDocLoaded) return;
+    this._onDocLoaded = () => {
+      this._mountOb?.disconnect();
+      this._mountOb = null;
+      this._watchedMount = null;
+      this._watchDocMount();
+      this.buildToc();
+    };
+    const root = this.getRootNode();
+    root?.addEventListener('doc-content-loaded', this._onDocLoaded);
+    this._docLoadedRoot = root;
+  }
+
   _watchDocMount() {
     const mount = this.getDocMount();
-    if (!mount || this._mountOb) return;
+    if (!mount) return;
+    if (this._mountOb && this._watchedMount === mount) return;
 
+    this._mountOb?.disconnect();
+    this._watchedMount = mount;
     this._mountOb = new MutationObserver(() => {
       clearTimeout(this._tocTimer);
       this._tocTimer = setTimeout(() => this.buildToc(), 120);
@@ -214,7 +254,7 @@ export class DocsRightSidebarNav extends SwitchComponent {
     );
 
     headings.forEach(({ el }) => {
-      if (el.id) this._ob.observe(el);
+      if (el) this._ob.observe(el);
     });
   }
 
