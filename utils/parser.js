@@ -75,9 +75,18 @@ function inlineText(text) {
     }
 
     const next = src.slice(i).search(/[`*]/);
-    const end = next === -1 ? src.length : i + next;
-    out += escapeHtml(src.slice(i, end));
-    i = end;
+    if (next === -1) {
+      out += escapeHtml(src.slice(i));
+      break;
+    }
+    if (next === 0) {
+      // Unmatched single * or ` — output literally and advance to avoid infinite loop
+      out += escapeHtml(src[i]);
+      i += 1;
+      continue;
+    }
+    out += escapeHtml(src.slice(i, i + next));
+    i += next;
   }
 
   return out;

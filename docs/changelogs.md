@@ -3,6 +3,29 @@
 Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
 
 
+## v0.2.9 – September 2, 2026
+
+**New Hooks (React-style simplified API)**
+
+Three new hooks that replace the `createState` + `static { this.useState() }` + `getState` + `updateState` ceremony for most cases. The old API is fully preserved and will not be removed — these are additions.
+
+- **`useState(initialValue)`** — local component state. Returns `[value, setter]`. The setter rerenders only this instance. No global key needed. Slots are stable across rerenders — initial value is used only on the first render; every subsequent render reads back whatever the setter last wrote. Calling one setter does not reset other local states.
+
+- **`useShared(key, defaultValue?)`** — global shared state. Returns `[value, setter]`. Subscribes this component to the key so it rerenders when the value changes from anywhere. **Idempotent:** if the key does not exist yet it is created automatically with `defaultValue`, so no separate `createState` is needed for feature-level states. First caller with a key wins; later callers with a different default simply use the already-created value.
+
+- **`onState(key, callback)`** — subscribe to a global key and run a callback on each change without triggering `render()`. Use for CSS animations, badge counts, or any DOM patch where rebuilding `innerHTML` would discard state. Call from `onMount()`. Subscriptions are deduped per key — the same key on every rerender updates the callback reference instead of stacking new listeners.
+
+**Engine change**
+
+- `_currentComponent` is now set to the active component **before** `render()` runs (previously it was set after). This is what enables calling `useState`, `useShared`, and `onState` directly inside `render()`.
+
+**Deprecations** — still work, will not be removed in v0.x
+
+- `static { this.useState('key') }` — superseded by `useShared(key, default)` in `render()`
+- `useState('key', callbackFn)` — superseded by `onState(key, callbackFn)` in `onMount()`. `onState` deduplicates automatically; `addOnDestroy` is not required.
+
+---
+
 ## v0.2.8 – August 21, 2026
 
 **Features**

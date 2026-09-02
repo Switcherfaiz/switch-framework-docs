@@ -5,10 +5,223 @@ Hooks are small tools that help your components **remember things**, **react to 
 > **Simple idea:** A **state** is like a shared notebook. Anyone can read it with `getState` and write in it with `updateState`. Hooks tell your component when to redraw, when to run extra code, or how to control lists.
 
 **Where hooks go:**
-- **`useEffect`** → write it in **`effects()`** (like React hooks at the top of a component). Not in `onMount`.
-- **`useState(callback)`** and **`useRef(this)`** → still go in **`onMount`** for listeners and refs.
+- **`useState(initial)`**, **`useShared(key)`** → call from **`render()`** so subscriptions wire up on every render cycle.
+- **`useEffect`** and **`useScreenFocus`** → write them in **`effects()`**.
+- **`onState(key, fn)`**, **`this.listener()`**, and **`useRef(this)`** → write them in **`onMount()`**.
 
 Every example below is a **full component** you can copy, register, and run.
+
+---
+
+### React-style hooks (simplified API)
+
+These three hooks cover most cases without global keys or `static {}` blocks.
+
+#### useState — local component state
+
+`useState(initialValue)` creates state that belongs only to this component instance. Calling the setter rerenders this component and no one else.
+
+```javascript title:components/Counter.js
+import { SwitchComponent, useState, registerComponent } from 'switch-framework';
+
+export class Counter extends SwitchComponent {
+  static tag = 'sw-counter';
+
+  onMount() {
+    this.listener('#inc', 'click', () => this._setCount((n) => n + 1));
+  }
+
+  render() {
+    const [count, setCount] = useState(0);
+    this._setCount = setCount;         // expose for onMount handlers
+    return `
+      <div class="card">
+        <p class="count">${count}</p>
+        <button id="inc">Add one</button>
+      </div>
+    `;
+  }
+}
+registerComponent(Counter);
+```
+
+**Rules:**
+- Call `useState` in the same order every render (same as React).
+- Store the setter on `this` so `onMount` handlers and async methods can use it.
+- The setter accepts a value or an updater function: `setCount(n => n + 1)`.
+
+---
+
+#### useShared — subscribe to global state
+
+`useShared(key, defaultValue?)` reads a global state key **and** subscribes this component to it. When the value changes (from anywhere in the app), this component rerenders. No `static {}` block needed, and **no separate `createState` call needed** — if the key does not exist yet, `useShared` creates it automatically using `defaultValue` as the initial value.
+
+```javascript title:screens/PinsScreen.js
+import { SwitchComponent, useShared, useScreenFocus, createProps } from 'switch-framework';
+import { apiGet } from '../api.js';
+
+export class PinsScreen extends SwitchComponent {
+  static screenName = 'pins';
+  static tag = 'sw-pins-screen';
+
+  effects() {
+    useScreenFocus(async () => {
+      const json = await apiGet('/pins');
+      this._setPins(json.pins || []);
+    });
+  }
+
+  render() {
+    const [pins, setPins] = useShared('pins', []);
+    this._setPins = setPins;
+    return `
+      <div class="masonry">
+        ${pins.map(p => `<tw-pin-card data="${createProps(p)}"></tw-pin-card>`).join('')}
+      </div>
+    `;
+  }
+}
+```
+
+`setPins(next)` is equivalent to `updateState('pins', next)`. Both work — use whichever reads cleaner.
+
+**When to use `useShared` vs `static { this.useState() }`:**
+
+```params-table
+{"headers":["","useShared","static { this.useState() }"],"htmlColumns":[0,1,2],"rows":[["Where to write","<code>render()</code>","class <code>static {}</code> block"],["Auto-creates key","✓ yes","✗ no"],["Creates subscription","yes, on first render","yes, at class load time"],["Both cause full rerender","✓","✓"],["Verdict","<strong>preferred — simpler</strong>","still works, no plans to remove"]]}
+```
+
+`useShared` is the preferred approach going forward. `static { this.useState() }` still works and will not be removed.
+
+---
+
+#### onState — DOM patch without rerender
+
+`onState(key, fn)` subscribes to a global key and calls `fn` on each change — **without** triggering `render()`. Use this when replacing `innerHTML` would reset a CSS animation or discard a focused input.
+
+Call it from `onMount()`. On every rerender `onMount` runs again, but `onState` deduplicates subscriptions per key — the callback reference is updated, not stacked.
+
+**Priority rule — `onState` wins over `useShared` for the same key.** If both are called for the same key on the same component, the framework cancels the `useShared` rerender subscription so only the `onState` callback fires. This lets you opt out of a full rerender for specific keys. In practice, use each key with only one strategy: either `useShared` (rerender) or `onState` (callback), not both.
+
+```javascript title:components/LikeButton.js
+import { SwitchComponent, onState, updateState, createState, registerComponent } from 'switch-framework';
+
+createState('liked', false);
+
+export class LikeButton extends SwitchComponent {
+  static tag = 'sw-like-button';
+
+  onMount() {
+    // Runs on change without rebuilding HTML — animation survives
+    onState('liked', (liked) => {
+      const heart = this.select('.heart');
+      if (!heart) return;
+      heart.classList.remove('pop');
+      void heart.offsetWidth;          // force reflow
+      heart.classList.add('pop');
+      heart.style.color = liked ? '#e60023' : '#ccc';
+    });
+
+    this.listener('.like-btn', 'click', () => {
+      updateState('liked', (v) => !v);
+    });
+  }
+
+  render() {
+    return `
+      <button class="like-btn">
+        <span class="heart">♥</span>
+      </button>
+    `;
+  }
+
+  styleSheet() {
+    return `
+      <style>
+        :host { display: block; }
+        .like-btn { border: none; background: transparent; cursor: pointer; font-size: 28px; }
+        .heart { display: inline-block; color: #ccc; }
+        .heart.pop { animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
+      </style>
+    `;
+  }
+}
+registerComponent(LikeButton);
+```
+
+---
+
+#### All three together — Messages screen
+
+This example shows all three hooks on the **same component with different keys** — the right way to use them together.
+
+- `useShared('messages')` owns the list. When messages change, the component rerenders and the unread badge recalculates inside `render()` — no separate `onState` needed for the same key.
+- `onState('messages-typing', fn)` owns the typing indicator. It patches a small element without rebuilding the whole list — a different key with callback-only behavior.
+- `useState(null)` is purely local open-thread tracking.
+
+```javascript title:screens/MessagesScreen.js
+import { SwitchComponent, useShared, useState, onState, updateState, useScreenFocus } from 'switch-framework';
+import { apiGet } from '../api.js';
+
+export class MessagesScreen extends SwitchComponent {
+  static screenName = 'messages';
+  static tag = 'sw-messages-screen';
+
+  effects() {
+    useScreenFocus(async () => {
+      const json = await apiGet('/messages');
+      this._setList(json.messages || []);
+    });
+  }
+
+  onMount() {
+    this.listener('[data-msg-id]', 'click', (e) => {
+      const id = e.target.closest('[data-msg-id]')?.dataset.msgId;
+      this._setOpenId(id || null);
+    });
+    this.listener('#back', 'click', () => this._setOpenId(null));
+
+    // Different key from 'messages' — patches DOM without rebuilding the list
+    onState('messages-typing', (who) => {
+      const tip = this.select('.typing-tip');
+      if (tip) tip.textContent = who ? `${who} is typing…` : '';
+    });
+  }
+
+  render() {
+    // useShared owns 'messages' — full rerender when list changes
+    const [list, setList] = useShared('messages', []);
+    // useState owns open-thread ID — local, invisible outside this component
+    const [openId, setOpenId] = useState(null);
+
+    this._setList  = setList;
+    this._setOpenId = setOpenId;
+
+    // Badge calculated here — no need for a separate onState('messages')
+    const unread = list.filter(m => m.unread).length;
+
+    const current = list.find(m => String(m.id) === String(openId));
+    if (current) return `<div class="thread">...</div>`;
+
+    return `
+      <div class="page">
+        <span class="badge">${unread || ''}</span>
+        <span class="typing-tip"></span>
+        ${list.map(m => `<button data-msg-id="${m.id}">${m.name}</button>`).join('')}
+      </div>
+    `;
+  }
+}
+```
+
+```params-table
+{"headers":["Hook","Key","Behavior"],"htmlColumns":[0,1,2],"rows":[["<code>useShared</code>","<code>'messages'</code>","Full rerender — list and badge rebuild together"],["<code>useState</code>","local (no key)","Local open-thread ID — only this component"],["<code>onState</code>","<code>'messages-typing'</code>","Callback only — patches the typing tip, no rebuild"]]}
+```
+
+> **Rule of thumb:** use each global key with **one** strategy per component — either `useShared` (rerender) or `onState` (callback). If you call both for the same key, `onState` wins and cancels the rerender subscription.
+
+---
 
 ### Shared state — createState, getState, updateState
 
@@ -96,6 +309,8 @@ The component re-renders automatically when the parent replaces its `data` attri
 
 ### static useState — redraw the whole component
 
+> **Classic API** — `useShared(key, defaultValue)` called from `render()` is the simpler replacement. Both do the same thing; `static { this.useState() }` will not be removed.
+
 `static { this.useState('key'); }` means: **when this key changes, run `render()` and `onMount()` again.**
 
 Use it for anything that should appear on screen (text, colors, lists, icons).
@@ -176,6 +391,8 @@ static { this.useState('sw-user-list-loading'); }
 **FlatList** already creates default keys for your tag (like `sw-user-list-data`). Add `static { this.useState('…'); }` for each key you read in `render()`.
 
 ### useState with a callback — DOM work without full redraw
+
+> **Deprecated** — use [`onState(key, callback)`](#onstate--dom-patch-without-rerender) instead. `useState('key', callback)` still works and will not be removed, but `onState` is the preferred form: it deduplicates subscriptions automatically so you do not need `addOnDestroy`, and it reads more clearly.
 
 Sometimes you need to **touch the DOM directly** when state changes — for example to play a CSS animation. A full re-render would replace the element and **cancel** the animation.
 
@@ -669,12 +886,16 @@ Think of it like pressing a **remote button** that the list is already listening
 ### Quick reference
 
 ```params-table
-{"headers":["Hook","Where","What it does"],"htmlColumns":[0,1,2],"rows":[["<code>createState</code>","<code>static {}</code> or app startup","Creates a shared value"],["<code>getState</code> / <code>updateState</code>","Anywhere","Read or change a shared value"],["<code>static { this.useState('key') }</code>","Class <code>static {}</code>","Redraw component when key changes"],["<code>useState('key', callback)</code>","<code>onMount</code>","DOM tweaks and animations on change (no auto redraw)"],["<code>useEffect(fn, deps)</code>","<code>effects()</code>","Call multiple times; watch keys, run side effects, optional cleanup return"],["<code>useScreenFocus(fn)</code>","<code>effects()</code>","Run when this screen is the active route (keep-alive safe)"],["<code>useRef(this)</code>","<code>onMount</code>","FlatList scroll methods (scrollToEnd, scrollToIndex, etc.)"],["<code>this.listener()</code>","<code>onMount</code>","Attach click/input handlers"],["<code>this.addOnDestroy(fn)</code>","<code>onMount</code>","Clean up when component is removed"]]}
+{"headers":["Hook","Where","What it does"],"htmlColumns":[0,1,2],"rows":[["<code>useState(initial)</code>","<code>render()</code>","Local instance state — returns [value, setter], rerenders only this component"],["<code>useShared(key, default?)</code>","<code>render()</code>","Subscribe to global state — returns [value, setter], rerenders on change. If <code>onState</code> is also called for the same key, <code>onState</code> wins and no rerender fires."],["<code>onState(key, fn)</code>","<code>onMount()</code>","Callback on global state change — no rerender, patches existing DOM. Cancels any <code>useShared</code> rerender subscription for the same key."],["<code>createState</code>","<code>static {}</code> or app startup","Creates a shared value"],["<code>getState</code> / <code>updateState</code>","Anywhere","Read or change a shared value"],["<code>static { this.useState('key') }</code>","Class <code>static {}</code>","Redraw component when key changes (classic API)"],["<code>useState('key', callback)</code>","<code>onMount</code>","DOM tweaks on change — no rerender (deprecated, prefer onState)"],["<code>useEffect(fn, deps)</code>","<code>effects()</code>","Watch keys, run side effects, optional cleanup return"],["<code>useScreenFocus(fn)</code>","<code>effects()</code>","Run when this screen is the active route (keep-alive safe)"],["<code>useRef(this)</code>","<code>onMount</code>","FlatList scroll methods (scrollToEnd, scrollToIndex, etc.)"],["<code>this.listener()</code>","<code>onMount</code>","Attach click/input handlers"],["<code>this.addOnDestroy(fn)</code>","<code>onMount</code>","Clean up when component is removed"]]}
 ```
 
 ### Remember
 
-- **`useEffect`** goes in **`effects()`** — `onMount` is for `listener()`, `useRef(this)`, and `useState(callback)`
+- **`useState(initial)`** and **`useShared(key)`** go in **`render()`** — call them in the same order every render.
+- Store setters on `this` (`this._setX = setX`) so `onMount` handlers and async methods can call them.
+- **`onState`** goes in **`onMount()`** — subscriptions are deduped per key, safe to call on every rerender.
+- **One strategy per key:** use `useShared` (rerender) or `onState` (callback) for a given key — not both. If you call both, `onState` wins and cancels the rerender.
+- **`useEffect`** goes in **`effects()`** — `onMount` is for `listener()`, `useRef(this)`, and `onState()`
 - **`[]` deps** = run once. Do **not** put states you update inside the effect into the same deps array
-- **Fetch / loader** → `fetchData()` updates state; **`static useState`** removes the loader. Effect deps = `['activeRoute']`, not `quote-loading`
+- **Fetch / loader** → `fetchData()` updates state; reactive hooks rerender the component. Effect deps = `['activeRoute']`, not the loading/data keys
 - **FlatList** — no `super.onMount()`. Use `useRef(this)` or action states to scroll

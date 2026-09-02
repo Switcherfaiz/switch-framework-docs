@@ -25,7 +25,7 @@ export class SwDocsComponentsFlatListScreen extends SwitchComponent {
     const page = docPageFromScreenName(this.constructor.screenName);
     return renderDocShell(page, `
       <p class="section-desc">
-        <sw-docs-changelog-link text="â† Back to Component Setup" route="docs/components"></sw-docs-changelog-link>
+        <sw-docs-changelog-link text="← Back to Component Setup" route="docs/components"></sw-docs-changelog-link>
       </p>
       <sw-docs-pagination></sw-docs-pagination>
     `);

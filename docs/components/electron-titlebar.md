@@ -18,7 +18,7 @@ For `static tag = 'sw-app-titlebar'`, the base class creates:
 {"headers":["State key","Initial","Purpose"],"htmlColumns":[0,1,2],"rows":[["<code>sw-app-titlebar-window-state</code>","<code>'normal'</code>","UI state: <code>normal</code>, <code>maximized</code>, or <code>minimized</code> — use in <code>render()</code>"],["<code>sw-app-titlebar-visible</code>","<code>true</code>","Show or hide the title bar from anywhere"],["<code>sw-app-titlebar-action-minimize</code>","<code>0</code>","Bump to minimize (from anywhere)"],["<code>sw-app-titlebar-action-maximize</code>","<code>0</code>","Bump to maximize"],["<code>sw-app-titlebar-action-restore</code>","<code>0</code>","Bump to restore"],["<code>sw-app-titlebar-action-close</code>","<code>0</code>","Bump to close"],["<code>sw-app-titlebar-action-toggle-maximize</code>","<code>0</code>","Bump to toggle maximize/restore"]]}
 ```
 
-Pattern: **`${tag}-window-state`**, **`${tag}-visible`**, and **`${tag}-action-*`**. Subscribe in a `static {}` block with `this.useState('…')` for keys you read in `render()`.
+Pattern: **`${tag}-window-state`**, **`${tag}-visible`**, and **`${tag}-action-[key]`**. Subscribe in a `static {}` block with `this.useState('…')` for keys you read in `render()`.
 
 ### Full example
 
