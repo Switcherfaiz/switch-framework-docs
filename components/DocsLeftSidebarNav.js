@@ -269,7 +269,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         }
 
         .docs-nav {
-          padding: 24px 12px 120px 12px;
+          padding: 20px 10px 96px;
           height: 100%;
           min-height: 0;
           overflow-y: auto;
@@ -306,10 +306,10 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         }
 
         .nav-title {
-          font-size: 10px;
+          font-size: var(--text-xs, 11px);
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.1em;
           color: var(--muted_text);
           margin: 0 0 12px;
           padding-left: 12px;
@@ -327,8 +327,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
 
         .nav-link {
           display: block;
-          padding: 10px 14px;
-          font-size: 13px;
+          padding: 7px 12px;
+          font-size: var(--text-sm, 12.5px);
           color: var(--sub_text);
           text-decoration: none;
           border-radius: 8px;
@@ -370,8 +370,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
           align-items: center;
           justify-content: space-between;
           width: 100%;
-          padding: 10px 14px;
-          font-size: 14px;
+          padding: 8px 12px;
+          font-size: var(--text-md, 14px);
           color: var(--sub_text);
           background: transparent;
           border: none;
@@ -388,8 +388,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         }
 
         .nav-expand-label {
-          font-weight: 700;
-          font-size: 14px;
+          font-weight: 650;
+          font-size: var(--text-md, 14px);
         }
 
         .nav-chevron {
@@ -427,9 +427,9 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         }
 
         .nav-sublist .nav-link {
-          padding: 8px 12px 8px 20px;
-          font-weight: 600;
-          font-size: 12px;
+          padding: 6px 12px 6px 18px;
+          font-weight: 500;
+          font-size: var(--text-sm, 12.5px);
         }
       </style>
     `;

@@ -39,140 +39,119 @@ function createDocTextComponent(tag, className, styleBlock) {
   };
 }
 
-export const DocHeading = createDocTextComponent('sw-doc-heading', 'doc-heading', `
-  :host { display: block; }
-  .doc-heading {
-    font-size: 32px;
-    font-weight: 800;
-    color: var(--main_text);
-    margin: 0 0 16px;
-    letter-spacing: -0.02em;
-  }
+const INLINE_CODE = `
   code {
     background: var(--surface_2);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Monaco', monospace;
-    font-size: 13px;
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-family: var(--font-mono, 'Fira Code', monospace);
+    font-size: 0.86em;
+    color: var(--code_text);
   }
+`;
+
+export const DocHeading = createDocTextComponent('sw-doc-heading', 'doc-heading', `
+  :host { display: block; font-family: var(--font); }
+  .doc-heading {
+    font-size: var(--text-2xl, 32px);
+    font-weight: 750;
+    line-height: var(--leading-tight, 1.25);
+    color: var(--main_text);
+    margin: 0 0 12px;
+    letter-spacing: -0.03em;
+  }
+  ${INLINE_CODE}
 `);
 
 export const DocSubheading = createDocTextComponent('sw-doc-subheading', 'doc-subheading', `
-  :host { display: block; }
+  :host { display: block; font-family: var(--font); }
   .doc-subheading {
-    font-size: 32px;
-    font-weight: 800;
+    font-size: var(--text-xl, 22px);
+    font-weight: 700;
+    line-height: var(--leading-tight, 1.25);
     color: var(--main_text);
-    margin: 0 0 16px;
+    margin: 36px 0 10px;
     letter-spacing: -0.02em;
+    padding-top: 8px;
+    border-top: 1px solid var(--border_light);
   }
-  code {
-    background: var(--surface_2);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Monaco', monospace;
-    font-size: 13px;
-  }
+  ${INLINE_CODE}
 `);
 
 export const DocSectionHeading = createDocTextComponent('sw-doc-section-heading', 'doc-section-heading', `
-  :host { display: block; }
+  :host { display: block; font-family: var(--font); }
   .doc-section-heading {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: var(--text-lg, 18px);
+    font-weight: 650;
+    line-height: 1.35;
     color: var(--main_text);
-    margin: 28px 0 12px;
+    margin: 32px 0 10px;
+    letter-spacing: -0.015em;
   }
-  code {
-    background: var(--surface_2);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Monaco', monospace;
-    font-size: 13px;
-  }
+  ${INLINE_CODE}
 `);
 
 export const DocSubsectionHeading = createDocTextComponent('sw-doc-subsection-heading', 'doc-subsection-heading', `
-  :host { display: block; }
+  :host { display: block; font-family: var(--font); }
   .doc-subsection-heading {
-    font-size: 16px;
-    font-weight: 700;
+    font-size: var(--text-md, 15px);
+    font-weight: 650;
+    line-height: 1.4;
     color: var(--main_text);
-    margin: 22px 0 10px;
+    margin: 22px 0 8px;
     letter-spacing: -0.01em;
   }
-  code {
-    background: var(--surface_2);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Monaco', monospace;
-    font-size: 12px;
-  }
+  ${INLINE_CODE}
 `);
 
 export const DocParagraph = createDocTextComponent('sw-doc-paragraph', 'doc-paragraph', `
-  :host { display: block; }
+  :host { display: block; font-family: var(--font); }
   .doc-paragraph {
-    font-size: 15px;
-    line-height: 1.7;
+    font-size: var(--text-body, 16px);
+    line-height: var(--leading-body, 1.75);
     color: var(--sub_text);
-    margin: 0 0 20px;
+    margin: 0 0 16px;
   }
-  code {
-    background: var(--surface_2);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Monaco', monospace;
-    font-size: 13px;
-    color: var(--main_text);
-  }
+  ${INLINE_CODE}
 `);
 
 export const DocCallout = createDocTextComponent('sw-doc-callout', 'doc-callout', `
-  :host { display: block; }
+  :host { display: block; font-family: var(--font); }
   .doc-callout {
-    background: var(--surface_2);
+    background: var(--surface_1);
+    border: 1px solid var(--border_light);
     border-left: 3px solid var(--primary);
-    padding: 16px 20px;
+    padding: 14px 18px;
     margin: 20px 0;
-    border-radius: 0 8px 8px 0;
-    font-size: 14px;
-    line-height: 1.6;
+    border-radius: 0 var(--radius_sm, 8px) var(--radius_sm, 8px) 0;
+    font-size: var(--text-md, 15px);
+    line-height: 1.65;
     color: var(--sub_text);
   }
-  code {
-    background: var(--surface_3);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Monaco', monospace;
-    font-size: 13px;
-  }
+  ${INLINE_CODE}
 `);
 
 export const DocListItem = createDocTextComponent('sw-doc-list-item', 'doc-list-item', `
-  :host { display: block; }
+  :host { display: block; font-family: var(--font); }
   .doc-list-item {
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: var(--text-body, 16px);
+    line-height: 1.7;
     color: var(--sub_text);
     padding-left: 20px;
     position: relative;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .doc-list-item::before {
-    content: '→';
+    content: '';
     position: absolute;
-    left: 0;
-    color: var(--primary);
-    font-weight: 700;
+    left: 2px;
+    top: 0.7em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
   }
-  code {
-    background: var(--surface_2);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Monaco', monospace;
-    font-size: 13px;
-  }
+  ${INLINE_CODE}
 `);
 
 export class DocLoader extends SwitchComponent {

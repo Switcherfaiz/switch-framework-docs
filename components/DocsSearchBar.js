@@ -45,12 +45,12 @@ export class DocsSearchBar extends SwitchComponent {
           width: 100%;
           background: var(--surface_2);
           border: 1px solid var(--border_color);
-          border-radius: 8px;
-          padding: 10px 12px;
-          height: 40px;
+          border-radius: 10px;
+          padding: 8px 12px;
+          height: 38px;
           cursor: pointer;
-          font-size: 14px;
-          font-family: 'Montserrat', system-ui, sans-serif;
+          font-size: var(--text-md, 14px);
+          font-family: var(--font);
           color: var(--muted_text);
           transition: border-color 0.2s;
           text-align: left;
@@ -72,13 +72,13 @@ export class DocsSearchBar extends SwitchComponent {
         }
 
         .search-trigger kbd {
-          font-size: 11px;
+          font-size: var(--text-xs, 11px);
           color: var(--muted_text);
           border: 1px solid var(--border_color);
-          background: transparent;
+          background: var(--surface_1);
           padding: 2px 6px;
-          border-radius: 4px;
-          font-family: sans-serif;
+          border-radius: 5px;
+          font-family: var(--font-mono, inherit);
         }
 
         @media (max-width: 640px) {

@@ -153,8 +153,9 @@ export class DocsPageMenu extends SwitchComponent {
           border-radius: 8px;
           background: var(--surface_2);
           color: var(--main_text);
-          font-size: 13px;
+          font-size: var(--text-sm, 12.5px);
           font-weight: 600;
+          font-family: var(--font);
           cursor: pointer;
           transition: background 0.15s, border-color 0.15s;
         }
@@ -233,13 +234,13 @@ export class DocsPageMenu extends SwitchComponent {
         }
 
         .item-title {
-          font-size: 14px;
+          font-size: var(--text-md, 14px);
           font-weight: 600;
           color: var(--main_text);
         }
 
         .item-desc {
-          font-size: 12px;
+          font-size: var(--text-sm, 12.5px);
           color: var(--muted_text);
           line-height: 1.4;
         }

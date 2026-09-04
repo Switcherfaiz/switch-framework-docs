@@ -276,7 +276,7 @@ export class DocsRightSidebarNav extends SwitchComponent {
       <style>
         :host {
           display: block;
-          width: 240px;
+          width: 100%;
           height: 100%;
           min-height: 0;
           overflow: hidden;
@@ -287,7 +287,7 @@ export class DocsRightSidebarNav extends SwitchComponent {
           height: 100%;
           min-height: 0;
           background: var(--page_background);
-          padding: 20px 0;
+          padding: 24px 0;
           overflow-y: auto;
           overflow-x: hidden;
           scrollbar-width: thin;
@@ -312,16 +312,16 @@ export class DocsRightSidebarNav extends SwitchComponent {
         }
 
         .toc {
-          padding: 0 16px;
+          padding: 0 20px 0 16px;
         }
 
         .toc-title {
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.06em;
           color: var(--muted_text);
-          margin: 0 0 12px;
+          margin: 0 0 14px;
         }
 
         .toc-list {
@@ -331,17 +331,19 @@ export class DocsRightSidebarNav extends SwitchComponent {
         }
 
         .toc-level-2 .toc-link { padding-left: 12px; }
-        .toc-level-3 .toc-link { padding-left: 20px; font-size: 12px; }
-        .toc-level-4 .toc-link { padding-left: 28px; font-size: 12px; }
+        .toc-level-3 .toc-link { padding-left: 18px; font-size: 13px; font-weight: 500; }
+        .toc-level-4 .toc-link { padding-left: 24px; font-size: 13px; font-weight: 500; }
 
         .toc-link {
           display: block;
-          padding: 6px 12px;
+          padding: 7px 12px;
           margin-left: 0;
-          font-size: 13px;
+          font-size: 13.5px;
+          font-weight: 500;
+          line-height: 1.4;
           color: var(--sub_text);
           text-decoration: none;
-          border-radius: 4px;
+          border-radius: 6px;
           transition: all 0.15s;
           border-left: 2px solid transparent;
         }
@@ -349,19 +351,21 @@ export class DocsRightSidebarNav extends SwitchComponent {
         .toc-link:hover {
           background: var(--surface_hover);
           color: var(--primary);
+          font-weight: 600;
         }
 
         .toc-link.active {
           color: var(--primary);
-          font-weight: 600;
+          font-weight: 700;
           border-left-color: var(--primary);
           background: var(--primary_light);
         }
 
         .toc-empty {
           font-size: 13px;
+          font-weight: 500;
           color: var(--muted_text);
-          padding: 6px 12px;
+          padding: 6px 10px;
         }
 
         @media (max-width: 1024px) {

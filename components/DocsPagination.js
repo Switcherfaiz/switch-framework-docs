@@ -89,8 +89,8 @@ export class DocsPagination extends SwitchComponent {
           justify-content: space-between;
           align-items: stretch;
           gap: 16px;
-          margin-top: 72px;
-          padding-top: 32px;
+          margin-top: 48px;
+          padding-top: 28px;
           border-top: 1px solid var(--border_color);
         }
 
@@ -98,18 +98,18 @@ export class DocsPagination extends SwitchComponent {
           display: flex;
           align-items: center;
           gap: 14px;
-          padding: 16px 24px;
+          padding: 14px 18px;
           border: 1px solid var(--border_color);
           border-radius: 12px;
-          background: var(--surface_2);
+          background: var(--surface_1);
           color: var(--sub_text);
-          font-size: 14px;
+          font-size: var(--text-md, 14px);
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s ease;
           flex: 1;
           max-width: 280px;
-          min-height: 72px;
+          min-height: 64px;
         }
 
         .pagination-btn:hover:not(:disabled) {
@@ -137,13 +137,13 @@ export class DocsPagination extends SwitchComponent {
         .pagination-btn.next .pagination-text { align-items: flex-end; }
 
         .pagination-label {
-          font-size: 11px;
+          font-size: var(--text-xs, 11px);
           color: var(--muted_text);
           text-transform: uppercase;
           letter-spacing: 0.06em;
         }
 
-        .pagination-page { font-size: 15px; font-weight: 600; color: var(--main_text); }
+        .pagination-page { font-size: var(--text-md, 14px); font-weight: 650; color: var(--main_text); }
 
         @media (max-width: 768px) {
           .pagination { flex-direction: column; gap: 12px; }

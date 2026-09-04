@@ -529,10 +529,10 @@ export class Counter extends SwitchComponent {
         }
 
         .hero-title {
-          font-size: 80px;
-          font-weight: 700;
-          line-height: 1.1;
-          letter-spacing: -0.02em;
+          font-size: clamp(40px, 6vw, 64px);
+          font-weight: 750;
+          line-height: 1.08;
+          letter-spacing: -0.035em;
           color: var(--main_text);
           margin-bottom: 24px;
         }
@@ -546,9 +546,9 @@ export class Counter extends SwitchComponent {
         }
 
         .hero-subtitle {
-          font-size: 20px;
-          font-weight: 400;
-          line-height: 1.6;
+          font-size: var(--text-lg, 17px);
+          font-weight: 450;
+          line-height: 1.65;
           color: var(--sub_text);
           max-width: 800px;
           margin: 0 auto 40px;

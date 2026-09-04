@@ -78,12 +78,13 @@ export class DocsParamsTable extends SwitchComponent {
         .params-table {
           width: 100%;
           border-collapse: collapse;
-          font-size: 14px;
+          font-size: var(--text-md, 14px);
+          font-family: var(--font);
         }
 
         .params-table th,
         .params-table td {
-          padding: 14px 18px;
+          padding: 11px 14px;
           text-align: left;
           border-bottom: 1px solid var(--border_color);
         }
@@ -107,8 +108,8 @@ export class DocsParamsTable extends SwitchComponent {
           background: var(--surface_3);
           padding: 2px 6px;
           border-radius: 4px;
-          font-family: 'SF Mono', Monaco, Consolas, monospace;
-          font-size: 13px;
+          font-family: var(--font-mono, 'Fira Code', monospace);
+          font-size: 12.5px;
           color: var(--code_text);
         }
       </style>

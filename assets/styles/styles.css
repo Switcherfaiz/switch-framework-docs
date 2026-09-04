@@ -230,7 +230,17 @@ body {
   --radius_md: 12px;
   --radius_lg: 16px;
 
-  --font: 'Montserrat', 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', 'SF Mono', Monaco, Consolas, monospace;
+  --text-xs: 12px;
+  --text-sm: 13.5px;
+  --text-md: 15px;
+  --text-body: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 32px;
+  --leading-tight: 1.25;
+  --leading-body: 1.75;
 }
 
 /* Dark mode */

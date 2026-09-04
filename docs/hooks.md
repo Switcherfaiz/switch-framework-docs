@@ -4,10 +4,29 @@ Hooks are small tools that help your components **remember things**, **react to 
 
 > **Simple idea:** A **state** is like a shared notebook. Anyone can read it with `getState` and write in it with `updateState`. Hooks tell your component when to redraw, when to run extra code, or how to control lists.
 
+---
+
+### Quick cheat sheet (read this first)
+
+```params-table
+{"headers":["Tool","What it is","Rerender?","Where to call","Read / write"],"htmlColumns":[0,1,2,3,4],"rows":[["<code>createState(key, value)</code>","Create a global key once at app boot","—","<code>_layout.js</code> init","<code>getState(key)</code> / <code>updateState(key, value)</code>"],["<code>ensureState(key, value)</code>","Same as create, but never throws if key exists","—","boot or features","same as createState"],["<code>getState(key)</code>","Read a global value from anywhere","No","anywhere","read only"],["<code>updateState(key, value)</code>","Write a global value from anywhere","Only if a screen uses <code>useShared</code> on that key","anywhere","write"],["<code>useState(initial)</code>","Small local value on this tag only","Yes — this component only","<code>render()</code>","returned <code>[value, setValue]</code>"],["<code>useInstanceState(initial)</code>","Screen data on this tag only (like constructor fields)","Optional — default yes; pass <code>{ rerender: false }</code> to skip","<code>render()</code>","returned <code>[value, setValue]</code> — not in <code>getState</code>"],["<code>useShared(key, default)</code>","Subscribe to a global key + rerender this screen when it changes","Yes — full rerender","<code>render()</code>","returned <code>[value, setValue]</code> — same as updateState"],["<code>onState(key, fn)</code>","Run a function when a global key changes","No — patch DOM only","<code>onMount()</code> once","wins over useShared for same key"],["<code>useEffect(fn, deps)</code>","Run code when deps change","Can trigger rerender if deps are state keys","<code>effects()</code>",""],["<code>useScreenFocus(fn)</code>","Run when this screen is visible (and params match)","No by itself","<code>effects()</code>",""],["<code>this.paint(sel, html)</code>","Replace one HTML region without full rerender","No","handlers / async","imperative"]]}
+```
+
+**Two state systems (both stay — they do different jobs):**
+
+- **`SwitchStateManager`** — app data keys: `user`, `pins`, `home-results`. Use `createState` / `ensureState` / `getState` / `updateState` / hooks.
+- **`globalStates`** — router + navigation: `activeRoute`, `routeParams`, `navigate`. The framework mirrors route keys into `SwitchStateManager` at boot so `useEffect(..., ['activeRoute'])` works.
+
+**Lifecycle:**
+
+- **`onMount()`** — runs **once** after first render. Put `listener()` and `onState()` here.
+- **`onUpdate()`** — optional; runs after later rerenders only.
+- **`effects()`** — runs every render cycle; put `useScreenFocus` / `useEffect` here.
+
 **Where hooks go:**
-- **`useState(initial)`**, **`useShared(key)`** → call from **`render()`** so subscriptions wire up on every render cycle.
-- **`useEffect`** and **`useScreenFocus`** → write them in **`effects()`**.
-- **`onState(key, fn)`**, **`this.listener()`**, and **`useRef(this)`** → write them in **`onMount()`**.
+- **`useState(initial)`**, **`useShared(key)`**, **`useInstanceState(initial)`** → call from **`render()`**
+- **`useEffect`** and **`useScreenFocus`** → write them in **`effects()`**
+- **`onState(key, fn)`**, **`this.listener()`**, and **`useRef(this)`** → write them in **`onMount()`**
 
 Every example below is a **full component** you can copy, register, and run.
 
@@ -15,11 +34,11 @@ Every example below is a **full component** you can copy, register, and run.
 
 ### React-style hooks (simplified API)
 
-These three hooks cover most cases without global keys or `static {}` blocks.
+These hooks cover most cases without global keys or `static {}` blocks.
 
 #### useState — local component state
 
-`useState(initialValue)` creates state that belongs only to this component instance. Calling the setter rerenders this component and no one else.
+`useState(initialValue)` creates state that belongs only to this component instance. Calling the setter rerenders this component and no one else. **Not global** — other components cannot use `getState()` to read it.
 
 ```javascript title:components/Counter.js
 import { SwitchComponent, useState, registerComponent } from 'switch-framework';
@@ -52,9 +71,76 @@ registerComponent(Counter);
 
 ---
 
+#### useInstanceState — screen-level instance state
+
+`useInstanceState(initialValue)` stores data **on this component instance** — like putting values on `this` in a constructor. Each keep-alive screen gets its own copy (e.g. `/user/alice` vs `/user/bob`).
+
+- **Not global** — no `getState('profile')` from another file.
+- **Default:** calling the setter **rerenders** this screen (same as `useState`).
+- **Skip rerender:** `setProfile(next, { rerender: false })` then use `this.paint()` or a small DOM patch.
+
+```javascript title:screens/UserScreen.js
+import { SwitchComponent, useInstanceState, useScreenFocus, registerComponent } from 'switch-framework';
+
+export class UserScreen extends SwitchComponent {
+  static screenName = 'user/:id';
+  static tag = 'sw-user-screen';
+  static props = 'encoded';
+
+  effects() {
+    useScreenFocus(() => this.load());
+  }
+
+  onMount() {
+    this.listener('#follow', 'click', () => {
+      this._setProfile((s) => ({
+        ...s,
+        user: { ...s.user, isFollowing: !s.user.isFollowing }
+      }), { rerender: false });
+      // patch button only — no full remount
+      const btn = this.select('#follow');
+      if (btn) btn.textContent = 'Following';
+    });
+  }
+
+  async load() {
+    const id = this.getProps().id;
+    const json = await fetch(`/api/users/${id}`).then((r) => r.json());
+    this._setProfile({ user: json.user, pins: [], loading: false });
+  }
+
+  render() {
+    const [profile, setProfile] = useInstanceState({ user: null, pins: [], loading: true });
+    this._setProfile = setProfile;
+    const { user, loading } = profile;
+    if (loading) return `<div class="page">Loading…</div>`;
+    return `<div class="page"><h1>${user?.name}</h1><button id="follow">Follow</button></div>`;
+  }
+}
+registerComponent(UserScreen);
+```
+
+---
+
+#### ensureState — safe global key creation
+
+`ensureState(key, default)` creates a global key **only if missing**. Use it in `_layout.js` boot and feature files instead of `try { createState(...) } catch {}`.
+
+`createState` still throws when the key already exists — useful to catch duplicate boot keys during development.
+
+```javascript title:app/_layout.js
+import { ensureState, updateState } from 'switch-framework';
+
+ensureState('pins', []);
+ensureState('user', null);
+updateState('user', sessionUser);
+```
+
+---
+
 #### useShared — subscribe to global state
 
-`useShared(key, defaultValue?)` reads a global state key **and** subscribes this component to it. When the value changes (from anywhere in the app), this component rerenders. No `static {}` block needed, and **no separate `createState` call needed** — if the key does not exist yet, `useShared` creates it automatically using `defaultValue` as the initial value.
+`useShared(key, defaultValue?)` reads a global state key **and** subscribes this component to it. When the value changes (from anywhere in the app), this component rerenders. Uses `ensureState` internally — no try/catch needed.
 
 ```javascript title:screens/PinsScreen.js
 import { SwitchComponent, useShared, useScreenFocus, createProps } from 'switch-framework';
@@ -99,7 +185,7 @@ export class PinsScreen extends SwitchComponent {
 
 `onState(key, fn)` subscribes to a global key and calls `fn` on each change — **without** triggering `render()`. Use this when replacing `innerHTML` would reset a CSS animation or discard a focused input.
 
-Call it from `onMount()`. On every rerender `onMount` runs again, but `onState` deduplicates subscriptions per key — the callback reference is updated, not stacked.
+Call it from `onMount()` (runs once). Subscriptions are deduped per key — calling onState with the same key on a later rerender safely updates the callback reference.
 
 **Priority rule — `onState` wins over `useShared` for the same key.** If both are called for the same key on the same component, the framework cancels the `useShared` rerender subscription so only the `onState` callback fires. This lets you opt out of a full rerender for specific keys. In practice, use each key with only one strategy: either `useShared` (rerender) or `onState` (callback), not both.
 

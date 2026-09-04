@@ -38,15 +38,15 @@ export class DocsFeedback extends SwitchComponent {
           display: flex;
           align-items: center;
           gap: 12px;
-          margin-top: 24px;
-          padding: 16px;
-          background: var(--surface_2);
+          margin-top: 28px;
+          padding: 14px 16px;
+          background: var(--surface_1);
           border: 1px solid var(--border_color);
           border-radius: 12px;
         }
 
         .feedback-label {
-          font-size: 14px;
+          font-size: var(--text-md, 14px);
           font-weight: 600;
           color: var(--sub_text);
         }

@@ -237,7 +237,7 @@ export class SwTabsLayout extends TabLayout {
           width: 100%;
           height: inherit;
           overflow: hidden;
-          font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+          font-family: var(--font);
         }
 
         * {
@@ -256,7 +256,7 @@ export class SwTabsLayout extends TabLayout {
         .content {
           flex: 1;
           display: grid;
-          grid-template-columns: 260px 1fr 240px;
+          grid-template-columns: 268px minmax(0, 1fr) 300px;
           overflow: hidden;
           position: relative;
         }

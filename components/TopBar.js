@@ -149,10 +149,11 @@ export class TopBar extends SwitchComponent {
           align-items: center;
           justify-content: space-between;
           gap: 24px;
-          padding: 12px 40px;
+          padding: 10px 28px;
+          height: 60px;
           border-bottom: 1px solid var(--border_color);
-          background: var(--page_background);
-          backdrop-filter: blur(12px);
+          background: color-mix(in srgb, var(--page_background) 86%, transparent);
+          backdrop-filter: blur(16px);
           position: sticky;
           top: 0;
           z-index: 50;
@@ -198,7 +199,7 @@ export class TopBar extends SwitchComponent {
         }
 
         .logo-text {
-          font-size: 18px;
+          font-size: 15px;
           font-weight: 700;
           color: var(--main_text);
           letter-spacing: -0.015em;
@@ -208,14 +209,14 @@ export class TopBar extends SwitchComponent {
         .nav-links {
           display: flex;
           align-items: center;
-          gap: 36px;
+          gap: 22px;
         }
 
         .nav-link {
           color: var(--sub_text);
           text-decoration: none;
-          font-size: 14px;
-          font-weight: 500;
+          font-size: 13px;
+          font-weight: 550;
           transition: color 0.2s;
           cursor: pointer;
         }
