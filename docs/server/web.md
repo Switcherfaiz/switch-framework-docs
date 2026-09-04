@@ -65,13 +65,10 @@ backend/
 └── uploads/
 ```
 
-Root `server.js` proxies `/api` and `/uploads` to that API:
+Root `server.js` is UI-only (Switch Framework static files and sessions). The browser calls the API origin directly (`http://localhost:4000`).
 
-```javascript title:Proxy /api to the backend
-app.initServer((server) => {
-  server.use('/api', proxyToApi);
-  server.use('/uploads', proxyToApi);
-});
+```javascript title:app/api.js
+export const API_ORIGIN = 'http://localhost:4000';
 ```
 
 Start both:

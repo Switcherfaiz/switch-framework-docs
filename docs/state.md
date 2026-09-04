@@ -2,6 +2,9 @@
 
 Need to share data between components that live in totally different parts of your app? Say hello to **SwitchStateManager** – a lightweight, event-driven state system. Create a state once, subscribe from anywhere, update from anywhere. No prop drilling, no context providers. Just good ol' reactive state that works.
 
+> [!NOTE]
+> Create keys once at boot with `createState` in `app/_layout.js` `init()`. Screens then subscribe with `static { this.useState('key'); }` or `useShared` / `onState`. See [[Hooks|docs/hooks]] for the full cheat sheet.
+
 ### The Big Idea
 
 You give each state a unique **identifier** (a string like `'patient-list'` or `'cart-items'`). One component creates it and gets a setter. Other components – anywhere in the tree – can subscribe and get updates. When someone calls `updateState`, every subscriber gets notified.

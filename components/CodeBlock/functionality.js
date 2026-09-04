@@ -90,16 +90,24 @@ export function renderCodeBlockShell(block) {
   return `
     <div class="code-card">
       <div class="code-toolbar">
-        <button type="button" class="code-lang-btn" id="code-lang-open">${label}</button>
-        ${title ? `<span class="code-file-label">${title}</span>` : ''}
+        <div class="code-toolbar-meta">
+          <button type="button" class="code-lang-btn" id="code-lang-open">${label}</button>
+          ${title ? `<span class="code-file-label">${title}</span>` : ''}
+        </div>
         <div class="code-toolbar-actions">
           ${runnable ? '<button type="button" class="code-icon-btn" id="code-run" aria-label="Run preview"><span class="switch_icon_play"></span></button>' : ''}
-          <button type="button" class="code-icon-btn" id="code-copy" aria-label="Copy code"><span class="switch_icon_copy"></span></button>
+          <button type="button" class="code-copy-btn" id="code-copy" aria-label="Copy code">
+            <span class="switch_icon_copy"></span>
+            <span class="copy-label">Copy</span>
+          </button>
           <button type="button" class="code-icon-btn" id="code-expand" aria-label="Expand code"><span class="switch_icon_fullscreen"></span></button>
         </div>
       </div>
-      <div class="code-editor-panel">
-        <pre class="code-pre"><code class="hljs language-${hljsLang}" id="code-inline" data-code-body></code></pre>
+      <div class="code-scroll">
+        <div class="code-gutter" id="code-gutter" aria-hidden="true"></div>
+        <div class="code-editor-panel">
+          <pre class="code-pre"><code class="hljs language-${hljsLang}" id="code-inline" data-code-body></code></pre>
+        </div>
       </div>
     </div>`;
 }
@@ -165,12 +173,24 @@ export function createCodeBlockFunctionality(host, hljs) {
     el.innerHTML = formatHighlighted(hljs, text, language);
   };
 
+  const paintGutter = (root, text) => {
+    const gutter = root?.querySelector('#code-gutter');
+    if (!gutter) return;
+    const count = Math.max(1, String(text ?? '').trim().split('\n').length);
+    gutter.replaceChildren(...Array.from({ length: count }, (_, i) => {
+      const span = document.createElement('span');
+      span.textContent = String(i + 1);
+      return span;
+    }));
+  };
+
   const applyHighlight = () => {
     const block = getBlock();
     if (!block) return;
     const text = getText();
     uiLanguage = host._uiLanguage || getCodeBlockLanguage(block);
     paintCode(host.shadowRoot?.querySelector('#code-inline'), text, uiLanguage);
+    paintGutter(host.shadowRoot, text);
     if (fsPortal && fullscreenTab === 'code' && !fsEditMode) {
       paintCode(fsPortal.querySelector('#code-full'), text, uiLanguage);
     }
@@ -377,11 +397,17 @@ export function createCodeBlockFunctionality(host, hljs) {
       if (e.target?.closest?.('#code-copy')) {
         const ok = await copyText(getText());
         if (ok) {
-          const icon = root.querySelector('#code-copy span');
-          if (icon) {
-            icon.className = 'switch_icon_check';
-            setTimeout(() => { icon.className = 'switch_icon_copy'; }, 1200);
-          }
+          const btn = root.querySelector('#code-copy');
+          const icon = btn?.querySelector('.switch_icon_copy, .switch_icon_check');
+          const label = btn?.querySelector('.copy-label');
+          btn?.classList.add('is-copied');
+          if (icon) icon.className = 'switch_icon_check';
+          if (label) label.textContent = 'Copied';
+          setTimeout(() => {
+            btn?.classList.remove('is-copied');
+            if (icon) icon.className = 'switch_icon_copy';
+            if (label) label.textContent = 'Copy';
+          }, 1400);
         }
         return;
       }

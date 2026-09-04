@@ -71,28 +71,32 @@ export class DocsParamsTable extends SwitchComponent {
 
         .table-wrap {
           overflow-x: auto;
-          border-radius: var(--radius_sm, 8px);
+          border-radius: 12px;
           border: 1px solid var(--border_color);
+          background: var(--surface_1);
         }
 
         .params-table {
           width: 100%;
           border-collapse: collapse;
-          font-size: var(--text-md, 14px);
+          font-size: 13.5px;
           font-family: var(--font);
         }
 
         .params-table th,
         .params-table td {
-          padding: 11px 14px;
+          padding: 10px 14px;
           text-align: left;
           border-bottom: 1px solid var(--border_color);
         }
 
         .params-table th {
           background: var(--surface_2);
-          font-weight: 600;
-          color: var(--main_text);
+          font-weight: 650;
+          font-size: 12px;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          color: var(--muted_text);
         }
 
         .params-table td {

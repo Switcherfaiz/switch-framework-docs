@@ -1,4 +1,4 @@
-﻿import { SwitchComponent, updateState, useState } from 'switch-framework';
+import { SwitchComponent, updateState, useState } from 'switch-framework';
 import { loadDocContent, renderDocShell, docPageFromScreenName } from '/utils/doc-loader.js';
 import { icons } from '/data/icons-map.js';
 import { iconsFilterHandlers } from '/data/icons-filter-handlers.js';

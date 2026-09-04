@@ -107,40 +107,74 @@
 
 /* DM Sans */
 @font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 @font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-Italic.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
 }
 @font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-Black.ttf') format('truetype');
-    font-weight: 900;
-    font-style: normal;
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
 @font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-BoldItalic.ttf') format('truetype');
-    font-weight: 900;
-    font-style: italic;
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
 }
 @font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-Medium.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
 }
 @font-face {
-    font-family: 'DM Sans';
-    src: url('/assets/fonts/DMSans-MediumItalic.ttf') format('truetype');
-    font-weight: 500;
-    font-style: italic;
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/assets/fonts/DMSans-BlackItalic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
 }
 
 html, body {
@@ -148,12 +182,29 @@ html, body {
   overflow-x: hidden;
 }
 
+html {
+  color-scheme: light;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   margin: 0;
   background: var(--page_background);
   color: var(--main_text);
   font-family: var(--font);
+  font-feature-settings: 'ss01' on, 'cv11' on;
   transition: background-color 0.2s, color 0.2s;
+}
+
+body[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+::selection {
+  background: var(--primary_light);
+  color: var(--main_text);
 }
 
 /* ─── Scrollbars (Firefox + WebKit) ───────────────────────────────── */
@@ -186,101 +237,131 @@ body {
   background: transparent;
 }
 
-/* Light mode: soft slate “inverse” of dark — same structure, less harsh contrast */
+/* Light: clean zinc canvas, indigo accent */
 :root, body {
   --primary: #4f46e5;
   --primary_hover: #4338ca;
-  --primary_light: rgba(79, 70, 229, 0.12);
+  --primary_light: rgba(79, 70, 229, 0.1);
 
-  --page_background: #f1f5f9;
+  --page_background: #fafafa;
   --surface_1: #ffffff;
-  --surface_2: #e8edf3;
-  --surface_3: #e2e8f0;
-  --surface_hover: #dbe4ee;
+  --surface_2: #f4f4f5;
+  --surface_3: #e4e4e7;
+  --surface_hover: #ececee;
 
-  --main_text: #1e293b;
-  --sub_text: #64748b;
-  --muted_text: #94a3b8;
+  --main_text: #18181b;
+  --sub_text: #52525b;
+  --muted_text: #a1a1aa;
 
-  --border_color: #cbd5e1;
-  --border_light: #e2e8f0;
+  --border_color: #e4e4e7;
+  --border_light: #f4f4f5;
 
-  --scrollbar_track: #e2e8f0;
-  --scrollbar_thumb: #cbd5e1;
-  --scrollbar_thumb_hover: #94a3b8;
+  --scrollbar_track: transparent;
+  --scrollbar_thumb: #d4d4d8;
+  --scrollbar_thumb_hover: #a1a1aa;
 
-  --code_bg: #eef2f7;
+  --code_bg: #f4f4f5;
   --code_text: #4f46e5;
   --code_string: #b45309;
 
-  /* Code block: dark panel on light page (matches dark theme panels) */
-  --codeblock_bg: #1e293b;
-  --codeblock_header: #334155;
-  --codeblock_border: #334155;
-  --codeblock_text: #f8fafc;
-  --codeblock_muted: #94a3b8;
+  --codeblock_bg: #18181b;
+  --codeblock_header: #27272a;
+  --codeblock_border: #27272a;
+  --codeblock_text: #fafafa;
+  --codeblock_muted: #a1a1aa;
   --codeblock_string: #fbbf24;
-  --codeblock_accent: #818cf8;
+  --codeblock_accent: #a5b4fc;
 
-  --shadow_sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow_md: 0 4px 12px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);
-  --shadow_lg: 0 12px 32px rgba(15, 23, 42, 0.08), 0 4px 8px rgba(15, 23, 42, 0.04);
+  --callout_note_bg: #eef2ff;
+  --callout_note_border: #c7d2fe;
+  --callout_note_text: #3730a3;
+  --callout_tip_bg: #ecfdf5;
+  --callout_tip_border: #a7f3d0;
+  --callout_tip_text: #047857;
+  --callout_warning_bg: #fffbeb;
+  --callout_warning_border: #fde68a;
+  --callout_warning_text: #b45309;
+  --callout_important_bg: #f5f3ff;
+  --callout_important_border: #ddd6fe;
+  --callout_important_text: #6d28d9;
+  --callout_caution_bg: #fef2f2;
+  --callout_caution_border: #fecaca;
+  --callout_caution_text: #b91c1c;
+
+  --shadow_sm: 0 1px 2px rgba(24, 24, 27, 0.04);
+  --shadow_md: 0 8px 24px rgba(24, 24, 27, 0.06);
+  --shadow_lg: 0 24px 48px rgba(24, 24, 27, 0.08);
 
   --radius_sm: 8px;
   --radius_md: 12px;
   --radius_lg: 16px;
+  --radius_xl: 24px;
 
-  --font: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font: 'DM Sans', 'Montserrat', system-ui, -apple-system, sans-serif;
   --font-mono: 'Fira Code', 'SF Mono', Monaco, Consolas, monospace;
   --text-xs: 12px;
-  --text-sm: 13.5px;
-  --text-md: 15px;
+  --text-sm: 13px;
+  --text-md: 14.5px;
   --text-body: 16px;
   --text-lg: 18px;
   --text-xl: 22px;
-  --text-2xl: 32px;
-  --leading-tight: 1.25;
+  --text-2xl: 34px;
+  --leading-tight: 1.2;
   --leading-body: 1.75;
+  --header_height: 56px;
 }
 
-/* Dark mode */
 body[data-theme="dark"] {
-  color-scheme: dark;
   --primary: #818cf8;
   --primary_hover: #a5b4fc;
-  --primary_light: rgba(129, 140, 248, 0.15);
+  --primary_light: rgba(129, 140, 248, 0.14);
 
-  --page_background: #0f172a;
-  --surface_1: #1e293b;
-  --surface_2: #334155;
-  --surface_3: #475569;
-  --surface_hover: #475569;
+  --page_background: #09090b;
+  --surface_1: #111113;
+  --surface_2: #18181b;
+  --surface_3: #27272a;
+  --surface_hover: #27272a;
 
-  --main_text: #f8fafc;
-  --sub_text: #cbd5e1;
-  --muted_text: #94a3b8;
+  --main_text: #fafafa;
+  --sub_text: #a1a1aa;
+  --muted_text: #71717a;
 
-  --border_color: #334155;
-  --border_light: #1e293b;
+  --border_color: #27272a;
+  --border_light: #18181b;
 
-  --scrollbar_track: #1e293b;
-  --scrollbar_thumb: #475569;
-  --scrollbar_thumb_hover: #64748b;
+  --scrollbar_track: transparent;
+  --scrollbar_thumb: #3f3f46;
+  --scrollbar_thumb_hover: #71717a;
 
-  --code_bg: #1e293b;
-  --code_text: #818cf8;
+  --code_bg: #18181b;
+  --code_text: #a5b4fc;
   --code_string: #fbbf24;
 
-  /* Code block: dark, close to page background */
-  --codeblock_bg: #1e293b;
-  --codeblock_header: #334155;
-  --codeblock_border: #334155;
-  --codeblock_text: #f8fafc;
-  --codeblock_muted: #94a3b8;
+  --codeblock_bg: #111113;
+  --codeblock_header: #18181b;
+  --codeblock_border: #27272a;
+  --codeblock_text: #fafafa;
+  --codeblock_muted: #a1a1aa;
   --codeblock_string: #fbbf24;
-  --codeblock_accent: #818cf8;
+  --codeblock_accent: #a5b4fc;
 
-  --shadow_sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow_md: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.3);
-  --shadow_lg: 0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -4px rgba(0,0,0,0.4);
+  --callout_note_bg: rgba(79, 70, 229, 0.12);
+  --callout_note_border: rgba(129, 140, 248, 0.35);
+  --callout_note_text: #c7d2fe;
+  --callout_tip_bg: rgba(16, 185, 129, 0.1);
+  --callout_tip_border: rgba(52, 211, 153, 0.32);
+  --callout_tip_text: #6ee7b7;
+  --callout_warning_bg: rgba(245, 158, 11, 0.1);
+  --callout_warning_border: rgba(251, 191, 36, 0.32);
+  --callout_warning_text: #fcd34d;
+  --callout_important_bg: rgba(139, 92, 246, 0.12);
+  --callout_important_border: rgba(167, 139, 250, 0.35);
+  --callout_important_text: #ddd6fe;
+  --callout_caution_bg: rgba(239, 68, 68, 0.1);
+  --callout_caution_border: rgba(248, 113, 113, 0.32);
+  --callout_caution_text: #fca5a5;
+
+  --shadow_sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow_md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow_lg: 0 24px 48px rgba(0, 0, 0, 0.45);
 }

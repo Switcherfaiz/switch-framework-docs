@@ -2,6 +2,9 @@
 
 Use the CLI to scaffold a Switch Framework app with Electron for desktop distribution. Your app runs in a native window with access to Node.js APIs when needed.
 
+> [!CAUTION]
+> Pair Electron with a supported Node.js version. The version table is on the [[CLI|docs/cli]] page. A mismatch can make `npm run electron:dev` fail.
+
 ### Create a desktop app
 
 ```bash title:Create Electron app

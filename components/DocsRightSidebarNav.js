@@ -312,53 +312,58 @@ export class DocsRightSidebarNav extends SwitchComponent {
         }
 
         .toc {
-          padding: 0 20px 0 16px;
+          padding: 0 18px 32px 14px;
         }
 
         .toc-title {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.06em;
+          letter-spacing: 0.08em;
           color: var(--muted_text);
-          margin: 0 0 14px;
+          margin: 0 0 12px;
         }
 
         .toc-list {
           list-style: none;
           padding: 0;
           margin: 0;
+          border-left: 1px solid var(--border_color);
         }
 
+        .toc-level-1 .toc-link { padding-left: 12px; }
         .toc-level-2 .toc-link { padding-left: 12px; }
-        .toc-level-3 .toc-link { padding-left: 18px; font-size: 13px; font-weight: 500; }
-        .toc-level-4 .toc-link { padding-left: 24px; font-size: 13px; font-weight: 500; }
+        .toc-level-3 .toc-link { padding-left: 20px; font-size: 12.5px; }
+        .toc-level-4 .toc-link { padding-left: 28px; font-size: 12.5px; }
 
         .toc-link {
           display: block;
-          padding: 7px 12px;
-          margin-left: 0;
-          font-size: 13.5px;
+          padding: 6px 10px 6px 12px;
+          font-size: 13px;
           font-weight: 500;
-          line-height: 1.4;
+          line-height: 1.45;
           color: var(--sub_text);
           text-decoration: none;
-          border-radius: 6px;
-          transition: all 0.15s;
+          border-radius: 0;
+          transition: color 0.15s, border-color 0.15s;
           border-left: 2px solid transparent;
+          margin-left: -1px;
+          overflow-wrap: break-word;
+          word-break: break-word;
+          hyphens: auto;
         }
 
         .toc-link:hover {
-          background: var(--surface_hover);
-          color: var(--primary);
-          font-weight: 600;
+          background: transparent;
+          color: var(--main_text);
+          font-weight: 500;
         }
 
         .toc-link.active {
           color: var(--primary);
-          font-weight: 700;
+          font-weight: 600;
           border-left-color: var(--primary);
-          background: var(--primary_light);
+          background: transparent;
         }
 
         .toc-empty {

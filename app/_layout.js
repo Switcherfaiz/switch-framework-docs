@@ -1,11 +1,16 @@
-﻿import { StackLayout, createState, registerComponents, setGlobalComponentSheet } from 'switch-framework';
+import { StackLayout, createState, registerComponents, setGlobalComponentSheet } from 'switch-framework';
 import { replace } from 'switch-framework/router';
 import { SwStarterSplashScreen } from '/components/SwStarterSplashScreen.js';
 import { SwTabBar } from '/components/SwTabBar.js';
 import { DocsSearch } from '/components/DocsSearch.js';
+import { DocsSearchBar } from '/components/DocsSearchBar.js';
 import { IconsBottomSheet } from '/components/IconsBottomSheet.js';
+import { TopBar } from '/components/TopBar.js';
+import { DocsFooter } from '/components/DocsFooter.js';
+import { CodeBlock } from '/components/CodeBlock/index.js';
+import { SwProfiles } from '/components/SwProfiles.js';
 
-registerComponents([SwStarterSplashScreen, SwTabBar, DocsSearch, IconsBottomSheet]);
+registerComponents([SwStarterSplashScreen, SwTabBar, DocsSearch, DocsSearchBar, IconsBottomSheet, TopBar, DocsFooter, CodeBlock, SwProfiles]);
 
 import { SwIndexScreen } from './index.js';
 import NotFoundScreen from './+not-found.js';

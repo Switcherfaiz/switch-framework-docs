@@ -2,6 +2,9 @@
 
 Two ways to get started: install the packages yourself, or let the CLI do the heavy lifting. We recommend the CLI – it scaffolds everything so you can start coding in seconds.
 
+> [!TIP]
+> Prefer one command? `npx create-switch-framework-app my-app` scaffolds web, Electron, or both. Details live on the [[CLI|docs/cli]] page.
+
 ### Option 1: Manual install
 
 Add the core packages to your project:

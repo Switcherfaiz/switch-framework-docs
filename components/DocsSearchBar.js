@@ -41,24 +41,24 @@ export class DocsSearchBar extends SwitchComponent {
         .search-trigger {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
           width: 100%;
-          background: var(--surface_2);
+          background: var(--surface_1);
           border: 1px solid var(--border_color);
           border-radius: 10px;
-          padding: 8px 12px;
-          height: 38px;
+          padding: 0 10px 0 12px;
+          height: 36px;
           cursor: pointer;
-          font-size: var(--text-md, 14px);
+          font-size: 13px;
           font-family: var(--font);
           color: var(--muted_text);
-          transition: border-color 0.2s;
+          transition: border-color 0.15s, box-shadow 0.15s;
           text-align: left;
           box-sizing: border-box;
         }
 
         .search-trigger:hover {
-          border-color: var(--primary);
+          border-color: color-mix(in srgb, var(--primary) 45%, var(--border_color));
           color: var(--sub_text);
         }
 

@@ -17,8 +17,8 @@ function ensurePortalStyles() {
       z-index: 99999;
       display: flex;
       flex-direction: column;
-      background: var(--noterai-code-card-surface, #1e1e1e);
-      font-family: 'Montserrat', system-ui, sans-serif;
+      background: var(--codeblock_bg, #18181b);
+      font-family: var(--font, 'DM Sans', system-ui, sans-serif);
       -webkit-text-size-adjust: 100%;
       text-size-adjust: 100%;
     }
@@ -27,63 +27,70 @@ function ensurePortalStyles() {
     #${PORTAL_ID} .code-fs-head {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 6px 4px 6px 0;
+      gap: 8px;
+      padding: 8px 12px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: var(--codeblock_header, #27272a);
       flex-shrink: 0;
     }
     #${PORTAL_ID} .code-fs-close {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      border-radius: 8px;
     }
     #${PORTAL_ID} .code-fs-lang {
       flex: 1;
       min-width: 0;
-      border: none;
-      background: transparent;
-      padding: 0 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      padding: 5px 10px;
       margin: 0;
       font-family: inherit;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--noterai-code-toolbar-text, #fff);
+      font-size: 12px;
+      font-weight: 650;
+      color: var(--codeblock_muted, #a1a1aa);
       cursor: pointer;
       text-align: left;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      border-radius: 999px;
+      max-width: 220px;
     }
     #${PORTAL_ID} .code-fs-actions {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding-right: 8px;
+      gap: 6px;
+      margin-left: auto;
       flex-shrink: 0;
     }
     #${PORTAL_ID} .code-icon-btn {
       border: none;
       background: transparent;
-      padding: 5px 6px;
+      padding: 7px 8px;
       margin: 0;
       cursor: pointer;
-      color: var(--noterai-code-toolbar-icon, rgba(255,255,255,0.55));
-      font-size: 18px;
+      color: var(--codeblock_muted, #a1a1aa);
+      font-size: 16px;
       line-height: 1;
-    }
-    #${PORTAL_ID} .code-icon-btn.is-active { color: var(--noterai-code-toolbar-text, #fff); }
-    #${PORTAL_ID} .code-fs-actions .code-icon-btn.is-active {
-      color: #a5b4fc;
-      background: rgba(99,102,241,0.28);
       border-radius: 8px;
     }
+    #${PORTAL_ID} .code-icon-btn:hover {
+      background: rgba(255,255,255,0.07);
+      color: #fafafa;
+    }
+    #${PORTAL_ID} .code-icon-btn.is-active { color: #fafafa; }
+    #${PORTAL_ID} .code-fs-actions .code-icon-btn.is-active {
+      color: #c4b5fd;
+      background: rgba(129, 140, 248, 0.18);
+    }
     #${PORTAL_ID} .code-fs-run {
-      color: #a5b4fc !important;
-      background: rgba(99,102,241,0.28);
-      border-radius: 9px;
+      color: #c4b5fd !important;
+      background: rgba(129, 140, 248, 0.18);
     }
     #${PORTAL_ID} .code-fs-body {
       flex: 1;
@@ -91,7 +98,7 @@ function ensurePortalStyles() {
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      padding: 12px;
+      padding: 0;
     }
     #${PORTAL_ID} .code-fs-pane {
       flex: 1;
@@ -99,15 +106,14 @@ function ensurePortalStyles() {
       display: flex;
       flex-direction: column;
       overflow: auto;
-      border-radius: 10px;
     }
     #${PORTAL_ID} .code-fs-pane.is-hidden { display: none; }
     #${PORTAL_ID} .code-pre { margin: 0; padding: 0; overflow: auto; flex: 1; min-height: 0; }
     #${PORTAL_ID} #code-fs-view-wrap.is-hidden { display: none; }
     #${PORTAL_ID} .code-pre code.hljs {
       display: block;
-      min-height: calc(100vh - 88px);
-      padding: 12px 14px;
+      min-height: calc(100vh - 56px);
+      padding: 20px 24px;
       background: transparent !important;
       white-space: pre;
       tab-size: 2;
@@ -116,12 +122,11 @@ function ensurePortalStyles() {
     #${PORTAL_ID} .code-fs-edit {
       flex: 1;
       width: 100%;
-      min-height: calc(100vh - 88px);
-      padding: 12px 14px;
+      min-height: calc(100vh - 56px);
+      padding: 20px 24px;
       border: none;
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.25);
-      color: #f8f8f2;
+      background: #111113;
+      color: #f4f4f5;
       resize: none;
       outline: none;
       white-space: pre;
@@ -134,32 +139,33 @@ function ensurePortalStyles() {
     #${PORTAL_ID} #code-fs-preview-iframe {
       flex: 1;
       width: 100%;
-      min-height: calc(100vh - 88px);
+      min-height: calc(100vh - 56px);
       border: none;
       display: block;
       background: #fff;
-      border-radius: 10px;
     }
     #${PORTAL_ID} .code-fs-mode-toggle {
       display: flex;
       gap: 4px;
       margin-right: 4px;
+      padding: 3px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
     }
     #${PORTAL_ID} .code-fs-mode-btn {
-      border: 1px solid rgba(255,255,255,0.15);
+      border: none;
       background: transparent;
-      color: rgba(255,255,255,0.65);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
+      font-weight: 650;
+      padding: 5px 10px;
+      border-radius: 8px;
       cursor: pointer;
       font-family: inherit;
     }
     #${PORTAL_ID} .code-fs-mode-btn.is-active {
-      background: rgba(99,102,241,0.28);
+      background: rgba(129, 140, 248, 0.22);
       color: #fff;
-      border-color: rgba(99,102,241,0.5);
     }
   `;
   document.head.appendChild(style);

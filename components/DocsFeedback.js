@@ -37,38 +37,40 @@ export class DocsFeedback extends SwitchComponent {
         .feedback {
           display: flex;
           align-items: center;
+          flex-wrap: wrap;
           gap: 12px;
           margin-top: 28px;
-          padding: 14px 16px;
-          background: var(--surface_1);
+          padding: 12px 14px;
+          background: transparent;
           border: 1px solid var(--border_color);
-          border-radius: 12px;
-        }
-
-        .feedback-label {
-          font-size: var(--text-md, 14px);
-          font-weight: 600;
-          color: var(--sub_text);
+          border-radius: 14px;
         }
 
         .feedback-btn {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 8px 16px;
-          border: 1px solid var(--primary);
-          border-radius: 8px;
-          background: var(--primary_light);
-          color: var(--primary);
-          font-size: 14px;
+          padding: 7px 12px;
+          border: 1px solid var(--border_color);
+          border-radius: 999px;
+          background: var(--surface_1);
+          color: var(--main_text);
+          font-size: 13px;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: all 0.15s;
         }
 
         .feedback-btn:hover {
           background: var(--primary);
-          color: white;
+          border-color: var(--primary);
+          color: #fff;
+        }
+
+        .feedback-label {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--sub_text);
         }
 
         .feedback-btn .switch_icon_thumb_up {

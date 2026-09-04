@@ -1,4 +1,4 @@
-﻿import { SwitchComponent } from 'switch-framework';
+import { SwitchComponent } from 'switch-framework';
 import { loadDocContent, renderDocShell, docPageFromScreenName } from '/utils/doc-loader.js';
 import { DOC_STYLES } from '/utils/doc-styles.js';
 

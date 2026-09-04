@@ -2,6 +2,7 @@
 
 **FlatList** is a performant list component inspired by React Native's FlatList. It provides efficient rendering of scrollable lists with built-in support for infinite scrolling, grid layouts, pull-to-refresh, and state-driven updates.
 
+> [!NOTE]
 > **Key Concept:** FlatList extends `SwitchComponent`. Base list setup runs **automatically** — no `super.onMount()`. Use **`static { this.useState('key'); }`**, read **`getState('key')`** in `render()` / `renderItem()`, and call scroll APIs via **`useRef(this)`** in `onMount()` or **action states** from anywhere.
 
 ### Default states

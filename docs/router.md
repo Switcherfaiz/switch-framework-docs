@@ -2,6 +2,9 @@
 
 Switch Framework's router is **runtime-first** – no webpack, no build step. Register screens in your layout files and the router handles navigation, deep linking, browser history, and route parameters.
 
+> [!IMPORTANT]
+> Screens must define `static screenName`, `static path`, `static title`, and `static tag`, then be added to `StackLayout.stackScreens` or `TabLayout.screens`. The tag pattern is `sw-*` (or your app prefix).
+
 ### Register screens
 
 Screens are registered in layout static arrays — not individually at boot.

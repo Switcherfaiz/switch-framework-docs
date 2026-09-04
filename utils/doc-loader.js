@@ -5,7 +5,7 @@ export function docPageFromScreenName(screenName) {
   return String(screenName || '').replace(/^docs\/?/, '') || 'introduction';
 }
 
-export function renderDocShell(page, footer = '<sw-docs-pagination></sw-docs-pagination>', sectionClass = 'doc-section') {
+export function renderDocShell(page, footer = '<sw-docs-feedback></sw-docs-feedback><sw-docs-pagination></sw-docs-pagination>', sectionClass = 'doc-section') {
   return `
     <div class="${sectionClass}">
       <div class="doc-page-toolbar">

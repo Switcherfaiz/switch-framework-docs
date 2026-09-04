@@ -1,4 +1,4 @@
-﻿import { TabLayout, registerComponents, updateState, getState } from 'switch-framework';
+import { TabLayout, registerComponents, updateState, getState } from 'switch-framework';
 import { getActiveRoute, useRouteChangesSubscriber, replace } from 'switch-framework/router';
 import { CodeBlock } from '/components/CodeBlock/index.js';
 import { DocsChangelogLink } from '/components/DocsChangelogLink.js';
@@ -23,7 +23,8 @@ import {
   DocParagraph,
   DocCallout,
   DocListItem,
-  DocLoader
+  DocLoader,
+  DocDivider
 } from '/components/DocContent.js';
 import { DocsPageMenu } from '/components/DocsPageMenu.js';
 
@@ -50,6 +51,7 @@ registerComponents([
   DocCallout,
   DocListItem,
   DocLoader,
+  DocDivider,
   DocsPageMenu
 ]);
 import { SwDocsIntroScreen } from './screens/introduction.js';
@@ -256,9 +258,15 @@ export class SwTabsLayout extends TabLayout {
         .content {
           flex: 1;
           display: grid;
-          grid-template-columns: 268px minmax(0, 1fr) 300px;
+          grid-template-columns: 248px minmax(0, 1fr) 320px;
           overflow: hidden;
           position: relative;
+        }
+
+        @media (min-width: 1400px) {
+          .content {
+            grid-template-columns: 260px minmax(0, 1fr) 360px;
+          }
         }
 
         .left-sidebar {
@@ -332,7 +340,7 @@ export class SwTabsLayout extends TabLayout {
         }
 
         .mobile-sidebar-trigger {
-          display: none;
+          display: none !important;
         }
 
         .mobile-sidebar-backdrop {
@@ -365,35 +373,7 @@ export class SwTabsLayout extends TabLayout {
           }
 
           .mobile-sidebar-trigger {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: fixed;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 36px;
-            height: 48px;
-            padding: 0;
-            margin: 0;
-            border: none;
-            border-radius: 0 12px 12px 0;
-            background: var(--surface_2);
-            color: var(--main_text);
-            cursor: pointer;
-            z-index: 40;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.08);
-            transition: background 0.2s;
-          }
-
-          .mobile-sidebar-trigger:hover {
-            background: var(--surface_hover);
-          }
-
-          .mobile-sidebar-trigger .switch_icon_chevron_right {
-            transform: rotate(0deg);
-            display: inline-block;
-            font-size: 18px;
+            display: none !important;
           }
 
           .mobile-sidebar-backdrop {
@@ -418,13 +398,15 @@ export class SwTabsLayout extends TabLayout {
             display: flex;
             position: fixed;
             left: 0;
-            top: 0;
+            top: var(--header_height, 56px);
             bottom: 0;
             width: 280px;
             max-width: 85vw;
             z-index: 50;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            background: var(--page_background);
+            box-shadow: var(--shadow_lg);
             flex-direction: column;
+            border-right: 1px solid var(--border_color);
           }
 
           .mobile-sidebar-header {

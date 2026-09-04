@@ -125,8 +125,41 @@ function headingId(text) {
     .replace(/^-+|-+$/g, '');
 }
 
-function textComponent(tag, html, id) {
-  return `<${tag} data="${dataAttr({ html, id: id || headingId(html) })}"></${tag}>`;
+function textComponent(tag, html, id, extra = {}) {
+  return `<${tag} data="${dataAttr({ html, id: id || headingId(html), ...extra })}"></${tag}>`;
+}
+
+function parseCalloutBlock(openLine, restLines) {
+  const rawLines = [openLine, ...restLines].map((line) => {
+    const value = norm(line);
+    return value.replace(/^>\s?/, '');
+  });
+
+  let variant = 'note';
+  let bodyLines = rawLines;
+
+  const header = String(rawLines[0] || '').trim();
+  const alertMatch = header.match(/^\[!(NOTE|TIP|WARNING|IMPORTANT|CAUTION|DEPRECATED)\]\s*(.*)$/i);
+  if (alertMatch) {
+    const kind = alertMatch[1].toLowerCase();
+    variant = kind === 'deprecated' ? 'warning' : kind;
+    const sameLine = String(alertMatch[2] || '').trim();
+    bodyLines = sameLine ? [sameLine, ...rawLines.slice(1)] : rawLines.slice(1);
+  } else {
+    const joined = rawLines.join(' ');
+    if (/\bdeprecated\b/i.test(joined)) variant = 'warning';
+    else if (/\bcaution\b|\bwarning\b/i.test(joined)) variant = 'warning';
+    else if (/\bkey concept\b/i.test(joined)) variant = 'note';
+    else if (/\brule of thumb\b|\bsimple idea\b|\btip\b/i.test(joined)) variant = 'tip';
+    else if (/\bclassic api\b|\bimportant\b/i.test(joined)) variant = 'important';
+  }
+
+  const html = bodyLines
+    .map((line) => inlineText(line))
+    .filter((line) => String(line).trim())
+    .join('<br>');
+
+  return { variant, html };
 }
 
 const rules = [
@@ -193,9 +226,20 @@ const rules = [
     },
   },
   {
-    test:   (line) => /^> /.test(norm(line)),
-    token:  (line) => ({ type: 'callout', text: norm(line).slice(2).trim() }),
-    render: ({ text }) => textComponent('sw-doc-callout', inlineText(text)),
+    test:   (line) => /^---+$/.test(norm(line).trim()),
+    token:  () => ({ type: 'hr' }),
+    render: () => '<sw-doc-divider></sw-doc-divider>',
+  },
+  {
+    test:          (line) => /^>/.test(norm(line)),
+    multiline:     true,
+    consumeClose:  false,
+    close:         (line) => !/^>/.test(norm(line)),
+    token:         (openLine, lines) => {
+      const { variant, html } = parseCalloutBlock(openLine, lines);
+      return { type: 'callout', variant, html };
+    },
+    render:        ({ variant, html }) => textComponent('sw-doc-callout', html, '', { variant }),
   },
   {
     test:   (line) => /^- /.test(norm(line)),
@@ -227,7 +271,7 @@ export const parse = (md) => {
         i += 1;
       }
       tokens.push({ ...rule.token(openLine, collected), rule });
-      if (i < lines.length && rule.close(lines[i])) i += 1;
+      if (rule.consumeClose !== false && i < lines.length && rule.close(lines[i])) i += 1;
     } else {
       tokens.push({ ...rule.token(line), rule });
       i += 1;

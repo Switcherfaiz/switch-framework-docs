@@ -13,32 +13,35 @@ function ensurePortalStyles() {
       align-items: flex-end;
       justify-content: center;
       background: rgba(0, 0, 0, 0.45);
-      font-family: var(--font, 'Montserrat', system-ui, sans-serif);
+      font-family: var(--font, 'DM Sans', system-ui, sans-serif);
     }
     #${PORTAL_ID}.is-hidden { display: none; }
     #${PORTAL_ID} .code-lang-panel {
       width: 100%;
-      max-width: 560px;
+      max-width: 480px;
       max-height: 70vh;
       overflow: auto;
-      border-radius: 20px 20px 0 0;
-      background: var(--page_background, #f5f5f5);
-      padding: 12px 16px calc(24px + env(safe-area-inset-bottom));
-      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.18);
+      border-radius: 16px 16px 0 0;
+      background: var(--surface_1, var(--page_background, #fff));
+      padding: 12px 12px calc(20px + env(safe-area-inset-bottom));
+      box-shadow: var(--shadow_lg, 0 -8px 32px rgba(0, 0, 0, 0.18));
+      border: 1px solid var(--border_color, #e4e4e7);
     }
     #${PORTAL_ID} .code-lang-handle {
       width: 36px;
       height: 4px;
       border-radius: 2px;
-      background: var(--noterai-faded, #8f8f8f);
+      background: var(--muted_text, #a1a1aa);
       opacity: 0.5;
       margin: 4px auto 16px;
     }
     #${PORTAL_ID} .code-lang-title {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--main_text, #000);
-      margin: 0 4px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted_text, #71717a);
+      margin: 0 8px 8px;
     }
     #${PORTAL_ID} .code-lang-row {
       display: block;
@@ -46,17 +49,18 @@ function ensurePortalStyles() {
       border: none;
       background: transparent;
       text-align: left;
-      padding: 12px 8px;
+      padding: 11px 12px;
       font-family: inherit;
-      font-size: 15px;
-      color: var(--main_text, #000);
-      border-bottom: 1px solid var(--noterai-pill-border, rgba(0,0,0,0.08));
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--main_text, #18181b);
       cursor: pointer;
       border-radius: 10px;
     }
     #${PORTAL_ID} .code-lang-row:hover,
     #${PORTAL_ID} .code-lang-row.is-active {
-      background: rgba(0, 145, 255, 0.1);
+      background: var(--primary_light, rgba(79, 70, 229, 0.1));
+      color: var(--primary, #4f46e5);
     }
     #${PORTAL_ID} .code-lang-row:last-child { border-bottom: none; }
   `;

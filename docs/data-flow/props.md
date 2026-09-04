@@ -54,7 +54,8 @@ export class Dropdown extends SwitchComponent {
 }
 ```
 
-> getProps() is an instance method – it cannot be used in a static block, because the element and its data attribute do not exist at class-definition time.
+> [!IMPORTANT]
+> `getProps()` is an instance method – it cannot be used in a static block, because the element and its data attribute do not exist at class-definition time.
 
 ### Props reactivity
 

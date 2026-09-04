@@ -33,6 +33,10 @@ export class TopBar extends SwitchComponent {
       changeTheme(getTheme() === 'dark' ? 'light' : 'dark');
       this.updateThemeIcon();
     });
+    this.listener('#mobile-nav-toggle', 'click', (e) => {
+      e.preventDefault();
+      updateState('mobile-sidebar-open', (v) => !v);
+    });
   }
 
   setupThemeSubscription() {
@@ -86,39 +90,45 @@ export class TopBar extends SwitchComponent {
 
   render() {
     const navLinks = this.getNavLinks();
-    //getting the active route from the state
-    const activeRoute = getState('activeRoute');
-    
+    const activeRoute = getState('activeRoute') || '';
+    const onDocs = String(activeRoute).startsWith('docs');
+
     return `
-      <header class="topbar">
+      <header class="topbar ${onDocs ? 'on-docs' : ''}">
         <div class="left-section">
+          <button id="mobile-nav-toggle" class="btn-icon mobile-nav" type="button" aria-label="Open documentation menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
           <a href="#" data-route="index" class="logo-section logo-link">
             <div class="logo-icon">
-              <img class="logo-light" src="/assets/files/Switch_framework_logo_purple.svg" alt="Switch Framework" width="20" height="20" />
-              <img class="logo-dark" src="/assets/files/Switch_framework_logo_white.svg" alt="Switch Framework" width="20" height="20" style="display:none" />
+              <img class="logo-light" src="/assets/files/Switch_framework_logo_purple.svg" alt="Switch Framework" width="22" height="22" />
+              <img class="logo-dark" src="/assets/files/Switch_framework_logo_white.svg" alt="Switch Framework" width="22" height="22" style="display:none" />
             </div>
-            <h2 class="logo-text">Switch Framework</h2>
+            <h2 class="logo-text">Switch</h2>
           </a>
           <nav class="nav-links">
-            ${navLinks.map(({ label, to }) => `
-              <a href="#" data-route="${to}" class="nav-link ${activeRoute === to ? 'active' : ''}">${label}</a>
-            `).join('')}
+            ${navLinks.map(({ label, to }) => {
+              const active = to === 'docs/introduction'
+                ? String(activeRoute).startsWith('docs')
+                : activeRoute === to;
+              return `<a href="#" data-route="${to}" class="nav-link ${active ? 'active' : ''}">${label}</a>`;
+            }).join('')}
           </nav>
         </div>
         <div class="right-section">
           <sw-docs-search-bar></sw-docs-search-bar>
           <div class="button-group">
             <a href="https://github.com/Switcherfaiz/switch-framework" target="_blank" rel="noopener noreferrer" class="btn-icon btn-github" aria-label="GitHub">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill="currentColor"/>
               </svg>
             </a>
             <button id="theme-toggle" class="btn-icon" type="button" aria-label="Toggle theme">
-              <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="12" r="4" fill="currentColor"/>
                 <path d="M12 2V4M12 20V22M4 12H2M6.31412 6.31412L4.8999 4.8999M17.6859 6.31412L19.1001 4.8999M6.31412 17.69L4.8999 19.1042M17.6859 17.69L19.1001 19.1042M22 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
-              <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none">
+              <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
@@ -148,45 +158,41 @@ export class TopBar extends SwitchComponent {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 24px;
-          padding: 10px 28px;
-          height: 60px;
+          gap: 20px;
+          padding: 0 20px;
+          height: var(--header_height, 56px);
           border-bottom: 1px solid var(--border_color);
-          background: color-mix(in srgb, var(--page_background) 86%, transparent);
-          backdrop-filter: blur(16px);
+          background: color-mix(in srgb, var(--page_background) 78%, transparent);
+          backdrop-filter: saturate(1.4) blur(18px);
+          -webkit-backdrop-filter: saturate(1.4) blur(18px);
           position: sticky;
           top: 0;
           z-index: 50;
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font);
         }
 
         .left-section {
           display: flex;
           align-items: center;
-          gap: 32px;
+          gap: 20px;
           flex-shrink: 0;
         }
 
         .logo-section {
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 10px;
         }
 
         .logo-link {
           text-decoration: none;
           color: inherit;
           cursor: pointer;
-          transition: opacity 0.2s;
-        }
-
-        .logo-link:hover {
-          opacity: 0.85;
         }
 
         .logo-icon {
-          width: 32px;
-          height: 32px;
+          width: 22px;
+          height: 22px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -199,17 +205,17 @@ export class TopBar extends SwitchComponent {
         }
 
         .logo-text {
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 700;
           color: var(--main_text);
-          letter-spacing: -0.015em;
+          letter-spacing: -0.03em;
           line-height: 1.2;
         }
 
         .nav-links {
           display: flex;
           align-items: center;
-          gap: 22px;
+          gap: 4px;
         }
 
         .nav-link {
@@ -217,19 +223,27 @@ export class TopBar extends SwitchComponent {
           text-decoration: none;
           font-size: 13px;
           font-weight: 550;
-          transition: color 0.2s;
+          padding: 6px 10px;
+          border-radius: 8px;
+          transition: color 0.15s, background 0.15s;
           cursor: pointer;
         }
 
-        .nav-link:hover,.nav-link.active {
-          color: var(--primary);
+        .nav-link:hover {
+          color: var(--main_text);
+          background: var(--surface_2);
+        }
+
+        .nav-link.active {
+          color: var(--main_text);
+          background: var(--surface_2);
         }
 
         .right-section {
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          gap: 24px;
+          gap: 12px;
           flex: 1;
           min-width: 0;
         }
@@ -237,7 +251,7 @@ export class TopBar extends SwitchComponent {
         .button-group {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 4px;
           flex-shrink: 0;
         }
 
@@ -249,36 +263,10 @@ export class TopBar extends SwitchComponent {
           justify-content: center;
         }
 
-        .btn-github:hover {
-          color: var(--primary);
-        }
-
-        .btn-secondary {
-          padding: 10px 24px;
-          height: 40px;
-          border-radius: 9999px;
-          font-size: 14px;
-          font-weight: 700;
-          font-family: 'Montserrat', sans-serif;
-          border: none;
-          background: transparent;
-          color: var(--main_text);
-          cursor: pointer;
-          transition: all 0.2s;
-          white-space: nowrap;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-        }
-
-        .btn-secondary:hover {
-          color: var(--primary);
-        }
-
         .btn-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 9999px;
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
           border: none;
           background: transparent;
           color: var(--main_text);
@@ -286,34 +274,26 @@ export class TopBar extends SwitchComponent {
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.2s;
+          transition: background 0.15s;
         }
 
         .btn-icon:hover {
-          background: var(--surface_hover);
+          background: var(--surface_2);
+        }
+
+        .mobile-nav {
+          display: none;
         }
 
         @media (max-width: 1024px) {
           .nav-links { display: none; }
+          .on-docs .mobile-nav { display: flex; }
         }
 
         @media (max-width: 768px) {
-          .topbar { padding: 12px 24px; }
-          .right-section { gap: 12px; }
-        }
-
-        @media (max-width: 640px) {
-          .topbar { padding: 12px 16px; }
-          .left-section { flex: 1; min-width: 0; gap: 12px; }
-          .logo-section { min-width: 0; gap: 10px; }
-          .logo-text {
-            font-size: 16px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 160px;
-          }
-          .right-section { flex: none; flex-shrink: 0; gap: 8px; }
+          .topbar { padding: 0 12px; }
+          .right-section { gap: 8px; }
+          .left-section { gap: 8px; }
         }
 
         @media (max-width: 420px) {

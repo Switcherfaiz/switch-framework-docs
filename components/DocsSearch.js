@@ -179,21 +179,22 @@ export class DocsSearch extends SwitchComponent {
         .search-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.4);
+          background: rgba(9, 9, 11, 0.45);
+          backdrop-filter: blur(8px);
           z-index: 13000;
           display: none;
           align-items: flex-start;
           justify-content: center;
-          padding-top: 15vh;
+          padding-top: 12vh;
         }
         .search-overlay.open { display: flex; }
         .search-modal {
           background: var(--surface_1);
           border: 1px solid var(--border_color);
-          border-radius: 12px;
+          border-radius: 16px;
           box-shadow: var(--shadow_lg);
           width: 100%;
-          max-width: 560px;
+          max-width: 640px;
           overflow: hidden;
         }
         .search-modal-header {

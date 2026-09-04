@@ -2,6 +2,9 @@
 
 A typical Switch Framework app follows a simple folder structure. The `app/` directory holds your layouts and screens; `components/` holds shared UI.
 
+> [!TIP]
+> Keep screens as `app/.../index.js` with a `SwitchComponent` subclass. Shared UI lives in `components/` and is registered with `registerComponents([...])` from your layout `init` or module top-level.
+
 ## Web app structure
 
 ```text title:Web app structure
@@ -117,7 +120,7 @@ Keep `server.js` for the web app. Put Express + MongoDB in a sibling `backend/` 
 
 ```text title:Web app + API
 my-app/
-├── server.js              # Serves the UI (port 5173), proxies /api
+├── server.js              # Serves the UI (port 5173)
 ├── backend/
 │   ├── server.js          # Express API (port 4000)
 │   ├── models/

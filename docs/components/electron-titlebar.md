@@ -2,6 +2,7 @@
 
 **ElectronTitleBar** is the desktop window chrome for Switch Framework Electron apps. It provides a draggable title region and hooks for minimize, maximize/restore, and close. On web builds it stays hidden.
 
+> [!NOTE]
 > **Key Concept:** Base setup runs **automatically** — no `super.onMount()`. Add `static { this.useState('your-key'); }`, read `getState('your-key')` in `render()`, wire clicks in `onMount()` with `useRef(this)`, or trigger actions from anywhere via **action states**.
 
 ### Automatic setup (Electron apps)

@@ -119,6 +119,7 @@ Each item in `static tabs`:
 
 StackLayout supports custom `render()` and `styleSheet()` for global shells and popups.
 
+> [!NOTE]
 > **Key Concept:** Your screens render inside the tab/stack content container. Content inside a `data-popups` container is extracted to the app shell and persists across layout switches.
 
 ```javascript title:StackLayout with Custom Render & Styles

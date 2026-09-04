@@ -2,6 +2,9 @@
 
 Get a Switch Framework app running in minutes.
 
+> [!TIP]
+> The CLI is the fastest path. Run `npx create-switch-framework-app my-app`, then `cd my-app` and `npm run dev`. See [[CLI|docs/cli]] for flags (`--app-type`, `--port`, `--yes`).
+
 ### 1. Create a project
 
 ```bash title:bash

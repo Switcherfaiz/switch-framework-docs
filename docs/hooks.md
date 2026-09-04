@@ -2,6 +2,7 @@
 
 Hooks are small tools that help your components **remember things**, **react to changes**, and **call special actions** (like scrolling a list or closing a window).
 
+> [!TIP]
 > **Simple idea:** A **state** is like a shared notebook. Anyone can read it with `getState` and write in it with `updateState`. Hooks tell your component when to redraw, when to run extra code, or how to control lists.
 
 ---
@@ -305,6 +306,7 @@ export class MessagesScreen extends SwitchComponent {
 {"headers":["Hook","Key","Behavior"],"htmlColumns":[0,1,2],"rows":[["<code>useShared</code>","<code>'messages'</code>","Full rerender — list and badge rebuild together"],["<code>useState</code>","local (no key)","Local open-thread ID — only this component"],["<code>onState</code>","<code>'messages-typing'</code>","Callback only — patches the typing tip, no rebuild"]]}
 ```
 
+> [!TIP]
 > **Rule of thumb:** use each global key with **one** strategy per component — either `useShared` (rerender) or `onState` (callback). If you call both for the same key, `onState` wins and cancels the rerender subscription.
 
 ---
@@ -395,6 +397,7 @@ The component re-renders automatically when the parent replaces its `data` attri
 
 ### static useState — redraw the whole component
 
+> [!IMPORTANT]
 > **Classic API** — `useShared(key, defaultValue)` called from `render()` is the simpler replacement. Both do the same thing; `static { this.useState() }` will not be removed.
 
 `static { this.useState('key'); }` means: **when this key changes, run `render()` and `onMount()` again.**
@@ -478,6 +481,7 @@ static { this.useState('sw-user-list-loading'); }
 
 ### useState with a callback — DOM work without full redraw
 
+> [!WARNING]
 > **Deprecated** — use [`onState(key, callback)`](#onstate--dom-patch-without-rerender) instead. `useState('key', callback)` still works and will not be removed, but `onState` is the preferred form: it deduplicates subscriptions automatically so you do not need `addOnDestroy`, and it reads more clearly.
 
 Sometimes you need to **touch the DOM directly** when state changes — for example to play a CSS animation. A full re-render would replace the element and **cancel** the animation.

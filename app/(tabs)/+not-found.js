@@ -1,4 +1,4 @@
-﻿import { SwitchComponent, navigate, goBack, getActiveRoute } from '/switch-framework/index.js';
+import { SwitchComponent, navigate, goBack, getActiveRoute } from 'switch-framework';
 
 export class SwUserNotFoundScreen extends SwitchComponent {
   static screenName = '+not-found';
@@ -10,10 +10,9 @@ export class SwUserNotFoundScreen extends SwitchComponent {
     this._bindEvents();
   }
 
-  
-
   _bindEvents() {
     this.listener('#home', 'click', () => navigate('index'));
+    this.listener('#docs', 'click', () => navigate('docs/introduction'));
     this.listener('#back', 'click', () => goBack());
   }
 
@@ -23,16 +22,15 @@ export class SwUserNotFoundScreen extends SwitchComponent {
 
     return `
       <div class="wrap">
-        <div class="card">
-          <div class="code">404</div>
-          <div class="h">This screen does not exist</div>
-          <div class="p">No screen is registered for:</div>
-          <div class="path">${safePath}</div>
-
-          <div class="row">
-            <button class="btn" id="home">Go to Home</button>
-            <button class="btn secondary" id="back">Go Back</button>
-          </div>
+        <p class="kicker">Error</p>
+        <div class="code">404</div>
+        <h1>This screen does not exist</h1>
+        <p class="lede">No screen is registered for:</p>
+        <div class="path">${safePath}</div>
+        <div class="row">
+          <button class="btn" id="home" type="button">Go home</button>
+          <button class="btn secondary" id="docs" type="button">Open docs</button>
+          <button class="btn secondary" id="back" type="button">Go back</button>
         </div>
       </div>
     `;
@@ -53,196 +51,61 @@ export class SwUserNotFoundScreen extends SwitchComponent {
         :host {
           display: block;
           width: 100%;
-          min-height: 100dvh;
+          min-height: 100%;
           font-family: var(--font);
+          color: var(--main_text);
         }
-
-        * {
-          box-sizing: border-box;
-          font-family: inherit;
-        }
-
+        * { box-sizing: border-box; font-family: inherit; }
         .wrap {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 18px;
+          max-width: 640px;
+          margin: 0 auto;
+          padding: 72px 32px 80px;
         }
-
-        .card {
-          width: min(680px, 100%);
-          background: transparent;
-          border: none;
-          border-radius: 18px;
-          padding: 18px;
-          box-shadow: none;
+        .kicker {
+          color: var(--primary);
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          margin: 0 0 8px;
         }
-
         .code {
-          font-weight: 1000;
-          font-size: 44px;
+          font-weight: 700;
+          font-size: 56px;
+          letter-spacing: -0.05em;
           line-height: 1;
-          color: var(--main_text);
         }
-
-        .h {
-          margin-top: 10px;
-          font-weight: 1000;
-          font-size: 20px;
-          color: var(--main_text);
+        h1 {
+          margin: 12px 0 8px;
+          font-weight: 700;
+          font-size: 28px;
+          letter-spacing: -0.03em;
         }
-
-        .p {
-          margin-top: 6px;
-          color: var(--sub_text);
-          font-weight: 800;
-        }
-
+        .lede { margin: 0; color: var(--sub_text); }
         .path {
-          margin-top: 10px;
-          padding: 10px 12px;
-          border-radius: 14px;
-          background: var(--surface_2);
-          border: 1px solid var(--border_light);
-          font-weight: 900;
-          color: var(--main_text);
+          margin-top: 16px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          background: var(--surface_1);
+          border: 1px solid var(--border_color);
+          font-family: var(--font-mono);
+          font-size: 13px;
           word-break: break-word;
         }
-
-        .row {
-          margin-top: 14px;
-          display: flex;
-          gap: 10px;
-          flex-wrap: wrap;
-        }
-
+        .row { margin-top: 22px; display: flex; gap: 10px; flex-wrap: wrap; }
         .btn {
           border: none;
-          background: linear-gradient(135deg, #0091ff 0%, #0073e6 100%);
-          color: #fff;
-          font-weight: 1000;
+          background: var(--main_text);
+          color: var(--page_background);
+          font-weight: 650;
           border-radius: 999px;
-          padding: 10px 14px;
+          padding: 10px 16px;
           cursor: pointer;
         }
-
-        .btn:hover {
-          opacity: 0.9;
-        }
-
         .btn.secondary {
-          background: var(--surface_2);
+          background: var(--surface_1);
           color: var(--main_text);
-        }
-
-        .btn.secondary:hover {
-          background: var(--surface_3);
-        }
-      </style>
-    `;
-  }
-
-  _escapeHtml(value = '') {
-    return String(value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#039;');
-  }
-
-  styleSheet() {
-    return `
-      <style>
-        :host {
-          display: block;
-          width: 100%;
-          min-height: 100dvh;
-          font-family: var(--font);
-        }
-
-        * {
-          box-sizing: border-box;
-          font-family: inherit;
-        }
-
-        .wrap {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 18px;
-        }
-
-        .card {
-          width: min(680px, 100%);
-          background: transparent;
-          border: none;
-          border-radius: 18px;
-          padding: 18px;
-          box-shadow: none;
-        }
-
-        .code {
-          font-weight: 1000;
-          font-size: 44px;
-          line-height: 1;
-          color: var(--main_text);
-        }
-
-        .h {
-          margin-top: 10px;
-          font-weight: 1000;
-          font-size: 20px;
-          color: var(--main_text);
-        }
-
-        .p {
-          margin-top: 6px;
-          color: var(--sub_text);
-          font-weight: 800;
-        }
-
-        .path {
-          margin-top: 10px;
-          padding: 10px 12px;
-          border-radius: 14px;
-          background: var(--surface_2);
-          border: 1px solid var(--border_light);
-          font-weight: 900;
-          color: var(--main_text);
-          word-break: break-word;
-        }
-
-        .row {
-          margin-top: 14px;
-          display: flex;
-          gap: 10px;
-          flex-wrap: wrap;
-        }
-
-        .btn {
-          border: none;
-          background: linear-gradient(135deg, #0091ff 0%, #0073e6 100%);
-          color: #fff;
-          font-weight: 1000;
-          border-radius: 999px;
-          padding: 10px 14px;
-          cursor: pointer;
-        }
-
-        .btn:hover {
-          opacity: 0.9;
-        }
-
-        .btn.secondary {
-          background: var(--surface_2);
-          color: var(--main_text);
-        }
-
-        .btn.secondary:hover {
-          background: var(--surface_3);
+          border: 1px solid var(--border_color);
         }
       </style>
     `;

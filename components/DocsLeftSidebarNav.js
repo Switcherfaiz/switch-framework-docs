@@ -269,7 +269,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         }
 
         .docs-nav {
-          padding: 20px 10px 96px;
+          padding: 16px 8px 96px;
           height: 100%;
           min-height: 0;
           overflow-y: auto;
@@ -306,13 +306,13 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         }
 
         .nav-title {
-          font-size: var(--text-xs, 11px);
+          font-size: 11px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.08em;
           color: var(--muted_text);
-          margin: 0 0 12px;
-          padding-left: 12px;
+          margin: 0 0 8px;
+          padding-left: 10px;
         }
 
         .nav-list {
@@ -327,38 +327,31 @@ export class DocsLeftSidebarNav extends SwitchComponent {
 
         .nav-link {
           display: block;
-          padding: 7px 12px;
-          font-size: var(--text-sm, 12.5px);
+          padding: 6px 10px;
+          font-size: 13px;
           color: var(--sub_text);
           text-decoration: none;
           border-radius: 8px;
-          transition: all 0.2s ease;
+          transition: background 0.15s, color 0.15s;
           cursor: pointer;
           border: 1px solid transparent;
         }
 
         .nav-link:hover {
-          background: var(--surface_hover);
-          color: var(--primary);
+          background: var(--surface_2);
+          color: var(--main_text);
         }
 
         .nav-link.active {
           position: relative;
-          background: transparent;
+          background: var(--primary_light);
           color: var(--primary);
           font-weight: 600;
           border-color: transparent;
         }
 
         .nav-link.active::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 8px;
-          bottom: 8px;
-          width: 3px;
-          background: var(--primary);
-          border-radius: 0 2px 2px 0;
+          display: none;
         }
 
         .nav-expandable {
@@ -383,8 +376,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         }
 
         .nav-expand-btn:hover {
-          background: var(--surface_hover);
-          color: var(--primary);
+          background: var(--surface_2);
+          color: var(--main_text);
         }
 
         .nav-expand-label {

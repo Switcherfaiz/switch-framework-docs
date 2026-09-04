@@ -148,12 +148,12 @@ export class DocsPageMenu extends SwitchComponent {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 8px 14px;
+          padding: 7px 12px;
           border: 1px solid var(--border_color);
-          border-radius: 8px;
-          background: var(--surface_2);
+          border-radius: 999px;
+          background: var(--surface_1);
           color: var(--main_text);
-          font-size: var(--text-sm, 12.5px);
+          font-size: 12.5px;
           font-weight: 600;
           font-family: var(--font);
           cursor: pointer;

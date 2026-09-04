@@ -1,4 +1,5 @@
-﻿import { SwitchComponent } from '/switch-framework/index.js';
+import { SwitchComponent } from 'switch-framework';
+import { SITE_PAGE_STYLES } from '/utils/doc-styles.js';
 
 export class SwAboutScreen extends SwitchComponent {
   static screenName = 'about';
@@ -8,16 +9,20 @@ export class SwAboutScreen extends SwitchComponent {
 
   render() {
     return `
-      <div class="about-wrap">
-        <header class="about-header">
-          <sw-topbar></sw-topbar>
-        </header>
-        <main class="about-main">
-          <div class="doc-section">
-            <h2 class="section-title">About Switch Framework</h2>
-            <p class="section-desc">Switch Framework is a lightweight, runtime-first frontend framework. No build step required. Open source and MIT licensed.</p>
+      <div class="site-wrap">
+        <header class="site-header"><sw-topbar></sw-topbar></header>
+        <main class="site-main">
+          <div class="site-section">
+            <p class="site-kicker">Project</p>
+            <h1 class="site-title">About Switch Framework</h1>
+            <p class="site-desc">Switch Framework is a lightweight, runtime-first frontend framework that plays nicely with <code>switch-framework-backend</code>. It gives you routing, Web Components, and optional state management — without a bundler.</p>
+            <h2 class="site-h2">What you get</h2>
+            <p class="site-desc">Declarative stack and tab navigation, shadow DOM components, and event-driven state. Everything runs as native ES modules in the browser. Prototype fast, ship faster.</p>
+            <h2 class="site-h2">Open source</h2>
+            <p class="site-desc">Switch is MIT licensed. The source and this documentation live on GitHub at <a href="https://github.com/Switcherfaiz/switch-framework" target="_blank" rel="noopener noreferrer">Switcherfaiz/switch-framework</a>.</p>
           </div>
         </main>
+        <sw-docs-footer></sw-docs-footer>
       </div>
     `;
   }
@@ -25,14 +30,15 @@ export class SwAboutScreen extends SwitchComponent {
   styleSheet() {
     return `
       <style>
-        :host { display: block; width: 100%; min-height: 100vh; font-family: 'Montserrat', sans-serif; }
-        * { box-sizing: border-box; }
-        .about-wrap { display: flex; flex-direction: column; min-height: 100vh; }
-        .about-header { position: sticky; top: 0; z-index: 100; flex-shrink: 0; }
-        .about-main { flex: 1; overflow-y: auto; padding: 32px 24px; }
-        .doc-section { max-width: 900px; margin: 0 auto; }
-        .section-title { font-size: 32px; font-weight: 800; color: var(--main_text); margin: 0 0 16px; }
-        .section-desc { font-size: 15px; line-height: 1.7; color: var(--sub_text); }
+        ${SITE_PAGE_STYLES}
+        code {
+          font-family: var(--font-mono);
+          font-size: 0.9em;
+          background: var(--surface_2);
+          padding: 1px 6px;
+          border-radius: 6px;
+          color: var(--code_text);
+        }
       </style>
     `;
   }

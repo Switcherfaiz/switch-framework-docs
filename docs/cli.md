@@ -2,6 +2,9 @@
 
 Use `npx` to run the CLI without installing, or install globally for faster repeated use.
 
+> [!NOTE]
+> New projects pin **`switch-framework@^0.2.6`** and **`switch-framework-backend@^0.2.0`** in `package.json`.
+
 ```bash title:Commands (npx)
 npx create-switch-framework-app my-app
 npx create-switch-framework-app my-app --yes --app-type web --port 4000
@@ -33,6 +36,9 @@ create-switch-framework-app my-app --yes --app-type web
 Scaffolded Electron projects install `electron` and `electron-builder` as dev dependencies (`npm install electron electron-builder --save-dev`).
 
 Each Electron release supports specific Node.js versions. After scaffolding, use an Electron version that matches the Node.js you have installed — otherwise `npm run electron:dev` may fail.
+
+> [!WARNING]
+> Electron must match your Node.js version. Check with `node -v`, then install a compatible Electron (for example Node 22 → `electron@33`).
 
 ```params-table
 {"headers":["Your Node.js","Recommended Electron"],"htmlColumns":[0,1],"rows":[["Node 23+","<code>35.x</code>"],["Node 22","<code>33.x</code>"],["Node 20","<code>31.x</code>"],["Node 18","<code>28.x</code>"]]}

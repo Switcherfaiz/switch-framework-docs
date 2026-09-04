@@ -88,35 +88,36 @@ export class DocsPagination extends SwitchComponent {
           display: flex;
           justify-content: space-between;
           align-items: stretch;
-          gap: 16px;
-          margin-top: 48px;
-          padding-top: 28px;
+          gap: 12px;
+          margin-top: 56px;
+          padding-top: 24px;
           border-top: 1px solid var(--border_color);
         }
 
         .pagination-btn {
           display: flex;
           align-items: center;
-          gap: 14px;
-          padding: 14px 18px;
+          gap: 12px;
+          padding: 14px 16px;
           border: 1px solid var(--border_color);
-          border-radius: 12px;
+          border-radius: 14px;
           background: var(--surface_1);
           color: var(--sub_text);
-          font-size: var(--text-md, 14px);
+          font-size: 14px;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: border-color 0.15s, transform 0.15s;
           flex: 1;
-          max-width: 280px;
-          min-height: 64px;
+          max-width: 300px;
+          min-height: 72px;
         }
 
         .pagination-btn:hover:not(:disabled) {
-          background: var(--surface_hover);
+          background: var(--surface_1);
           border-color: var(--primary);
           color: var(--primary);
-          box-shadow: var(--shadow_sm);
+          box-shadow: none;
+          transform: translateY(-1px);
         }
 
         .pagination-btn:disabled {

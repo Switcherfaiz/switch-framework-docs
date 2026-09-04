@@ -1,4 +1,4 @@
-﻿import { SwitchComponent, registerComponents } from 'switch-framework';
+import { SwitchComponent, registerComponents } from 'switch-framework';
 import { loadDocContent, renderDocShell } from '/utils/doc-loader.js';
 import { DOC_STYLES } from '/utils/doc-styles.js';
 import { DocsChangelogLink } from '/components/DocsChangelogLink.js';
@@ -12,6 +12,7 @@ import {
   DocCallout,
   DocListItem,
   DocLoader,
+  DocDivider,
 } from '/components/DocContent.js';
 
 registerComponents([
@@ -25,6 +26,7 @@ registerComponents([
   DocCallout,
   DocListItem,
   DocLoader,
+  DocDivider,
 ]);
 
 const EXTRA_STYLES = `
@@ -45,7 +47,7 @@ const EXTRA_STYLES = `
     padding: 32px 24px;
   }
   .changelogs-section {
-    max-width: 900px;
+    max-width: 760px;
     margin: 0 auto;
   }
   @media (max-width: 768px) {
@@ -76,6 +78,7 @@ export class SwChangelogsScreen extends SwitchComponent {
         <main class="changelogs-main">
           ${renderDocShell('changelogs', '', 'doc-section changelogs-section')}
         </main>
+        <sw-docs-footer></sw-docs-footer>
       </div>
     `;
   }

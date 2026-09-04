@@ -2,6 +2,12 @@
 
 **Switch Framework** is a lightweight, runtime-first frontend framework that plays nicely with `switch-framework-backend`. Think of it as your friendly neighborhood router + component layer – no build step required, no webpack config to cry over. Just HTML, ES modules, and a sprinkle of structure.
 
+> [!TIP]
+> New here? After this page, follow [[Tutorial: Reactive button|docs/tutorial/reactive-button]] for a hands-on first component, then [[Web installation|docs/installation/web]] to scaffold an app.
+
+> [!NOTE]
+> Switch runs as native ES modules in the browser. You do not need a bundler to get started.
+
 ### What's the deal?
 
 You get a declarative routing system (stack screens, tab navigation), Web Components for encapsulation, and optional state management. Everything runs directly in the browser – no bundler needed to get started. Prototype fast, ship faster. If you've ever wanted "React Router but simpler" or "Vue's structure without the framework," Switch is here for you.
