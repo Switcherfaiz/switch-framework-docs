@@ -60,7 +60,7 @@ export async function mountPreviewComponent(code, rootEl) {
       if (!customElements.get(Export.tag)) customElements.define(Export.tag, Export);
       if (root) root.innerHTML = `<${Export.tag}></${Export.tag}>`;
     } else if (root) {
-      root.innerHTML = '<div class="preview-error">No component found. Make sure your class extends SwitchComponent or FlatList and has a static tag property.</div>';
+      root.innerHTML = '<div class="preview-error">No component found. Make sure your class extends SwitchComponent, ScrollView, or FlatList and has a static tag property.</div>';
     }
   } catch (err) {
     if (root) root.innerHTML = `<div class="preview-error">${err.message}</div>`;

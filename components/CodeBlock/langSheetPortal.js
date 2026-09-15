@@ -1,3 +1,5 @@
+import { syncOverlayBack } from 'switch-framework';
+
 const PORTAL_ID = 'sw-code-lang-portal';
 
 function ensurePortalStyles() {
@@ -100,6 +102,7 @@ export function openCodeLangSheet({ options, activeLang, onPick }) {
   portal.classList.remove('is-hidden');
 
   const close = () => {
+    syncOverlayBack(portal, false);
     portal.classList.add('is-hidden');
     portal.replaceChildren();
     portal.removeEventListener('click', onPortalClick);
@@ -123,12 +126,14 @@ export function openCodeLangSheet({ options, activeLang, onPick }) {
   portal.addEventListener('click', onPortalClick);
   document.addEventListener('keydown', onKey);
   portal._closeLangSheet = close;
+  syncOverlayBack(portal, true, close);
 }
 
 export function closeCodeLangSheet() {
   const portal = document.getElementById(PORTAL_ID);
   if (portal?._closeLangSheet) portal._closeLangSheet();
   else if (portal) {
+    syncOverlayBack(portal, false);
     portal.classList.add('is-hidden');
     portal.replaceChildren();
   }

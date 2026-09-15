@@ -848,7 +848,7 @@ useEffect(() => {
 
 ### useRef — scroll control for FlatList
 
-FlatList has **scroll methods**. Get a ref with `useRef(this)` inside `onMount`, then call methods on it.
+FlatList and ScrollView have **scroll methods**. Get a ref with `useRef(this)` inside `onMount`, then call methods on it (`scrollToEnd`, `append`, `appendItems`, `reset`, …). See [[ScrollView|docs/components/scrollview]] for the append protocol.
 
 ```javascript
 const listRef = useRef(this);

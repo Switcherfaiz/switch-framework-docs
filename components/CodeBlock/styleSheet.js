@@ -122,7 +122,7 @@ export function codeBlockStyleSheet() {
       .code-scroll {
         display: grid;
         grid-template-columns: auto minmax(0, 1fr);
-        max-height: min(520px, 70vh);
+        max-height: var(--codeblock-max-scroll, min(520px, 70vh));
         overflow: auto;
         scrollbar-width: thin;
         scrollbar-color: #3f3f46 transparent;
@@ -151,11 +151,16 @@ export function codeBlockStyleSheet() {
 
       .code-editor-panel {
         min-width: 0;
-      }
-      .code-pre {
-        margin: 0;
-        padding: 0;
         overflow: visible;
+      }
+      .code-pre,
+      .code-pre code,
+      .code-pre code.hljs,
+      pre code.hljs {
+        margin: 0;
+        overflow: visible !important;
+        overflow-x: visible !important;
+        overflow-y: visible !important;
       }
       .code-pre code.hljs {
         padding: 14px 16px 14px 14px !important;
@@ -163,7 +168,21 @@ export function codeBlockStyleSheet() {
 
       @media (max-width: 640px) {
         .code-copy-btn .copy-label { display: none; }
-        .code-file-label { font-size: 11px; }
+        .code-file-label { font-size: 11px; max-width: 42vw; }
+        .code-toolbar { padding: 0 8px 0 10px; gap: 6px; }
+        .code-gutter {
+          padding: 10px 0 10px 8px;
+          font-size: 11px;
+          line-height: 20px;
+        }
+        .code-pre code.hljs {
+          padding: 10px 12px 10px 10px !important;
+          font-size: 12px;
+          line-height: 20px;
+        }
+        .code-scroll {
+          max-height: var(--codeblock-max-scroll, min(360px, 52vh));
+        }
       }
     </style>`;
 }

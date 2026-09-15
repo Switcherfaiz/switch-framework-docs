@@ -2,6 +2,8 @@
 
 All screens and UI components extend **SwitchComponent**. It provides shadow DOM, a render lifecycle, and `useEffect` for reactive updates. No `customElements.define` needed – use `registerComponents([...])` in your layout and the framework auto-registers classes with a static `tag`.
 
+**Built-in components:** [[FlatList|docs/components/flatlist]] for row lists, [[ScrollView|docs/components/scrollview]] for a viewport that can host masonry or mixed content without remounting on load-more, [[Modal|docs/components/modal]] for overlays. Nest a Modal tag anywhere — the framework lifts it onto the `.popups` layer so it paints on top.
+
 ### Writing a component
 
 Override `render()` and optionally `styleSheet()`. Use `onMount()` for lifecycle logic with `this.listener()` for events, and `static { this.useState('key'); }` for reactive updates.

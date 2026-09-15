@@ -19,6 +19,16 @@ export const CODE_FONT_CSS = `
     color: #e4e4e7;
   }
 
+  pre,
+  pre.code-pre,
+  code,
+  code.hljs,
+  pre code.hljs {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+
   pre code.hljs {
     display: block;
     padding: 14px 16px;

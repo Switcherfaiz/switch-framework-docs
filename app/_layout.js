@@ -31,12 +31,7 @@ export class SwStackLayout extends StackLayout {
   static initialRoute = 'index';
 
   static render() {
-    return `
-        <div class="popups" data-popups>
-          <sw-docs-search></sw-docs-search>
-          <sw-icons-bottom-sheet></sw-icons-bottom-sheet>
-        </div>
-    `;
+    return `<div class="popups" data-popups></div>`;
   }
 
   static styleSheet() {

@@ -75,21 +75,36 @@ export class PatientList extends SwitchComponent {
 
 ### useEffect
 
-`useEffect(callback, deps)` runs your callback when any state in the **dependency array** changes. Call it from `onMount()`. It works like React's useEffect: when `deps` change, the effect runs again.
+Call `useEffect` from `effects()` — not from `onMount()`, and not to remount. You can register several effects. Each one runs after mount and again when a listed state key changes. Use it for I/O (fetch, sync a route into state). Do not call `this.rerender()` or `_renderToShadow()` inside the callback. Update state, then let `onState` or `useShared` follow it.
 
-```javascript title:useEffect – runs when deps change
-import { SwitchComponent, useEffect, getState } from 'switch-framework';
+- `useEffect(fn, [])` — once after mount, cleanup on destroy.
+- `useEffect(fn, ['routeParams'])` — mount, then whenever that key changes.
+- Several `useEffect` calls in one `effects()` are fine — each has its own deps and cleanup.
 
-export class MyScreen extends SwitchComponent {
-  onMount() {
+```javascript title:effects() — multiple useEffect, no remount
+import { SwitchComponent, useEffect, updateState, getState } from 'switch-framework';
+import { useParams, useScreenFocus } from 'switch-framework/router';
+
+export class HomeScreen extends SwitchComponent {
+  static tag = 'sw-home-screen';
+
+  effects() {
     useEffect(() => {
-      this.rerender();
-    }, ['anotherStateKey']);
+      loadHomeTags();
+    }, []);
+
+    useEffect(() => {
+      const key = useParams()?.id || 'All';
+      if (getState('home-category') !== key) updateState('home-category', key);
+    }, ['routeParams']);
+
+    useScreenFocus(() => {
+      if (!(getState('home-pins') || []).length) fetchHomePins({ page: 1 });
+    });
   }
 
   render() {
-    const val = getState('anotherStateKey');
-    return `<div>${val}</div>`;
+    return `<tw-home-filters></tw-home-filters><tw-home-pins></tw-home-pins>`;
   }
 }
 ```
@@ -119,9 +134,11 @@ updateState('docs-helpful-count', (n) => n + 1);
 - `createState(identifier, initialValue)` – create a new state. Throws if identifier already exists.
 - `static { this.useState('counter'); }` – subscribe for full re-render.
 - `useState(identifier, callback)` – subscribe with callback(s). Auto-unsubscribes on destroy.
-- `useEffect(callback, deps)` – subscribe to state keys. Callback runs when deps change.
+- `effects()` – register one or more `useEffect` / `useScreenFocus` calls. I/O only.
+- `useEffect(fn, deps)` – call from `effects()`, not `onMount()`. Does not remount.
+- `useScreenFocus(fn)` – effect that runs only while this screen is active.
+- `onState(key, fn)` – patch the DOM when a key changes. Call from `onMount()`.
 - `updateState(identifier, valueOrUpdater)` – update any state by identifier.
 - `getState(identifier)` – read current value without subscribing.
-- `rerender()` / `renderToShadow()` – re-run render + onMount.
 
 **Internal (do not use):** `_runRenderAndMount`. Use `onMount` / `onDestroy` instead of deprecated `connected` / `disconnected`.

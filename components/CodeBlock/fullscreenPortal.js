@@ -1,4 +1,5 @@
 import { CODE_FONT_CSS, ensureCodeAssetsInHead } from './codeFonts.js';
+import { syncOverlayBack } from 'switch-framework';
 
 const PORTAL_ID = 'sw-code-fs-portal';
 const STYLE_ID = 'sw-code-fs-portal-style';
@@ -109,6 +110,13 @@ function ensurePortalStyles() {
     }
     #${PORTAL_ID} .code-fs-pane.is-hidden { display: none; }
     #${PORTAL_ID} .code-pre { margin: 0; padding: 0; overflow: auto; flex: 1; min-height: 0; }
+    #${PORTAL_ID} .code-pre code,
+    #${PORTAL_ID} .code-pre code.hljs,
+    #${PORTAL_ID} pre code.hljs {
+      overflow: visible !important;
+      overflow-x: visible !important;
+      overflow-y: visible !important;
+    }
     #${PORTAL_ID} #code-fs-view-wrap.is-hidden { display: none; }
     #${PORTAL_ID} .code-pre code.hljs {
       display: block;
@@ -186,6 +194,7 @@ export function getFullscreenPortal() {
 export function closeFullscreenPortal() {
   const portal = document.getElementById(PORTAL_ID);
   if (portal) {
+    syncOverlayBack(portal, false);
     portal.classList.add('is-hidden');
     portal.replaceChildren();
     portal._owner = null;
@@ -201,5 +210,9 @@ export function openFullscreenPortal(html, owner) {
   portal.innerHTML = html;
   portal.classList.remove('is-hidden');
   portal._owner = owner;
+  syncOverlayBack(portal, true, () => {
+    if (portal._owner?.closeFullscreen) portal._owner.closeFullscreen();
+    else closeFullscreenPortal();
+  });
   return portal;
 }

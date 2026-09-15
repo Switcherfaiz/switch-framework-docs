@@ -1,4 +1,4 @@
-import { TabLayout, registerComponents, updateState, getState } from 'switch-framework';
+import { TabLayout, registerComponents, updateState, getState, syncOverlayBack } from 'switch-framework';
 import { getActiveRoute, useRouteChangesSubscriber, replace } from 'switch-framework/router';
 import { CodeBlock } from '/components/CodeBlock/index.js';
 import { DocsChangelogLink } from '/components/DocsChangelogLink.js';
@@ -62,6 +62,8 @@ import { SwDocsRouterScreen } from './screens/router.js';
 import { SwDocsStateScreen } from './screens/state.js';
 import { SwDocsComponentsScreen } from './screens/components.js';
 import { SwDocsComponentsFlatListScreen } from './screens/components-flatlist.js';
+import { SwDocsComponentsScrollViewScreen } from './screens/components-scrollview.js';
+import { SwDocsComponentsModalScreen } from './screens/components-modal.js';
 import { SwDocsComponentsElectronTitleBarScreen } from './screens/components-electron-titlebar.js';
 import { SwDocsThemingScreen } from './screens/theming.js';
 import { SwDocsAnimationsScreen } from './screens/animations.js';
@@ -96,6 +98,8 @@ registerComponents([
   SwDocsSwitchIconsScreen,
   SwDocsComponentsScreen,
   SwDocsComponentsFlatListScreen,
+  SwDocsComponentsScrollViewScreen,
+  SwDocsComponentsModalScreen,
   SwDocsComponentsElectronTitleBarScreen,
   SwDocsHooksScreen,
   SwDocsDataFlowPropsScreen,
@@ -138,6 +142,8 @@ export class SwTabsLayout extends TabLayout {
     SwDocsSwitchIconsScreen,
     SwDocsComponentsScreen,
     SwDocsComponentsFlatListScreen,
+    SwDocsComponentsScrollViewScreen,
+    SwDocsComponentsModalScreen,
     SwDocsComponentsElectronTitleBarScreen,
     SwDocsHooksScreen,
     SwDocsDataFlowPropsScreen
@@ -156,6 +162,7 @@ export class SwTabsLayout extends TabLayout {
     this._bindMobileSidebar();
     this._syncMobileSidebarUI();
     this.useEffect(() => this._syncMobileSidebarUI(), ['mobile-sidebar-open']);
+    this.addOnDestroy(() => syncOverlayBack(this, false));
   }
 
   _redirectBareDocsRoute() {
@@ -180,6 +187,7 @@ export class SwTabsLayout extends TabLayout {
     const open = !!getState('mobile-sidebar-open');
     this.select('.left-sidebar')?.classList.toggle('mobile-open', open);
     this.select('.mobile-sidebar-backdrop')?.classList.toggle('visible', open);
+    syncOverlayBack(this, open, () => updateState('mobile-sidebar-open', false));
   }
 
   _bindMobileSidebar() {

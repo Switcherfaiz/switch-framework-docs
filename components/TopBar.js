@@ -117,6 +117,7 @@ export class TopBar extends SwitchComponent {
         </div>
         <div class="right-section">
           <sw-docs-search-bar></sw-docs-search-bar>
+          <sw-docs-search></sw-docs-search>
           <div class="button-group">
             <a href="https://github.com/Switcherfaiz/switch-framework" target="_blank" rel="noopener noreferrer" class="btn-icon btn-github" aria-label="GitHub">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

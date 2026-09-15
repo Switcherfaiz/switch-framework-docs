@@ -49,22 +49,48 @@ export class SwIndexScreen extends SwitchComponent {
   }
 
   counterCode() {
-    return `import { SwitchComponent, getState, updateState, createState } from 'switch-framework';
+    return `import { SwitchComponent, useShared, useState } from 'switch-framework';
 
 export class Counter extends SwitchComponent {
   static tag = 'sw-counter';
-  static { createState('counter', 0); }
-  static { this.useState('counter'); }
 
   onMount() {
-    this.listener('#inc', 'click', () => {
-      updateState('counter', (n) => (n ?? 0) + 1);
+    this.listener('#inc', 'click', () => this._setCount((n) => n + 1));
+    this.listener('#pulse', 'click', () => {
+      this._setTotal((t) => t + 1);
+      requestAnimationFrame(() => {
+        const btn = this.select('#pulse');
+        if (!btn) return;
+        if (typeof btn.animate === 'function') {
+          btn.animate(
+            [
+              { transform: 'scale(1)' },
+              { transform: 'scale(1.12)' },
+              { transform: 'scale(1)' }
+            ],
+            { duration: 280, easing: 'cubic-bezier(0.34, 1.4, 0.64, 1)' }
+          );
+          return;
+        }
+        btn.classList.remove('bump');
+        void btn.offsetWidth;
+        btn.classList.add('bump');
+      });
     });
   }
 
   render() {
-    const count = getState('counter') ?? 0;
-    return \`<button id="inc">Count: \${count}</button>\`;
+    const [total, setTotal] = useShared('total-clicks', 0);
+    const [count, setCount] = useState(0);
+    this._setTotal = setTotal;
+    this._setCount = setCount;
+
+    return \`
+      <div class="row">
+        <button id="inc" type="button">Count: \${count}</button>
+        <button id="pulse" type="button">Shared: \${total}</button>
+      </div>
+    \`;
   }
 
   styleSheet() {
@@ -77,16 +103,23 @@ export class Counter extends SwitchComponent {
         min-height: 120px;
         font-family: var(--font);
       }
-      #inc {
-        padding: 12px 28px;
-        font-size: 16px;
+      .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+      #inc, #pulse {
+        padding: 12px 22px;
+        font-size: 15px;
         border: none;
         border-radius: 999px;
         cursor: pointer;
-        background: #4f46e5;
-        color: white;
         font-weight: 650;
         font-family: inherit;
+        transition: transform 0.18s ease;
+      }
+      #inc { background: #4f46e5; color: #fff; }
+      #pulse { background: #0f766e; color: #fff; }
+      #pulse.bump { animation: pulse-bump 0.28s cubic-bezier(0.34, 1.4, 0.64, 1); }
+      @keyframes pulse-bump {
+        0%, 100% { transform: scale(1); }
+        45% { transform: scale(1.12); }
       }
     </style>\`;
   }
@@ -261,7 +294,8 @@ export class Counter extends SwitchComponent {
           pointer-events: none;
           opacity: 0.7;
         }
-        .hero-copy, .hero-visual { position: relative; z-index: 1; }
+        .hero-copy, .hero-visual { position: relative; z-index: 1; min-width: 0; }
+        .hero-visual { width: 100%; }
         .badge {
           display: inline-flex;
           align-items: center;
@@ -369,6 +403,8 @@ export class Counter extends SwitchComponent {
         }
 
         .window {
+          width: 100%;
+          max-width: 100%;
           border: 1px solid var(--border_color);
           background: var(--surface_1);
           border-radius: 16px;
@@ -394,10 +430,18 @@ export class Counter extends SwitchComponent {
           font-family: var(--font-mono);
         }
         .window-body { padding: 0; background: var(--codeblock_bg, #18181b); }
+        .window-body {
+          min-width: 0;
+          overflow: hidden;
+        }
         .window-body sw-codeblock {
           --codeblock-radius: 0;
           --codeblock-frame: transparent;
           --codeblock-shadow: none;
+          --codeblock-max-scroll: min(420px, 58vh);
+          display: block;
+          width: 100%;
+          max-width: 100%;
           margin: 0;
         }
 
@@ -487,12 +531,29 @@ export class Counter extends SwitchComponent {
           .hero { grid-template-columns: 1fr; padding: 48px 20px 56px; gap: 32px; }
           .card-grid, .feature-grid { grid-template-columns: 1fr 1fr; }
           .band, .cta-band { padding-left: 20px; padding-right: 20px; }
+          .window-body sw-codeblock {
+            --codeblock-max-scroll: min(380px, 50vh);
+          }
         }
         @media (max-width: 640px) {
+          .hero { padding: 36px 16px 48px; gap: 24px; }
           .card-grid, .feature-grid { grid-template-columns: 1fr; }
           .command { width: 100%; }
           .command code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .cta { padding: 32px 22px; }
+          .window { border-radius: 12px; }
+          .window-bar { padding: 8px 10px; gap: 6px; }
+          .window-title {
+            margin-left: 4px;
+            font-size: 10px;
+            max-width: 52vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .window-body sw-codeblock {
+            --codeblock-max-scroll: min(300px, 42vh);
+          }
         }
       </style>
     `;

@@ -129,6 +129,7 @@ export class SwDocsSwitchIconsScreen extends SwitchComponent {
           <button id="icons-load-more" type="button" class="icons-load-more-btn">Load more</button>
         </div>
         <sw-docs-pagination></sw-docs-pagination>
+        <sw-icons-bottom-sheet></sw-icons-bottom-sheet>
       </div>
     `;
   }

@@ -1,20 +1,32 @@
-import { SwitchComponent, updateState, getState, subscribeState } from 'switch-framework';
+import { Modal, updateState, getState, onState } from 'switch-framework';
 import { copyText } from '/utils/clipboard.js';
 
-export class IconsBottomSheet extends SwitchComponent {
+export class IconsBottomSheet extends Modal {
   static tag = 'sw-icons-bottom-sheet';
+  static animationType = 'slide';
+  static presentationStyle = 'pageSheet';
+  static interceptBack = true;
 
-  onMount() {
+  _isVisible() {
+    return !!getState('icon-sheet')?.open;
+  }
+
+  onRequestClose() {
+    this.close();
+  }
+
+    onMount() {
     this._expanded = false;
-    /** Live in tab layout: react whenever global `icon-sheet` changes (from switch-icons or elsewhere). */
-    const unsub = subscribeState('icon-sheet', (state) => this.updateSheetDOM(state));
-    this.addOnDestroy(() => unsub?.());
+    onState('icon-sheet', (state) => {
+      this._syncVisibleDOM();
+      this.updateSheetDOM(state);
+    });
     this.bindEvents();
+    this.updateSheetDOM(getState('icon-sheet') || {});
   }
 
   bindEvents() {
     this.listener('#icon-sheet-close', 'click', () => this.handleClose());
-    this.listener('#icon-sheet-backdrop', 'click', () => this.close());
     this.listener('#icon-sheet-prev', 'click', () => this.navigate(-1));
     this.listener('#icon-sheet-next', 'click', () => this.navigate(1));
     this.listener('#icon-sheet-copy-span', 'click', () => this.copySpan());
@@ -25,16 +37,13 @@ export class IconsBottomSheet extends SwitchComponent {
   }
 
   updateSheetDOM(state) {
-    const wrapper = this.select('.icon-sheet-wrapper');
-    if (!wrapper) return;
+    const root = this.select('[data-modal-root]');
+    if (!root) return;
 
     const isOpen = !!state?.open;
-    wrapper.classList.toggle('open', isOpen);
-    this.style.pointerEvents = isOpen ? 'auto' : '';
-
     if (!isOpen) {
       this._expanded = false;
-      wrapper.classList.remove('expanded');
+      root.classList.remove('expanded');
       const expandIcon = this.select('#icon-sheet-expand .icon-sheet-control-icon');
       if (expandIcon) expandIcon.className = 'switch_icon_window_maximize icon-sheet-control-icon';
       return;
@@ -85,9 +94,9 @@ export class IconsBottomSheet extends SwitchComponent {
   }
 
   _syncExpandUI() {
-    const wrapper = this.select('.icon-sheet-wrapper');
+    const root = this.select('[data-modal-root]');
     const expandIcon = this.select('#icon-sheet-expand .icon-sheet-control-icon');
-    if (wrapper) wrapper.classList.toggle('expanded', this._expanded);
+    if (root) root.classList.toggle('expanded', this._expanded);
     if (expandIcon) {
       expandIcon.className = (this._expanded ? 'switch_icon_window_minimize' : 'switch_icon_window_maximize') + ' icon-sheet-control-icon';
     }
@@ -205,8 +214,6 @@ export class IconsBottomSheet extends SwitchComponent {
 
   render() {
     return `
-      <div class="icon-sheet-wrapper" id="icon-sheet-root">
-        <div class="icon-sheet-backdrop" id="icon-sheet-backdrop"></div>
         <button type="button" id="icon-sheet-collapse-fullscreen" class="icon-sheet-fab-collapse" aria-label="Back to compact view">
           <span class="switch_icon_window_minimize icon-sheet-fab-collapse-icon"></span>
           <span class="icon-sheet-fab-collapse-label">Compact</span>
@@ -249,7 +256,6 @@ export class IconsBottomSheet extends SwitchComponent {
             <button id="icon-sheet-copy-span" class="icon-sheet-btn icon-sheet-btn-secondary" type="button">Copy span</button>
           </div>
         </div>
-      </div>
     `;
   }
 
@@ -258,40 +264,8 @@ export class IconsBottomSheet extends SwitchComponent {
       <style>
         @import '/assets/icons/style.css';
 
-        /* ─── Overlay wrapper ─────────────────────────────────────────── */
-        .icon-sheet-wrapper {
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          z-index: 12000;
-          isolation: isolate;
-        }
-
-        .icon-sheet-wrapper.open {
-          pointer-events: auto;
-        }
-
-        .icon-sheet-wrapper.expanded {
-          z-index: 12000;
-        }
-
-        /* ─── Backdrop ────────────────────────────────────────────────── */
-        /* Parent pointer-events:none does NOT disable children; without this, the
-           invisible full-screen backdrop (z-index 12000) steals all clicks under the sheet. */
-        .icon-sheet-backdrop {
-          position: absolute;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.45);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          opacity: 0;
-          pointer-events: none;
-          transition: opacity 0.28s ease;
-        }
-
-        .icon-sheet-wrapper.open .icon-sheet-backdrop {
-          opacity: 1;
-          pointer-events: auto;
+        [data-modal-root].expanded {
+          z-index: 12001;
         }
 
         /* Mobile-only: exit expanded → compact (pill, above content) */
@@ -335,50 +309,47 @@ export class IconsBottomSheet extends SwitchComponent {
         }
 
         @media (max-width: 768px) {
-          .icon-sheet-wrapper.expanded .icon-sheet-fab-collapse {
+          [data-modal-root].expanded .icon-sheet-fab-collapse {
             display: inline-flex;
           }
         }
 
         /* ─── Panel (shared base) ─────────────────────────────────────── */
         .icon-sheet-panel {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
+          width: 100%;
           background: linear-gradient(180deg, var(--surface_1) 0%, var(--surface_2) 120%);
           border-top: 1px solid var(--border_color);
-          border-radius: 20px 20px 0 0;
           padding: 24px;
           padding-bottom: max(24px, env(safe-area-inset-bottom));
           max-height: min(70vh, calc(100dvh - env(safe-area-inset-top)));
           overflow-y: auto;
           -webkit-overflow-scrolling: touch;
-          transform: translateY(100%);
-          transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
           box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.12);
           display: flex;
           flex-direction: column;
           gap: 20px;
           box-sizing: border-box;
-          pointer-events: none;
         }
 
-        .icon-sheet-wrapper.open .icon-sheet-panel {
-          transform: translateY(0);
-          pointer-events: auto;
+        /* ─── Expanded (fullscreen) ─ */
+        [data-modal-root].expanded {
+          align-items: stretch;
+          justify-content: stretch;
         }
-
-        /* ─── Expanded (fullscreen, centered) — fixed layer above topbar ─ */
-        .icon-sheet-wrapper.expanded .icon-sheet-panel {
-          position: fixed;
-          inset: 0;
-          z-index: 12001;
+        [data-modal-root].expanded .modal-container {
+          align-items: stretch;
+          justify-content: stretch;
+          padding: 0;
           max-height: none;
+          height: 100%;
+          width: 100%;
+        }
+
+        [data-modal-root].expanded .icon-sheet-panel {
+          max-height: none;
+          min-height: 100%;
           border-radius: 0;
           border-top: none;
-          transform: none;
-          overflow-y: auto;
           align-items: center;
           justify-content: center;
           gap: 32px;
@@ -634,13 +605,13 @@ export class IconsBottomSheet extends SwitchComponent {
            The panel fills the viewport; content is centred at a
            comfortable max-width so it never stretches edge-to-edge.
         ══════════════════════════════════════════════════════════════ */
-        .icon-sheet-wrapper.expanded .icon-sheet-panel > * {
+        [data-modal-root].expanded .icon-sheet-panel > * {
           width: 100%;
           max-width: 480px;
         }
 
         /* Controls pinned to top-right corner of the fullscreen panel */
-        .icon-sheet-wrapper.expanded .icon-sheet-controls {
+        [data-modal-root].expanded .icon-sheet-controls {
           position: absolute;
           top: max(16px, env(safe-area-inset-top));
           right: max(16px, env(safe-area-inset-right));
@@ -648,53 +619,53 @@ export class IconsBottomSheet extends SwitchComponent {
         }
 
         /* Header: stack vertically and centre everything */
-        .icon-sheet-wrapper.expanded .icon-sheet-header {
+        [data-modal-root].expanded .icon-sheet-header {
           flex-direction: column;
           align-items: center;
           gap: 20px;
         }
 
         /* Large preview in expanded */
-        .icon-sheet-wrapper.expanded .icon-sheet-preview {
+        [data-modal-root].expanded .icon-sheet-preview {
           width: 120px;
           height: 120px;
           border-radius: 20px;
         }
 
-        .icon-sheet-wrapper.expanded .icon-preview-glyph {
+        [data-modal-root].expanded .icon-preview-glyph {
           font-size: 60px;
         }
 
         /* Info block becomes centred */
-        .icon-sheet-wrapper.expanded .icon-sheet-info {
+        [data-modal-root].expanded .icon-sheet-info {
           align-items: center;
           min-height: unset;
           gap: 8px;
         }
 
-        .icon-sheet-wrapper.expanded .icon-sheet-title-row {
+        [data-modal-root].expanded .icon-sheet-title-row {
           justify-content: center;
         }
 
-        .icon-sheet-wrapper.expanded .icon-sheet-name {
+        [data-modal-root].expanded .icon-sheet-name {
           font-size: 26px;
           text-align: center;
           white-space: normal;
           overflow: visible;
         }
 
-        .icon-sheet-wrapper.expanded .icon-sheet-tags {
+        [data-modal-root].expanded .icon-sheet-tags {
           text-align: center;
           white-space: normal;
           overflow: visible;
         }
 
-        .icon-sheet-wrapper.expanded .icon-sheet-category {
+        [data-modal-root].expanded .icon-sheet-category {
           align-self: center;
         }
 
         /* Actions centred in expanded */
-        .icon-sheet-wrapper.expanded .icon-sheet-actions {
+        [data-modal-root].expanded .icon-sheet-actions {
           justify-content: center;
         }
 
@@ -810,33 +781,33 @@ export class IconsBottomSheet extends SwitchComponent {
           }
 
           /* Expanded: FAB + offset controls; content breathes */
-          .icon-sheet-wrapper.expanded .icon-sheet-panel {
+          [data-modal-root].expanded .icon-sheet-panel {
             padding: max(88px, calc(env(safe-area-inset-top) + 52px)) 18px max(28px, env(safe-area-inset-bottom));
             gap: 22px;
           }
 
-          .icon-sheet-wrapper.expanded .icon-sheet-header {
+          [data-modal-root].expanded .icon-sheet-header {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 18px;
           }
 
-          .icon-sheet-wrapper.expanded .icon-sheet-preview {
+          [data-modal-root].expanded .icon-sheet-preview {
             width: 96px;
             height: 96px;
             min-width: 96px;
           }
 
-          .icon-sheet-wrapper.expanded .icon-preview-glyph {
+          [data-modal-root].expanded .icon-preview-glyph {
             font-size: 48px;
           }
 
-          .icon-sheet-wrapper.expanded .icon-sheet-name {
+          [data-modal-root].expanded .icon-sheet-name {
             font-size: 22px;
           }
 
-          .icon-sheet-wrapper.expanded .icon-sheet-controls {
+          [data-modal-root].expanded .icon-sheet-controls {
             position: absolute;
             top: max(56px, calc(env(safe-area-inset-top) + 44px));
             right: max(12px, env(safe-area-inset-right));

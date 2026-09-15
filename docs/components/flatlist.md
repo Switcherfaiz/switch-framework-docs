@@ -3,7 +3,7 @@
 **FlatList** is a performant list component inspired by React Native's FlatList. It provides efficient rendering of scrollable lists with built-in support for infinite scrolling, grid layouts, pull-to-refresh, and state-driven updates.
 
 > [!NOTE]
-> **Key Concept:** FlatList extends `SwitchComponent`. Base list setup runs **automatically** — no `super.onMount()`. Use **`static { this.useState('key'); }`**, read **`getState('key')`** in `render()` / `renderItem()`, and call scroll APIs via **`useRef(this)`** in `onMount()` or **action states** from anywhere.
+> **Key Concept:** FlatList extends `ScrollView`. Data and loading **patch in place** (`onState` + `insertAdjacentHTML`) — the list host does not remount. Point it at your keys with **`static dataState`** / **`static loadingState`**, or pass the same names (or plain values) through **`createProps`**. Call **`super.onMount()`** in subclasses. Scroll APIs live on **`useRef(this)`**. For masonry or mixed inner layout, use [[ScrollView|docs/components/scrollview]] instead of forcing `horizontal`.
 
 ### Default states
 
@@ -13,56 +13,59 @@ For `static tag = 'sw-user-list'`, `registerStates` (via `registerComponents`) c
 {"headers":["State key","Initial","Purpose"],"htmlColumns":[0,1,2],"rows":[["<code>sw-user-list-data</code>","<code>[]</code>","List items — set <code>static dataState</code> to this key"],["<code>sw-user-list-loading</code>","<code>false</code>","Loading flag"],["<code>sw-user-list-refreshing</code>","<code>false</code>","Pull-to-refresh flag"],["<code>sw-user-list-error</code>","<code>null</code>","Error object/message"],["<code>sw-user-list-action-scroll-end</code>","<code>0</code>","Bump to <code>scrollToEnd()</code>"],["<code>sw-user-list-action-scroll-index</code>","<code>null</code>","Set <code>{ index, animated?, viewPosition? }</code> to scroll"],["<code>sw-user-list-action-flash-scroll</code>","<code>0</code>","Bump to flash scroll indicators"]]}
 ```
 
-Subscribe with `static { this.useState('sw-user-list-data'); }` for keys that should re-render the list.
+Subscribe with `static dataState` (or a `data` prop that is a state key). **Do not** also `this.useState(dataKey)` on the list host — that remounts the list. Data appends patch with `insertAdjacentHTML`.
+
+### Virtualized rendering (RN-style)
+
+Same props as [[ScrollView|docs/components/scrollview]] — FlatList inherits them:
+
+```javascript
+static virtualized = true;
+static initialNumToRender = 12;
+static windowSize = 10;
+static estimatedItemSize = 72;
+static removeClippedSubviews = true;
+```
+
+Set `virtualized: false` (or omit) to render every row in the DOM. For fixed-height rows, override `getItemLayout(data, index)` like React Native.
 
 ### Basic Usage
 
-Extend `FlatList` and override `renderItem()` to render each item. Initialize states in a `static {}` block with `createState()`, register re-renders with `static { this.useState('key'); }`, and point FlatList at your data/config keys:
+Extend `FlatList` and override `renderItem()`. Point the list at your data key. `updateState` on that key appends or resets rows without rebuilding the scroller.
 
 ```javascript
-static {
-  createState('sw-user-list-data', [...]);
-  createState('sw-user-list-horizontal', false);
-}
-static { this.useState('sw-user-list-data'); }
-static { this.useState('sw-user-list-horizontal'); }
-
 static dataState = 'sw-user-list-data';
-static horizontalState = 'sw-user-list-horizontal';
-// FlatList reads getState(dataState) / getState(horizontalState) on every render
+static loadingState = 'sw-user-list-loading';
 ```
-
-When `updateState('sw-user-list-data', …)` or `updateState('sw-user-list-horizontal', …)` runs anywhere in the app, the list re-renders with fresh values. You can also drive updates with `useEffect` and a dependency array (see below).
 
 Click **Run** to open a fullscreen live preview. Use **View / Edit** there to tweak code and run again.
 
 ```javascript title:components/UserList.js preview:liveview
-import { FlatList, createState, getState } from 'switch-framework';
+import { FlatList, ensureState, getState } from 'switch-framework';
 
 export class UserList extends FlatList {
   static tag = 'sw-user-list';
   static dataState = 'sw-user-list-data';
 
   static {
-    createState('sw-user-list-data', [
-      { id: 1, name: 'Alice', role: 'Developer' },
-      { id: 2, name: 'Bob', role: 'Designer' },
-      { id: 3, name: 'Carol', role: 'Manager' }
+    ensureState('sw-user-list-data', [
+      { id: 1, name: 'Alice Mensah', role: 'Product design', img: 'https://i.pravatar.cc/80?img=47' },
+      { id: 2, name: 'Bob Okello', role: 'Frontend', img: 'https://i.pravatar.cc/80?img=12' },
+      { id: 3, name: 'Carol Diaz', role: 'Illustration', img: 'https://i.pravatar.cc/80?img=32' },
+      { id: 4, name: 'Daniel Cho', role: 'Photography', img: 'https://i.pravatar.cc/80?img=15' }
     ]);
   }
 
-  static { this.useState('sw-user-list-data'); }
-
   renderItem({ item, index }) {
     return `
-      <div class="user-card" data-index="${index}">
-        <div class="user-avatar">${item.name[0]}</div>
+      <article class="user-card" data-index="${index}">
+        <img class="user-avatar" src="${item.img}" alt="" />
         <div class="user-info">
           <div class="user-name">${item.name}</div>
           <div class="user-role">${item.role}</div>
         </div>
-        <div class="user-chip">View</div>
-      </div>
+        <span class="user-chip">View</span>
+      </article>
     `;
   }
 
@@ -71,7 +74,8 @@ export class UserList extends FlatList {
   }
 
   onMount() {
-('.user-card', 'click', (e) => {
+    super.onMount();
+    this.listener('.user-card', 'click', (e) => {
       const card = e.target.closest('.user-card');
       const index = card?.dataset.index;
       const data = getState('sw-user-list-data');
@@ -83,32 +87,44 @@ export class UserList extends FlatList {
     return `
       <style>
         :host {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          display: block;
           width: 100%;
-          font-family: var(--font, system-ui);
+          height: 380px;
+          font-family: var(--font, 'DM Sans', system-ui);
         }
-
         flatlist {
-          width: min(100%, 480px);
-          max-height: min(420px, 70vh);
+          width: 100%;
+          height: 100%;
+          border-radius: 18px;
+          background: #fff;
+          border: 1px solid #ececec;
         }
         .user-card {
-          display: flex; align-items: center; justify-content: space-between; gap: 14px;
-          padding: 12px; border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 14px;
-          cursor: pointer; background: rgba(255,255,255,0.7);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 14px;
+          margin: 8px 10px;
+          border-radius: 14px;
+          cursor: pointer;
+          background: #fafafa;
         }
         .user-avatar {
-          width: 40px; height: 40px; border-radius: 50%;
-          background: linear-gradient(135deg, #6366f1, #8b5cf6);
-          color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          object-fit: cover;
         }
-        .user-name { font-weight: 800; color: #0f172a; }
-        .user-role { font-size: 12px; color: #64748b; font-weight: 700; }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-weight: 750; font-size: 14px; color: #111; }
+        .user-role { font-size: 12px; color: #6b7280; font-weight: 500; }
         .user-chip {
-          padding: 8px 10px; border-radius: 999px; font-weight: 900; font-size: 12px;
-          background: rgba(99,102,241,0.12); color: #4f46e5;
+          padding: 7px 12px;
+          border-radius: 999px;
+          font-weight: 700;
+          font-size: 12px;
+          background: #111;
+          color: #fff;
         }
       </style>
     `;
