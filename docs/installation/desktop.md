@@ -1,6 +1,6 @@
 ## Desktop App Installation
 
-Use the CLI to scaffold a Switch Framework Electron app. The template forks the Express server, picks a free port automatically, and opens a native window.
+Use the CLI to scaffold a Switch Framework Electron app. The template forks the Express server, picks a free port automatically, shows a splash window while booting, and opens a native frameless window.
 
 > [!NOTE]
 > New projects pin **`switch-framework@^0.2.9`** and **`switch-framework-backend@^0.2.9`**.
@@ -16,27 +16,23 @@ npm run electron:dev
 
 ### Finding the server port
 
-After `npm run electron:dev`, check the terminal:
-
-```
-[electron/child:app] http://127.0.0.1:54321
+```params-table
+{"headers":["Command","Where the port appears"],"htmlColumns":[0,1],"rows":[["<code>npm run electron:dev</code>","Terminal: <code>[electron/child:app] http://127.0.0.1:54321</code>"],["Inside the app","<code>window.switchApp.runtime.port</code> (preload)"],["<code>npm run dev</code> (web only)","Terminal: <code>Switch Framework app running at http://localhost:3000</code>"]]}
 ```
 
-That is the URL Electron loads. Inside the renderer, `window.switchApp.runtime.port` holds the same value.
-
-For **`npm run dev`** (web-only, no Electron), the port comes from `package.json` → `switchFramework.port` (default **3000**) unless you set `PORT` in the environment.
+See [[Desktop Server|docs/server/desktop]] for full details.
 
 ### Debugging in a normal browser
 
-In `constants/index.js`, set:
+Set **`ALLOW_WEB_VIEWING = true`** in **`constants/index.js`**, restart, copy the port from the terminal log, open **`http://127.0.0.1:<port>/`**. Set back to **`false`** before shipping.
 
-```javascript
-const ALLOW_WEB_VIEWING = true;
+See [[Web Viewing & Auth|docs/server/desktop-auth]].
+
+### Server docs (Electron)
+
+```params-table
+{"headers":["Topic","Page"],"htmlColumns":[0,1],"rows":[["Backend config (web + Electron)","[[Server Introduction|docs/server/introduction]]"],["Web-only server setup","[[Web Server|docs/server/web]]"],["Electron architecture & ports","[[Desktop Server|docs/server/desktop]]"],["Multiple child processes","[[Multiple child servers|docs/server/desktop-multi-server]]"],["Splash / loading window","[[Splash window|docs/server/desktop-splash]]"],["Auth token & browser debug","[[Web viewing & auth|docs/server/desktop-auth]]"]]}
 ```
-
-Restart the app, copy the port from the `[electron/child:app]` log, and open `http://127.0.0.1:<port>/` in Chrome or Edge. Set back to **`false`** before shipping.
-
-See [[Desktop Server|docs/server/desktop]] for architecture, auth middleware, and builder details.
 
 ### Build for production
 
@@ -44,4 +40,4 @@ See [[Desktop Server|docs/server/desktop]] for architecture, auth middleware, an
 npm run build
 ```
 
-Output goes to `dist/`. The builder config lives in `electron/electron-builder.json`.
+Output goes to **`dist/`**. Config: **`electron/electron-builder.json`**.

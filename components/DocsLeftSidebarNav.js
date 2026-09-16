@@ -17,7 +17,14 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations', 'docs/switch-icons'],
       'data-flow': ['docs/data-flow/props'],
       components: ['docs/components', 'docs/components/flatlist', 'docs/components/scrollview', 'docs/components/modal', 'docs/components/electron-titlebar', 'docs/hooks'],
-      backend: ['docs/server/introduction', 'docs/server/web', 'docs/server/desktop']
+      backend: [
+        'docs/server/introduction',
+        'docs/server/web',
+        'docs/server/desktop',
+        'docs/server/desktop-multi-server',
+        'docs/server/desktop-splash',
+        'docs/server/desktop-auth'
+      ]
     };
     const updates = {};
     for (const [key, routes] of Object.entries(routeMap)) {
@@ -200,7 +207,10 @@ export class DocsLeftSidebarNav extends SwitchComponent {
             children: [
               { label: 'Introduction', to: 'docs/server/introduction' },
               { label: 'Web Server', to: 'docs/server/web' },
-              { label: 'Desktop Server', to: 'docs/server/desktop' }
+              { label: 'Desktop Server', to: 'docs/server/desktop' },
+              { label: 'Multiple child servers', to: 'docs/server/desktop-multi-server' },
+              { label: 'Splash window', to: 'docs/server/desktop-splash' },
+              { label: 'Web viewing & auth', to: 'docs/server/desktop-auth' }
             ]
           }
         ]

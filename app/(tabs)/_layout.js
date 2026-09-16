@@ -79,6 +79,9 @@ import { SwDocsDataFlowPropsScreen } from './screens/data-flow/props.js';
 import { SwDocsServerIntroScreen } from './screens/server/introduction.js';
 import { SwDocsServerWebScreen } from './screens/server/web.js';
 import { SwDocsServerDesktopScreen } from './screens/server/desktop.js';
+import { SwDocsServerDesktopMultiScreen } from './screens/server/desktop-multi-server.js';
+import { SwDocsServerDesktopSplashScreen } from './screens/server/desktop-splash.js';
+import { SwDocsServerDesktopAuthScreen } from './screens/server/desktop-auth.js';
 
 registerComponents([
   SwDocsIntroScreen,
@@ -106,6 +109,9 @@ registerComponents([
   SwDocsServerIntroScreen,
   SwDocsServerWebScreen,
   SwDocsServerDesktopScreen,
+  SwDocsServerDesktopMultiScreen,
+  SwDocsServerDesktopSplashScreen,
+  SwDocsServerDesktopAuthScreen,
 ]);
 
 export class SwTabsLayout extends TabLayout {
@@ -125,6 +131,9 @@ export class SwTabsLayout extends TabLayout {
     SwDocsServerIntroScreen,
     SwDocsServerWebScreen,
     SwDocsServerDesktopScreen,
+    SwDocsServerDesktopMultiScreen,
+    SwDocsServerDesktopSplashScreen,
+    SwDocsServerDesktopAuthScreen,
     SwDocsIntroScreen,
     SwDocsTutorialReactiveButtonScreen,
     SwDocsThinkingScreen,
