@@ -1,118 +1,48 @@
-import { SwitchComponent, updateState, createState, getState } from 'switch-framework';
-import { navigate as navigate,getActiveRoute,useRouteChangesSubscriber } from 'switch-framework/router';
+import { SwitchComponent, useShared, onState, updateState, useEffect, VERSION } from 'switch-framework';
+import { navigate } from 'switch-framework/router';
+import { getTheme, changeTheme, useThemesChangesSubscriber } from 'switch-framework/themes';
 import { navigateDoc, isDocRoute } from '/utils/doc-nav.js';
-import { getTheme, changeTheme } from 'switch-framework/themes';
+
+const NAV = [
+  { label: 'Docs', to: 'docs/introduction' },
+  { label: 'Changelogs', to: 'changelogs' },
+  { label: 'Authors', to: 'authors' },
+  { label: 'About', to: 'about' },
+];
+
+function isNavActive(route, to) {
+  return to === 'docs/introduction'
+    ? String(route).startsWith('docs')
+    : route === to;
+}
 
 export class TopBar extends SwitchComponent {
   static tag = 'sw-topbar';
-  //creating and using the route changes state
-  static {createState('activeRoute', null);}
-  static {this.useState('activeRoute')}
-
-  onMount() {
-    this.bindTopBarEvents();
-    //subscribe to route changes then update the state by getting active route from router
-    useRouteChangesSubscriber(() => updateState('activeRoute', getActiveRoute()));
-    this.setupThemeSubscription();
-    this.setupGlobalKeys();
-    this.updateThemeIcon();
-  }
-
-
-  bindTopBarEvents() {
-    this.listener('a[data-route]', 'click', (e) => {
-      const link = e.target?.closest?.('a[data-route]');
-      if (!link) return;
-      e.preventDefault();
-      const route = link.getAttribute('data-route');
-      if (isDocRoute(route)) navigateDoc(route);
-      else navigate(route);
-    });
-    this.listener('#theme-toggle', 'click', (e) => {
-      e.preventDefault();
-      changeTheme(getTheme() === 'dark' ? 'light' : 'dark');
-      this.updateThemeIcon();
-    });
-    this.listener('#mobile-nav-toggle', 'click', (e) => {
-      e.preventDefault();
-      updateState('mobile-sidebar-open', (v) => !v);
-    });
-  }
-
-  setupThemeSubscription() {
-    if (this._themeSubbed) return;
-    this._themeSubbed = true;
-    this._themeHandler = () => this.updateThemeIcon();
-    document.addEventListener('theme:change', this._themeHandler);
-    this.addOnDestroy(() => {
-      document.removeEventListener('theme:change', this._themeHandler);
-    });
-  }
-
-  setupGlobalKeys() {
-    if (this._keysBound) return;
-    this._keysBound = true;
-    this._keyHandler = (e) => {
-      try {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-          e.preventDefault();
-          updateState('search-open', (v) => !v);
-        }
-        if (e.key === 'Escape') updateState('search-open', false);
-      } catch (_) {
-        /* state may be missing if wrong framework bundle was loaded */
-      }
-    };
-    document.addEventListener('keydown', this._keyHandler);
-    this.addOnDestroy(() => document.removeEventListener('keydown', this._keyHandler));
-  }
-
-  updateThemeIcon() {
-    const sun = this.selectAll('.icon-sun');
-    const moon = this.selectAll('.icon-moon');
-    const logoLight = this.selectAll('.logo-light');
-    const logoDark = this.selectAll('.logo-dark');
-    const isDark = getTheme() === 'dark';
-    sun?.forEach((el) => { el.style.display = isDark ? 'none' : 'block'; });
-    moon?.forEach((el) => { el.style.display = isDark ? 'block' : 'none'; });
-    logoLight?.forEach((el) => { el.style.display = isDark ? 'none' : 'block'; });
-    logoDark?.forEach((el) => { el.style.display = isDark ? 'block' : 'none'; });
-  }
-
-  getNavLinks() {
-    return [
-      { label: 'Docs', to: 'docs/introduction' },
-      { label: 'Changelogs', to: 'changelogs' },
-      { label: 'Authors', to: 'authors' },
-      { label: 'About', to: 'about' }
-    ];
-  }
 
   render() {
-    const navLinks = this.getNavLinks();
-    const activeRoute = getState('activeRoute') || '';
-    const onDocs = String(activeRoute).startsWith('docs');
+    const [route] = useShared('activeRoute', '');
+    const [theme, setTheme] = useShared('docs-theme', getTheme());
+    this._setTheme = setTheme;
+    const isDark = theme === 'dark';
 
     return `
-      <header class="topbar ${onDocs ? 'on-docs' : ''}">
+      <header class="topbar ${String(route).startsWith('docs') ? 'on-docs' : ''}">
         <div class="left-section">
           <button id="mobile-nav-toggle" class="btn-icon mobile-nav" type="button" aria-label="Open documentation menu">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           </button>
           <a href="#" data-route="index" class="logo-section logo-link">
             <div class="logo-icon">
-              <img class="logo-light" src="/assets/files/Switch_framework_logo_purple.svg" alt="Switch Framework" width="22" height="22" />
-              <img class="logo-dark" src="/assets/files/Switch_framework_logo_white.svg" alt="Switch Framework" width="22" height="22" style="display:none" />
+              <img class="logo-light" src="/assets/files/Switch_framework_logo_purple.svg" alt="Switch Framework" width="22" height="22" style="${isDark ? 'display:none' : 'display:block'}" />
+              <img class="logo-dark" src="/assets/files/Switch_framework_logo_white.svg" alt="Switch Framework" width="22" height="22" style="${isDark ? 'display:block' : 'display:none'}" />
             </div>
-            <h2 class="logo-text">Switch</h2>
+            <h2 class="logo-text">Switch Framework</h2>
           </a>
+          <a href="#" data-route="changelogs" class="version" title="switch-framework ${VERSION}">v${VERSION}</a>
           <nav class="nav-links">
-            ${navLinks.map(({ label, to }) => {
-              const active = to === 'docs/introduction'
-                ? String(activeRoute).startsWith('docs')
-                : activeRoute === to;
-              return `<a href="#" data-route="${to}" class="nav-link ${active ? 'active' : ''}">${label}</a>`;
-            }).join('')}
+            ${NAV.map(({ label, to }) => `
+              <a href="#" data-route="${to}" class="nav-link${isNavActive(route, to) ? ' active' : ''}">${label}</a>
+            `).join('')}
           </nav>
         </div>
         <div class="right-section">
@@ -125,11 +55,11 @@ export class TopBar extends SwitchComponent {
               </svg>
             </a>
             <button id="theme-toggle" class="btn-icon" type="button" aria-label="Toggle theme">
-              <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="${isDark ? 'display:none' : 'display:block'}">
                 <circle cx="12" cy="12" r="4" fill="currentColor"/>
                 <path d="M12 2V4M12 20V22M4 12H2M6.31412 6.31412L4.8999 4.8999M17.6859 6.31412L19.1001 4.8999M6.31412 17.69L4.8999 19.1042M17.6859 17.69L19.1001 19.1042M22 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
-              <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none">
+              <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="${isDark ? 'display:block' : 'display:none'}">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
@@ -137,6 +67,51 @@ export class TopBar extends SwitchComponent {
         </div>
       </header>
     `;
+  }
+
+  effects() {
+    useEffect(() => useThemesChangesSubscriber((theme) => {
+      this._setTheme?.(theme);
+    }), []);
+  }
+
+  onMount() {
+    this.listener('a[data-route]', 'click', (e) => {
+      const link = e.target?.closest?.('a[data-route]');
+      if (!link) return;
+      e.preventDefault();
+      const route = link.getAttribute('data-route');
+      if (isDocRoute(route)) navigateDoc(route);
+      else navigate(route);
+    });
+
+    this.listener('#theme-toggle', 'click', (e) => {
+      e.preventDefault();
+      const next = getTheme() === 'dark' ? 'light' : 'dark';
+      changeTheme(next);
+      this._setTheme(next);
+    });
+
+    this.listener('#mobile-nav-toggle', 'click', (e) => {
+      e.preventDefault();
+      updateState('mobile-sidebar-open', (v) => !v);
+    });
+
+    onState('activeRoute', (route) => {
+      const value = String(route || '');
+      this.select('.topbar')?.classList.toggle('on-docs', value.startsWith('docs'));
+      this.selectAll('.nav-link')?.forEach((a) => {
+        a.classList.toggle('active', isNavActive(value, a.getAttribute('data-route')));
+      });
+    });
+
+    onState('docs-theme', (theme) => {
+      const isDark = String(theme || 'light') === 'dark';
+      this.selectAll('.icon-sun')?.forEach((el) => { el.style.display = isDark ? 'none' : 'block'; });
+      this.selectAll('.icon-moon')?.forEach((el) => { el.style.display = isDark ? 'block' : 'none'; });
+      this.selectAll('.logo-light')?.forEach((el) => { el.style.display = isDark ? 'none' : 'block'; });
+      this.selectAll('.logo-dark')?.forEach((el) => { el.style.display = isDark ? 'block' : 'none'; });
+    });
   }
 
   styleSheet() {
@@ -175,7 +150,7 @@ export class TopBar extends SwitchComponent {
         .left-section {
           display: flex;
           align-items: center;
-          gap: 20px;
+          gap: 12px;
           flex-shrink: 0;
         }
 
@@ -197,6 +172,7 @@ export class TopBar extends SwitchComponent {
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
         }
 
         .logo-icon img {
@@ -211,6 +187,25 @@ export class TopBar extends SwitchComponent {
           color: var(--main_text);
           letter-spacing: -0.03em;
           line-height: 1.2;
+          white-space: nowrap;
+        }
+
+        .version {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          color: var(--sub_text);
+          background: var(--surface_2);
+          border: 1px solid var(--border_color);
+          border-radius: 999px;
+          padding: 2px 8px;
+          text-decoration: none;
+          line-height: 1.4;
+          flex-shrink: 0;
+        }
+
+        .version:hover {
+          color: var(--main_text);
         }
 
         .nav-links {
@@ -297,8 +292,8 @@ export class TopBar extends SwitchComponent {
           .left-section { gap: 8px; }
         }
 
-        @media (max-width: 420px) {
-          .logo-text { display: none; }
+        @media (max-width: 520px) {
+          .logo-text { font-size: 12px; }
         }
       </style>
     `;

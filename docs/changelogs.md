@@ -5,6 +5,12 @@ Release notes and version history for Switch Framework. Each version includes ne
 
 ## v0.2.9 – September 2, 2026
 
+**Components**
+
+- [[Modal|docs/components/modal]] — React Native-style overlay. `render()` is the panel; the host is lifted into the app `.popups` layer so it always paints on top. Bind visibility with `visibleState` (boolean or `{ open }`). Presentation: `overFullScreen`, `pageSheet`, `formSheet`, `centered`. Animation: `fade`, `slide`, `none`. `interceptBack` (on by default) makes Back / Escape dismiss the modal instead of leaving the page. Backdrop click dismisses. Override `onRequestClose()` to customize.
+- [[ScrollView|docs/components/scrollview]] — viewport for masonry or mixed content. `orientation` is the scroll axis; `layout` (`none` | `stack` | `row` | `grid` | `masonry`) is how children sit. Appending to the data state inserts only the new items (`insertAdjacentHTML`) without remounting the scroller, header, or loader.
+- [[FlatList|docs/components/flatlist]] now extends ScrollView, so load-more uses the same append-in-place path, plus row wrappers, separators, and `horizontal` / `numColumns`.
+
 **New Hooks (React-style simplified API)**
 
 Three new hooks that replace the `createState` + `static { this.useState() }` + `getState` + `updateState` ceremony for most cases. The old API is fully preserved and will not be removed — these are additions.
@@ -14,6 +20,10 @@ Three new hooks that replace the `createState` + `static { this.useState() }` + 
 - **`useShared(key, defaultValue?)`** — global shared state. Returns `[value, setter]`. Subscribes this component to the key so it rerenders when the value changes from anywhere. **Idempotent:** if the key does not exist yet it is created automatically with `defaultValue`, so no separate `createState` is needed for feature-level states. First caller with a key wins; later callers with a different default simply use the already-created value.
 
 - **`onState(key, callback)`** — subscribe to a global key and run a callback on each change without triggering `render()`. Use for CSS animations, badge counts, or any DOM patch where rebuilding `innerHTML` would discard state. Call from `onMount()`. Subscriptions are deduped per key — the same key on every rerender updates the callback reference instead of stacking new listeners.
+
+**Improvements**
+
+- `VERSION` is exported from `switch-framework` and matches the package version
 
 **Engine change**
 

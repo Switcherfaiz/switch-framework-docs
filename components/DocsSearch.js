@@ -31,14 +31,40 @@ function escapeAttr(s) {
   return String(s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+function isSearchHotkey(e) {
+  return (e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'k' || e.key === 'K' || e.code === 'KeyK');
+}
+
+let hotkeyOwner = null;
+
+function bindSearchHotkey(host) {
+  if (hotkeyOwner || !host) return;
+  hotkeyOwner = host;
+  const onKey = (e) => {
+    if (!isSearchHotkey(e)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    updateState('search-open', true);
+  };
+  document.addEventListener('keydown', onKey, true);
+  host.addOnDestroy(() => {
+    if (hotkeyOwner !== host) return;
+    document.removeEventListener('keydown', onKey, true);
+    hotkeyOwner = null;
+  });
+}
+
 export class DocsSearch extends Modal {
   static tag = 'sw-docs-search';
   static visibleState = 'search-open';
   static animationType = 'fade';
   static presentationStyle = 'centered';
   static interceptBack = true;
+  static transparent = false;
 
   onMount() {
+    bindSearchHotkey(this);
+
     onState('search-query', (query) => {
       const box = this.select('.search-suggestions');
       if (box) box.innerHTML = this.suggestions(query || '');
