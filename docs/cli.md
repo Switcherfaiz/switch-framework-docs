@@ -3,7 +3,7 @@
 Use `npx` to run the CLI without installing, or install globally for faster repeated use.
 
 > [!NOTE]
-> New projects pin **`switch-framework@^0.2.6`** and **`switch-framework-backend@^0.2.0`** in `package.json`.
+> New projects pin **`switch-framework@^0.2.9`** and **`switch-framework-backend@^0.2.9`** in `package.json`.
 
 ```bash title:Commands (npx)
 npx create-switch-framework-app my-app
@@ -50,4 +50,4 @@ Check your Node version with `node -v`, then install a matching Electron if need
 npm install electron@33 electron-builder --save-dev
 ```
 
-New projects pin **`switch-framework@^0.2.6`** and **`switch-framework-backend@^0.2.0`** in `package.json`.
+New projects pin **`switch-framework@^0.2.9`** and **`switch-framework-backend@^0.2.9`** in `package.json`.

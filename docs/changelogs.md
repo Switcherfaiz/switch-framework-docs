@@ -5,6 +5,18 @@ Release notes and version history for Switch Framework. Each version includes ne
 
 ## v0.2.9 – September 2, 2026
 
+**switch-framework-backend@0.2.9**
+
+- `config({ onHttpServer(httpServer) })` — hook before the server binds (Electron child `listen(0)` patch).
+- Uses `http.createServer(expressApp)` so the hook can wrap the Node HTTP server.
+
+**create-switch-framework-app@0.2.9**
+
+- Electron scaffold: child-process server, dynamic port, splash → main window.
+- `constants/index.js` + `ALLOW_WEB_VIEWING` flag and `server/local-auth.js` for optional browser debugging.
+- `electron/electron-builder.json` with explicit `files` list; preload exposes `switchApp.runtime.host/port`.
+- Dependency pins updated to **`^0.2.9`** for framework and backend.
+
 **Components**
 
 - [[Modal|docs/components/modal]] — React Native-style overlay. `render()` is the panel; the host is lifted into the app `.popups` layer so it always paints on top. Bind visibility with `visibleState` (boolean or `{ open }`). Presentation: `overFullScreen`, `pageSheet`, `formSheet`, `centered`. Animation: `fade`, `slide`, `none`. `interceptBack` (on by default) makes Back / Escape dismiss the modal instead of leaving the page. Backdrop click dismisses. Override `onRequestClose()` to customize.
