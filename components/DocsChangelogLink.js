@@ -9,15 +9,12 @@ import { navigate } from '/switch-framework/router/index.js';
 export class DocsChangelogLink extends SwitchComponent {
   static tag = 'sw-docs-changelog-link';
 
-  connected() {
-    const link = this.shadowRoot?.querySelector('.changelog-link');
-    if (link) {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const route = this.getAttribute('route') || '';
-        if (route) navigate(route);
-      });
-    }
+  onMount() {
+    this.listener('.changelog-link', 'click', (e) => {
+      e.preventDefault();
+      const route = this.getAttribute('route') || '';
+      if (route) navigate(route);
+    });
   }
 
   render() {

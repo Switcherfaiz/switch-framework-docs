@@ -1,4 +1,5 @@
 import { encodeData } from 'switch-framework';
+import { formatInline } from './inline-format.js';
 
 function norm(line) {
   return String(line ?? '').replace(/\r$/, '');
@@ -16,81 +17,7 @@ function isFenceOpen(line) {
   return /^```/.test(fenceLine(line));
 }
 
-function escapeHtml(text) {
-  return String(text || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function escapeAttr(text) {
-  return String(text || '')
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;');
-}
-
-function inlineText(text) {
-  const src = String(text || '');
-  let out = '';
-  let i = 0;
-
-  while (i < src.length) {
-    if (src.startsWith('[[', i)) {
-      const end = src.indexOf(']]', i + 2);
-      if (end !== -1) {
-        const inner = src.slice(i + 2, end);
-        const pipe = inner.indexOf('|');
-        if (pipe > 0) {
-          const label = inner.slice(0, pipe).trim();
-          const route = inner.slice(pipe + 1).trim();
-          out += `<sw-docs-changelog-link text="${escapeAttr(label)}" route="${escapeAttr(route)}"></sw-docs-changelog-link>`;
-          i = end + 2;
-          continue;
-        }
-      }
-    }
-
-    if (src[i] === '`') {
-      const end = src.indexOf('`', i + 1);
-      if (end === -1) {
-        out += escapeHtml(src.slice(i));
-        break;
-      }
-      out += `<code>${escapeHtml(src.slice(i + 1, end))}</code>`;
-      i = end + 1;
-      continue;
-    }
-
-    if (src.startsWith('**', i)) {
-      const end = src.indexOf('**', i + 2);
-      if (end === -1) {
-        out += escapeHtml(src.slice(i));
-        break;
-      }
-      out += `<strong>${escapeHtml(src.slice(i + 2, end))}</strong>`;
-      i = end + 2;
-      continue;
-    }
-
-    const next = src.slice(i).search(/[`*]/);
-    if (next === -1) {
-      out += escapeHtml(src.slice(i));
-      break;
-    }
-    if (next === 0) {
-      // Unmatched single * or ` — output literally and advance to avoid infinite loop
-      out += escapeHtml(src[i]);
-      i += 1;
-      continue;
-    }
-    out += escapeHtml(src.slice(i, i + next));
-    i += next;
-  }
-
-  return out;
-}
+const inlineText = formatInline;
 
 function normalizeFenceCode(code) {
   return String(code ?? '')

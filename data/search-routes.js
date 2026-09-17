@@ -28,6 +28,7 @@ export const SEARCH_ROUTES = [
   { route: 'docs/server/introduction', title: 'Server Introduction', keywords: ['server', 'backend', 'express'] },
   { route: 'docs/server/web', title: 'Web Server', keywords: ['server', 'web', 'express', 'api'] },
   { route: 'docs/server/desktop', title: 'Desktop Server', keywords: ['server', 'desktop', 'electron', 'dynamic port', 'child process'] },
+  { route: 'docs/server/desktop-electron-package', title: 'switch-framework-electron', keywords: ['electron package', 'bootstrapElectronApp', 'ipc', 'child server', 'fork', 'switch-framework-electron'] },
   { route: 'docs/server/desktop-multi-server', title: 'Multiple Child Servers', keywords: ['electron', 'fork', 'worker', 'multi server', 'ipc', 'onServerReady'] },
   { route: 'docs/server/desktop-splash', title: 'Splash Window', keywords: ['electron', 'splash', 'loading', 'boot', 'BrowserWindow'] },
   { route: 'docs/server/desktop-auth', title: 'Web Viewing & Auth', keywords: ['electron', 'auth', 'token', 'ALLOW_WEB_VIEWING', 'browser', 'debug'] },
@@ -62,6 +63,7 @@ export const DOC_ORDER = [
   { route: 'docs/server/introduction', title: 'Server Introduction' },
   { route: 'docs/server/web', title: 'Web Server' },
   { route: 'docs/server/desktop', title: 'Desktop Server' },
+  { route: 'docs/server/desktop-electron-package', title: 'switch-framework-electron' },
   { route: 'docs/server/desktop-multi-server', title: 'Multiple Child Servers' },
   { route: 'docs/server/desktop-splash', title: 'Splash Window' },
   { route: 'docs/server/desktop-auth', title: 'Web Viewing & Auth' }

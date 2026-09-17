@@ -1,4 +1,4 @@
-import { SwitchComponent, useShared, onState, updateState, useEffect, VERSION } from 'switch-framework';
+import { SwitchComponent, useShared, onState, updateState, useEffect } from 'switch-framework';
 import { navigate } from 'switch-framework/router';
 import { getTheme, changeTheme, useThemesChangesSubscriber } from 'switch-framework/themes';
 import { navigateDoc, isDocRoute } from '/utils/doc-nav.js';
@@ -21,6 +21,7 @@ export class TopBar extends SwitchComponent {
 
   render() {
     const [route] = useShared('activeRoute', '');
+    const [docsVersion] = useShared('docs-version', '');
     const [theme, setTheme] = useShared('docs-theme', getTheme());
     this._setTheme = setTheme;
     const isDark = theme === 'dark';
@@ -38,7 +39,7 @@ export class TopBar extends SwitchComponent {
             </div>
             <h2 class="logo-text">Switch Framework</h2>
           </a>
-          <a href="#" data-route="changelogs" class="version" title="switch-framework ${VERSION}">v${VERSION}</a>
+          <a href="#" data-route="changelogs" class="version" title="switch-framework-docs ${docsVersion || '…'}">v${docsVersion || '…'}</a>
           <nav class="nav-links">
             ${NAV.map(({ label, to }) => `
               <a href="#" data-route="${to}" class="nav-link${isNavActive(route, to) ? ' active' : ''}">${label}</a>
@@ -96,6 +97,13 @@ export class TopBar extends SwitchComponent {
       e.preventDefault();
       updateState('mobile-sidebar-open', (v) => !v);
     });
+
+    fetch('/package.json')
+      .then((r) => r.json())
+      .then((pkg) => {
+        if (pkg?.version) updateState('docs-version', pkg.version);
+      })
+      .catch(() => {});
 
     onState('activeRoute', (route) => {
       const value = String(route || '');

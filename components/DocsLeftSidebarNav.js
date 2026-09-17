@@ -23,7 +23,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
         'docs/server/desktop',
         'docs/server/desktop-multi-server',
         'docs/server/desktop-splash',
-        'docs/server/desktop-auth'
+        'docs/server/desktop-auth',
+        'docs/server/desktop-electron-package'
       ]
     };
     const updates = {};
@@ -208,6 +209,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
               { label: 'Introduction', to: 'docs/server/introduction' },
               { label: 'Web Server', to: 'docs/server/web' },
               { label: 'Desktop Server', to: 'docs/server/desktop' },
+              { label: 'switch-framework-electron', to: 'docs/server/desktop-electron-package' },
               { label: 'Multiple child servers', to: 'docs/server/desktop-multi-server' },
               { label: 'Splash window', to: 'docs/server/desktop-splash' },
               { label: 'Web viewing & auth', to: 'docs/server/desktop-auth' }

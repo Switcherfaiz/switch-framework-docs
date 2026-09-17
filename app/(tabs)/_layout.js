@@ -82,6 +82,7 @@ import { SwDocsServerDesktopScreen } from './screens/server/desktop.js';
 import { SwDocsServerDesktopMultiScreen } from './screens/server/desktop-multi-server.js';
 import { SwDocsServerDesktopSplashScreen } from './screens/server/desktop-splash.js';
 import { SwDocsServerDesktopAuthScreen } from './screens/server/desktop-auth.js';
+import { SwDocsServerDesktopElectronPackageScreen } from './screens/server/desktop-electron-package.js';
 
 registerComponents([
   SwDocsIntroScreen,
@@ -112,6 +113,7 @@ registerComponents([
   SwDocsServerDesktopMultiScreen,
   SwDocsServerDesktopSplashScreen,
   SwDocsServerDesktopAuthScreen,
+  SwDocsServerDesktopElectronPackageScreen,
 ]);
 
 export class SwTabsLayout extends TabLayout {
@@ -134,6 +136,7 @@ export class SwTabsLayout extends TabLayout {
     SwDocsServerDesktopMultiScreen,
     SwDocsServerDesktopSplashScreen,
     SwDocsServerDesktopAuthScreen,
+    SwDocsServerDesktopElectronPackageScreen,
     SwDocsIntroScreen,
     SwDocsTutorialReactiveButtonScreen,
     SwDocsThinkingScreen,
