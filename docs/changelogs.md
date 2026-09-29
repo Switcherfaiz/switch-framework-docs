@@ -3,6 +3,28 @@
 Release notes and version history for Switch Framework. Each version includes new features, improvements, and bug fixes.
 
 
+## v0.3.0 – September 30, 2026
+
+**Nested layouts**
+
+- [[Layouts|docs/layouts]] — `RootLayout` is the app boot + root stack. Put a `TabLayout` or `StackLayout` **class** in a parent `screens` list to nest navigators (Expo-style groups, no folder scanning).
+- Layouts are containers: `screenName` + `initialTab` / `initialScreen`. They do not own `static path`. Only leaf screens appear in the address bar.
+- `navigate('(tabs)')` and `navigate('profile-stack')` resolve to that layout’s initial leaf path (usually `/home` / `/profile`), not `/(tabs)`.
+- One browser history. Hide/show keep-alive still applies; `reset(route)` drops a cached screen or layout instance.
+- Auto-boot prefers a `RootLayout` subclass exported from `app/_layout.js`. RootLayout cannot be nested under Stack or Tabs.
+- `render()` on a layout is chrome only. Screens inject into `.tabcontainer`, `#content`, or a built-in `[data-sw-screens]` outlet.
+
+**Router**
+
+- [[Router|docs/router]] — `layoutChain` on each leaf, `replace` / `reset` documented, navigation-by-layout-id rules.
+
+**Fixes**
+
+- `SwitchComponent` render errors no longer leave `_isRendering` stuck; failures log to the console.
+- Props: `data="${createProps(...)}"` is copied onto the instance and stripped after the first paint. `getProps()` keeps working. A new `data` value after mount still re-renders. The strip itself does not remount.
+
+---
+
 ## v0.2.9 – September 2, 2026
 
 **switch-framework-backend@0.2.9**

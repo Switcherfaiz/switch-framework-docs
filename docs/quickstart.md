@@ -33,19 +33,19 @@ Or clone the test app structure manually.
 </html>
 ```
 
-No `startApp()` — the framework auto-boots when it finds your `StackLayout`.
+No `startApp()` — the framework auto-boots when it finds your `RootLayout` (or `StackLayout`).
 
 ### 3. Root layout
 
 ```javascript title:app/_layout.js
-import { StackLayout } from 'switch-framework';
+import { RootLayout } from 'switch-framework';
 import { IndexScreen } from './index.js';
 import { MyTabsLayout } from './(tabs)/_layout.js';
 
-export class MyStackLayout extends StackLayout {
-  static stackScreens = [IndexScreen];
+export class MyRootLayout extends RootLayout {
+  static screens = [MyTabsLayout, IndexScreen];
   static tabsLayout = MyTabsLayout;
-  static initialRoute = 'index';
+  static initialScreen = 'index';
 }
 ```
 
@@ -80,7 +80,7 @@ export class HomeScreen extends SwitchComponent {
 }
 ```
 
-That's it — four static fields on the screen, register it in `TabLayout.screens`, and the framework handles routing and layout switching.
+That's it — four static fields on the screen, register it in a layout `screens` list, and the framework handles routing and nested layout switching. Navigate with leaf names (`navigate('home')`) or a layout id (`navigate('(tabs)')` → that layout's initial leaf path). See [[Layouts|docs/layouts]] and [[Router|docs/router]].
 
 ### What you don't need
 
@@ -89,4 +89,4 @@ That's it — four static fields on the screen, register it in `TabLayout.screen
 
 ### Optional
 
-- `static layout = 'tabs'|'stack'` — only if you want it explicit; otherwise inferred from `stackScreens` or `TabLayout.screens`
+- `static layout = 'tabs'|'stack'` — only if you want it explicit; otherwise inferred from which layout `screens` list you register in

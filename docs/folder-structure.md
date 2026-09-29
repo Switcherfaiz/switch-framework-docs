@@ -12,25 +12,28 @@ my-app/
 ├── index.html          # Entry HTML with <sw-app-initial>
 ├── server.js           # Express server (serves static + switch-framework)
 ├── app/
-│   ├── _layout.js      # StackLayout — framework auto-starts from here
-│   ├── index.js        # Stack screen (landing / redirect)
+│   ├── _layout.js      # RootLayout — framework auto-starts from here
+│   ├── index.js        # Root stack screen (landing / redirect)
 │   ├── +not-found.js   # 404 screen
 │   ├── login/
-│   │   └── index.js    # Stack screen
+│   │   └── index.js    # Root stack screen (tabs hidden)
 │   └── (tabs)/
 │       ├── _layout.js  # TabLayout — screens + tab bar config
 │       ├── home/
 │       │   ├── index.js    # Tab screen — /home
 │       │   └── [id].js     # Tab screen — /home/:id
-│       └── explore/
-│           └── index.js    # Tab screen — /explore
+│       ├── explore/
+│       │   └── index.js    # Tab screen — /explore
+│       └── profile/
+│           ├── _layout.js  # Nested StackLayout — profile / settings / about
+│           └── index.js    # Leaf — /profile
 ├── components/         # Reusable components
 └── assets/             # Styles, fonts, icons
 ```
 
 ## index.html
 
-The entry HTML only needs `<sw-app-initial>` and a script that loads your root layout. **No `startApp()` call** — the framework detects your `StackLayout` subclass and boots automatically.
+The entry HTML only needs `<sw-app-initial>` and a script that loads your root layout. **No `startApp()` call** — the framework detects your `RootLayout` (or `StackLayout`) subclass and boots automatically.
 
 ```html title:index.html
 <!DOCTYPE html>
@@ -53,7 +56,7 @@ The entry HTML only needs `<sw-app-initial>` and a script that loads your root l
 When `index.html` loads `app/_layout.js`:
 
 1. The framework sees `<sw-app-initial>` in the page
-2. It finds your `StackLayout` subclass in that file
+2. It finds your `RootLayout` subclass in that file (or a `StackLayout` if you have no RootLayout)
 3. It calls `initTheme()`, registers screens, and starts routing
 
 You never call `startApp()` yourself unless you use a custom entry setup.
@@ -63,14 +66,14 @@ You never call `startApp()` yourself unless you use a custom entry setup.
 Screens are registered **only in layout files**, not on the screen class itself:
 
 ```params-table
-{"headers":["Where","What you pass","Layout used"],"htmlColumns":[0,1,2],"rows":[["<code>StackLayout.static stackScreens</code>","Stack screen classes","<code>stack</code>"],["<code>TabLayout.static screens</code>","Tab screen classes","<code>tabs</code>"]]}
+{"headers":["Where","What you pass","Layout used"],"htmlColumns":[0,1,2],"rows":[["<code>RootLayout.static screens</code>","Leaf screens and nested layout classes","Root stack, plus nested kinds"],["<code>TabLayout.static screens</code>","Tab leaves and nested stacks","<code>tabs</code> for leaves under tabs"],["<code>StackLayout.static screens</code>","Nested stack leaves","Same kind as the parent chain, unless under tabs"]]}
 ```
 
 ```javascript title:app/_layout.js
-export class MyStackLayout extends StackLayout {
-  static stackScreens = [IndexScreen, LoginScreen, NotFoundScreen];
+export class MyRootLayout extends RootLayout {
+  static screens = [MyTabsLayout, IndexScreen, LoginScreen, NotFoundScreen];
   static tabsLayout = MyTabsLayout;
-  static initialRoute = 'index';
+  static initialScreen = 'index';
 }
 ```
 
@@ -89,7 +92,7 @@ export class MyTabsLayout extends TabLayout {
 Each screen only needs route identity. **`static layout` is optional** — omit it and the framework infers from registration:
 
 ```params-table
-{"headers":["Registered in","Layout used"],"htmlColumns":[0,1],"rows":[["<code>StackLayout.stackScreens</code>","<code>stack</code>"],["<code>TabLayout.screens</code>","<code>tabs</code>"]]}
+{"headers":["Registered in","Layout used"],"htmlColumns":[0,1],"rows":[["<code>RootLayout.screens</code> (leaf, not under tabs)","<code>stack</code>"],["<code>TabLayout.screens</code> (or any layout under tabs)","<code>tabs</code>"]]}
 ```
 
 If you set `static layout` explicitly, it must match where you register the screen.
@@ -155,6 +158,7 @@ my-app/
 ## Key files
 
 - `index.html` — `<sw-app-initial>` + `<script src="/app/_layout.js">`
-- `app/_layout.js` — Root `StackLayout`: `stackScreens`, `tabsLayout`, `init`
-- `app/(tabs)/_layout.js` — `TabLayout`: `screens`, `tabs`, tab bar options
+- `app/_layout.js` — `RootLayout`: `screens`, `tabsLayout`, `init`
+- `app/(tabs)/_layout.js` — `TabLayout`: `screens`, `tabs`, `screenName`
+- Nested `app/.../_layout.js` — `StackLayout` / extra `TabLayout` with `screenName` (no `path`)
 - Screen files — `screenName`, `path`, `title`, `tag` only

@@ -38,7 +38,9 @@ Props must be JSON-safe: strings, numbers, booleans, arrays, objects, and state-
 
 ### getProps
 
-Inside any `SwitchComponent`, call `this.getProps()` to read the decoded props. It returns `{}` when no `data` attribute is set or the payload is malformed. The decoded object is cached per attribute value, so calling it in `render()`, `onMount()`, and event handlers costs nothing extra.
+Inside any `SwitchComponent`, call `this.getProps()` to read the decoded props. It returns `{}` when this instance never received props or the payload is malformed.
+
+The parent still writes `data="${createProps(...)}"`. After the first paint the framework copies that payload onto the instance and **removes the attribute**, so Inspect stays clean. `getProps()` reads the instance copy. Stripping does not remount the component.
 
 ```javascript title:Reading props in the child
 import { SwitchComponent, getState } from 'switch-framework';
@@ -55,11 +57,11 @@ export class Dropdown extends SwitchComponent {
 ```
 
 > [!IMPORTANT]
-> `getProps()` is an instance method – it cannot be used in a static block, because the element and its data attribute do not exist at class-definition time.
+> `getProps()` is an instance method – it cannot be used in a static block, because the element and its props do not exist at class-definition time.
 
 ### Props reactivity
 
-Every `SwitchComponent` observes its `data` attribute. When the parent renders the child with different props, the child re-renders automatically – no `observedAttributes` or `attributeChangedCallback` boilerplate needed. The framework never removes or modifies the attribute, so the DOM always shows exactly which props each instance received – you can decode it in devtools while debugging.
+Every `SwitchComponent` observes `data`. The first `data` value is ingested and stripped after paint (one render). A **new** `data` value after mount updates the instance copy, re-renders, then strips again. Use `this.getProps()`, not `getAttribute('data')`.
 
 ### Callbacks through state keys
 
