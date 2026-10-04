@@ -73,7 +73,7 @@ Path to the folder containing **`index.html`**.
 {"headers":["Layout","<code>staticRoot</code> value","When to use"],"htmlColumns":[0,1,2],"rows":[["Standard web app","<code>path.join(__dirname, '.')</code>","UI files at project root (CLI default)."],["Monorepo / <code>both</code> layout","<code>path.join(__dirname, 'web')</code>","UI lives in a <code>web/</code> subfolder; <code>server.js</code> stays at root."]]}
 ```
 
-The backend reads `index.html` from this folder and injects the Switch Framework import map on every SPA response.
+The backend reads `index.html` from this folder and injects the Switch Framework import map on every SPA response. Extra npm packages listed in `switchFramework.imports` are added to that map — see [[Importing packages|docs/external-dependencies]].
 
 ---
 

@@ -70,23 +70,21 @@ export class MyTabsLayout extends TabLayout {
       icon: 'home',
       path: '/home',
       screen: 'my-home-screen',
-      match: ['home']
+      match: ['pin']
     },
     {
       name: 'explore',
       title: 'Explore',
       icon: 'compass',
       path: '/explore',
-      screen: 'my-explore-screen',
-      match: ['explore']
+      screen: 'my-explore-screen'
     },
     {
       name: 'profile',
       title: 'Profile',
       icon: 'user',
       path: '/profile',
-      screen: 'my-profile-screen',
-      match: ['profile', 'settings', 'about']
+      screen: 'my-profile-screen'
     }
   ];
 
@@ -128,11 +126,14 @@ export class ProfileStack extends StackLayout {
   static tag = 'my-profile-stack';
   static screenName = 'profile-stack';
   static initialScreen = 'profile';
+  static headerShown = true;
   static screens = [ProfileScreen, SettingsScreen, AboutScreen];
 }
 ```
 
-Add `ProfileStack` to the parent TabLayout `screens` list. Add the leaf route names to the tab's `match` array so the profile tab stays highlighted on `/settings` and `/about`.
+Add `ProfileStack` to the parent TabLayout `screens` list. Tab `match` is optional for nested leaves: the framework unions `match` with every leaf under the child that belongs to that tab (`name`, `initialScreen`, or a leaf named like the tab). Keep an explicit `match` only for extras that are not under that child (for example `pin` on home).
+
+Set `static headerShown = true` on a nested `StackLayout` to paint a Back button and the active leaf `title`. Back is hidden on that stack’s `initialScreen`. A custom `render()` still replaces this chrome.
 
 ### Screen config (minimal)
 
@@ -198,10 +199,38 @@ Leaving a screen **hides** it (`inert`, `aria-hidden`). Coming back **shows** th
 
 ### Tab config reference
 
-Each item in `static tabs`:
+### Guards (`static guard`)
+
+Guards run at navigate / replace / popstate / start, **before** the leaf mounts. Put them on a layout to cover every nested screen, or on a leaf to override.
+
+`static guard` **must be a function** (not `!!getState('user')` at class load). Truthy return allows the route. Falsy return `replace`s to `static redirect` (default `'login'`), wipes keep-alive, and locks history so Back cannot reopen the protected tree.
+
+```javascript title:Protect tabs; bounce signed-in users off login
+import { TabLayout, SwitchComponent, getState } from 'switch-framework';
+
+export class MyTabsLayout extends TabLayout {
+  static redirect = 'login';
+  static guard = () => getState('user');
+}
+
+export class LoginScreen extends SwitchComponent {
+  static screenName = 'login';
+  static path = '/login';
+  static redirect = '(tabs)';
+  static guard = () => !getState('user');
+}
+```
+
+`static protected = true` with no `guard` means `() => getState('user')`. `protected = false` is public.
+
+Do **not** implement auth by returning only `<sw-redirect>` from a layout `render()` — that fights the outlet. Use tags in **leaf** `render()` (`<sw-link>`, `<sw-redirect>`); they keep their own element style.
+
+On logout, clear `user` then `wipeTo('login')` so every protected keep-alive instance is destroyed. The browser cannot delete old history entries; lock + wipe is the web equivalent.
+
+### Tab `match` (inferred)
 
 ```params-table
-{"headers":["Field","Purpose"],"htmlColumns":[0,1],"rows":[["<code>name</code>","Tab identifier (also used as <code>initialTab</code>)"],["<code>title</code>","Label (optional)"],["<code>icon</code>","Icon name"],["<code>path</code>","Leaf path when the tab is tapped"],["<code>screen</code>","Custom element tag used to highlight the tab"],["<code>match</code>","Route prefixes owned by this tab, including nested stack leaves"]]}
+{"headers":["Field","Purpose"],"htmlColumns":[0,1],"rows":[["<code>name</code>","Tab identifier (also used as <code>initialTab</code>)"],["<code>title</code>","Label (optional)"],["<code>icon</code>","Icon name"],["<code>path</code>","Leaf path when the tab is tapped"],["<code>screen</code>","Custom element tag used to highlight the tab"],["<code>match</code>","Optional extras. Unioned with the tab name and every leaf under the child that belongs to this tab"]]}
 ```
 
 ### Custom chrome (`render` / `styleSheet`)
@@ -252,6 +281,8 @@ export class MyRootLayout extends RootLayout {
 - `static screenName` — Layout id for `navigate('profile-stack')` (not a URL)
 - `static screens` / `static stackScreens` — Children (leaves or nested layouts)
 - `static initialScreen` / `static initialRoute` — Initial **leaf** inside this stack
+- `static headerShown` — `true` paints Back + title chrome (hidden Back on `initialScreen`)
+- `static guard` / `static redirect` / `static protected` — Auth at navigate time (see Guards)
 - `static splash` — Used only when this class is the boot root
 - `getContentContainer()` — Outlet: `.tabcontainer`, then `#content`, then `[data-sw-screens]`
 - `render()` / `styleSheet()` — Chrome only
@@ -262,12 +293,15 @@ export class MyRootLayout extends RootLayout {
 - `static screens` — Tab leaves **and** nested stacks
 - `static tabs` — Tab bar configuration
 - `static initialTab` — Default tab `name`
+- `static guard` / `static redirect` / `static protected` — Same as StackLayout; covers every tab leaf
 - `static options` — Tab bar styling options
 - `getContentContainer()` — Same outlet rules as StackLayout
 
+Leaf screens may set `static inAnimation` / `outAnimation` / `navigatingAnimation`. The default is **none** — screens appear and hide with no transition unless you opt in. See [[Animations|docs/animations]].
+
 ### globalStates – static app data
 
-`globalStates` holds navigation helpers and layout metadata: `navigate`, `go_back`, `replace`, `reset`, `tabsLayout`, `activeRoute`, `routeParams`, `searchParams`.
+`globalStates` holds navigation helpers and layout metadata: `navigate`, `go_back`, `replace`, `reset`, `wipeTo`, `tabsLayout`, `activeRoute`, `routeParams`, `searchParams`.
 
 ```javascript title:globalStates
 globalStates.getState('activeRoute');

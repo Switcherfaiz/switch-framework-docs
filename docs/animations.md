@@ -2,6 +2,52 @@
 
 Animations in Switch Framework are built with standard CSS: `@keyframes`, `transition`, and `animation`. No special library needed. You control visibility and animation state by toggling classes or inline styles – and our **state functions** (`updateState`, `subscribeState`) make those values reactive.
 
+### Screen transitions (opt-in)
+
+Tabs and stacks **do not animate** when a screen is shown or hidden. Omit the fields, or set them to `'none'`, and the next screen just appears.
+
+To opt in, set statics on the **leaf screen** (not the layout):
+
+```javascript title:Optional screen enter / leave
+export class PinScreen extends SwitchComponent {
+  static screenName = 'pin/:id';
+  static path = '/pin/:id';
+  static title = 'Pin';
+  static tag = 'my-pin-screen';
+  static inAnimation = 'fade';
+  static outAnimation = 'fade-bottom-out';
+}
+```
+
+`static navigatingAnimation` is the fallback for both directions. A more specific `inAnimation` / `outAnimation` wins. `'none'` on any of the three disables that side.
+
+```javascript title:Same preset both ways, or hard off
+static navigatingAnimation = 'slide-left';
+static navigatingAnimation = 'none';
+```
+
+**Built-in names:** `fade`, `fade-bottom`, `fade-bottom-out`, `fade-top`, `slide-left`, `slide-right`.
+
+Any other token is a **class name** the router adds on the screen host. On enter it adds `sw-in`, `inAnimation`, and your token; on leave it adds `sw-out`, `outAnimation`, and the token. Style them in that screen’s `styleSheet()`:
+
+```css title:Custom enter / leave on :host
+:host.inAnimation {
+  animation: myIn 0.28s ease both;
+}
+:host.outAnimation {
+  animation: myOut 0.2s ease both;
+}
+:host.sw-in.wipe { animation: myWipeIn 0.3s ease both; }
+:host.sw-out.wipe { animation: myWipeOut 0.2s ease both; }
+```
+
+```javascript title:Use the custom token
+static inAnimation = 'wipe';
+static outAnimation = 'wipe';
+```
+
+Keep-alive screens stay mounted, so a bare `:host { animation: ... }` only runs on first create. The `inAnimation` / `outAnimation` classes are what retrigger on later visits.
+
 ### Basic @keyframes
 
 Define keyframe animations in your component's stylesheet. Use `animation` or `animation-name` to apply them.

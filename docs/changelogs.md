@@ -17,6 +17,22 @@ Release notes and version history for Switch Framework. Each version includes ne
 **Router**
 
 - [[Router|docs/router]] — `layoutChain` on each leaf, `replace` / `reset` documented, navigation-by-layout-id rules.
+- `<sw-link>` / `<sw-redirect>` — Expo-style tags. Link navigates on click; Redirect `replace`s on mount. Not the route table.
+- `wipeTo(route)` — Drop keep-alive, clear app history, replace + lock so Back cannot reopen a protected screen.
+- Guards — `static guard = () => getState('user')` (function, evaluated at navigate time). Falsy → `static redirect`. Leaf overrides; else nearest layout. `static protected = true` is `() => getState('user')`.
+- Screen transitions default to **none**. Opt in with `static inAnimation` / `outAnimation` / `navigatingAnimation` (`fade`, `fade-bottom-out`, `slide-left`, …, or a custom class on `:host.inAnimation`). `'none'` disables. See [[Animations|docs/animations]].
+- `<sw-link>` accepts `target="_blank"` / `new-tab` and `href` query strings (`settings?t=account-management`). Unused path params become `?query`.
+
+**Layouts**
+
+- Tab `match` is unioned with inferred leaves under that tab’s child. Nested profile stacks no longer need `match: ['profile', 'settings', 'about']`.
+- `static headerShown = true` on a `StackLayout` paints Back + the active leaf title.
+
+**External dependencies**
+
+- [[Importing packages|docs/external-dependencies]] — allowlisted npm packages on the same import map as `switch-framework`. `npm i`, add the name to `switchFramework.imports`, restart, then `import '@scope/pkg'`.
+- [[Creating a Switch package|docs/external-dependencies/creating]] — ESM entry, `peerDependencies.switch-framework`, unique tag, `registerComponent` on import, host CSS variables for theme.
+- [[Allowlisting in package.json|docs/external-dependencies/package-json]] — app `switchFramework.imports` (array or object), merged with `config({ imports })`. `/npm` jail; `/node_modules` is never mounted.
 
 **Fixes**
 

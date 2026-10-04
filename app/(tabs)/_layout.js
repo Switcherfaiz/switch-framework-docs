@@ -76,6 +76,9 @@ import { SwDocsLayoutsScreen } from './screens/layouts.js';
 import { SwDocsInstallationDesktopScreen } from './screens/installation/desktop.js';
 import { SwDocsHooksScreen } from './screens/hooks.js';
 import { SwDocsDataFlowPropsScreen } from './screens/data-flow/props.js';
+import { SwDocsExternalDependenciesScreen } from './screens/external-dependencies.js';
+import { SwDocsExternalDependenciesCreatingScreen } from './screens/external-dependencies/creating.js';
+import { SwDocsExternalDependenciesPackageJsonScreen } from './screens/external-dependencies/package-json.js';
 import { SwDocsServerIntroScreen } from './screens/server/introduction.js';
 import { SwDocsServerWebScreen } from './screens/server/web.js';
 import { SwDocsServerDesktopScreen } from './screens/server/desktop.js';
@@ -107,6 +110,9 @@ registerComponents([
   SwDocsComponentsElectronTitleBarScreen,
   SwDocsHooksScreen,
   SwDocsDataFlowPropsScreen,
+  SwDocsExternalDependenciesScreen,
+  SwDocsExternalDependenciesCreatingScreen,
+  SwDocsExternalDependenciesPackageJsonScreen,
   SwDocsServerIntroScreen,
   SwDocsServerWebScreen,
   SwDocsServerDesktopScreen,
@@ -158,7 +164,10 @@ export class SwTabsLayout extends TabLayout {
     SwDocsComponentsModalScreen,
     SwDocsComponentsElectronTitleBarScreen,
     SwDocsHooksScreen,
-    SwDocsDataFlowPropsScreen
+    SwDocsDataFlowPropsScreen,
+    SwDocsExternalDependenciesScreen,
+    SwDocsExternalDependenciesCreatingScreen,
+    SwDocsExternalDependenciesPackageJsonScreen
   ];
 
   onMount() {

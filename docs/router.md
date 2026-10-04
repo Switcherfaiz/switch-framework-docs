@@ -57,6 +57,8 @@ export class HomeCategoryScreen extends SwitchComponent {
 
 Each screen needs its **own `static tag`**. If two screens share a tag, the first class wins and the second route will render the wrong screen (pills/active states look stuck).
 
+Screen enter/leave is **off** unless you set `static inAnimation`, `outAnimation`, or `navigatingAnimation`. See [[Animations|docs/animations]].
+
 Screens stay mounted when you leave them (hide/show). Scroll is kept. Use `useScreenFocus` from [[Hooks|docs/hooks]] to fetch only while the screen is the active leaf.
 
 ```javascript title:Root stack route — /login
@@ -85,13 +87,14 @@ One browser history for the whole tree. Nested stacks do not push a second histo
 1. **Prefer leaf `screenName`.** `navigate('settings')` is the URL you want people to share.
 2. **Use a layout id** when you mean “go to this navigator’s default child” — `navigate('(tabs)')` after login, `navigate('profile-stack')` to land on profile.
 3. **Keep auth on the root stack**, as a sibling of the tabs layout, so `navigate('login')` hides the tab bar.
-4. **Put nested flows in a StackLayout** under tabs when the tab bar should stay (profile → settings → about). List those leaves in the tab `match` array.
+4. **Put nested flows in a StackLayout** under tabs when the tab bar should stay (profile → settings → about). Nested stack leaves are inferred onto that tab; use `match` only for extras.
 5. **Deep links are leaf paths.** Bookmark `/about`; the router rebuilds the layout chain from the leaf.
-6. **Keep-alive is hide/show.** Use `useScreenFocus` for fetches. Use `reset('home')` when you need a fresh instance (logout, language change).
+6. **Keep-alive is hide/show.** Use `useScreenFocus` for fetches. Use `reset('home')` when you need a fresh instance, and `wipeTo('login')` after logout so protected screens cannot be shown from cache or Back.
 7. **Do not** invent `/(tabs)` or layout paths in `static path`. Do not register routes from `render()` HTML.
+8. **Guards belong on the class**, not as the only child of layout `render()`. `<sw-link>` / `<sw-redirect>` are leaf tags.
 
 ```javascript title:Navigate to routes
-import { navigate, replace, reset, goBack } from 'switch-framework';
+import { navigate, replace, reset, wipeTo, goBack } from 'switch-framework';
 
 navigate('home');
 navigate('home/electronics');
@@ -99,12 +102,39 @@ navigate('login');
 navigate('(tabs)');
 navigate('docs', { id: 'introduction' });
 replace('login');
+wipeTo('login');
 goBack();
 reset('home');
 reset('*');
 ```
 
-`navigate` and `replace` also accept a layout `screenName`. The router resolves it to `initialTab` / `initialScreen` (recursively) before matching a leaf route.
+`navigate` and `replace` also accept a layout `screenName`. The router resolves it to `initialTab` / `initialScreen` (recursively) before matching a leaf route. Failed `static guard`s call `wipeTo` to the layout/screen `redirect`.
+
+### Link and Redirect
+
+Import `{ Link, Redirect }` from `switch-framework` or `switch-framework/router` (defines `<sw-link>` / `<sw-redirect>`). Use the tags in `render()`. They are not the route table.
+
+| | `<sw-link>` | `<sw-redirect>` |
+|---|---|---|
+| When | Click (Cmd/Ctrl-click uses the real `<a href>`) | `onMount` once |
+| Children | Yes (`<slot>`) | None (`display: none`) |
+| History | `navigate` (push); `replace` optional | **`replace` by default** |
+
+Props (attribute **or** `data="${createProps({ ... })}"`): `href`, `params`, `replace`, `lockHistory`, `wipeHistory`, `target`, `newTab`. `href` is a leaf, path, layout id (`(tabs)`), or `settings?t=account-management`. Extra keys that are not path params become the query string.
+
+`target="_blank"` (or `target="new"`, or the `new-tab` attribute) opens the public path in a **new browser tab** and does not call `navigate`. Cmd/Ctrl-click still uses the real `<a href>`.
+
+```javascript title:Tags in render()
+import { createProps } from 'switch-framework';
+
+render() {
+  return `
+    <sw-link href="settings?t=account-management">Account</sw-link>
+    <sw-link href="help/privacy" target="_blank">Privacy and data</sw-link>
+    <sw-redirect data="${createProps({ href: '(tabs)', replace: true })}"></sw-redirect>
+  `;
+}
+```
 
 ### Route params & state
 
@@ -133,7 +163,9 @@ if (prev) navigate(prev.route, prev.params);
 - `goBack()` – Go back in browser history
 - `redirect(route, params)` – Same as navigate (alias)
 - `replace(route, params)` – Replace current history entry
+- `wipeTo(route, params)` – Clear keep-alive + app route history, `replace` + lock so Back cannot reopen a protected leaf
 - `reset(route?, params)` – Drop cached screen/layout instances. Omit route or pass `'*'` to clear all; otherwise remount that route
+- `Link` / `Redirect` – Custom elements `<sw-link>` / `<sw-redirect>`
 - `useParams()` – Get path params (e.g. `{ id: '42' }`)
 - `useSearchParams()` – Get query params (e.g. `{ name: 'Jane' }`)
 - `getActivePath()` – Full current URL

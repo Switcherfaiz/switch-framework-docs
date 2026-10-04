@@ -16,6 +16,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
       installation: ['docs/cli', 'docs/installation/web', 'docs/installation/desktop'],
       'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations', 'docs/switch-icons'],
       'data-flow': ['docs/data-flow/props'],
+      'external-dependencies': ['docs/external-dependencies', 'docs/external-dependencies/creating', 'docs/external-dependencies/package-json'],
       components: ['docs/components', 'docs/components/flatlist', 'docs/components/scrollview', 'docs/components/modal', 'docs/components/electron-titlebar', 'docs/hooks'],
       backend: [
         'docs/server/introduction',
@@ -176,6 +177,16 @@ export class DocsLeftSidebarNav extends SwitchComponent {
             key: 'data-flow',
             children: [
               { label: 'Props', to: 'docs/data-flow/props' }
+            ]
+          },
+          {
+            label: 'External Dependencies',
+            expandable: true,
+            key: 'external-dependencies',
+            children: [
+              { label: 'Importing packages', to: 'docs/external-dependencies' },
+              { label: 'Creating a Switch package', to: 'docs/external-dependencies/creating' },
+              { label: 'Allowlisting in package.json', to: 'docs/external-dependencies/package-json' }
             ]
           }
         ]
