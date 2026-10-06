@@ -83,7 +83,7 @@ Call `useEffect` from `effects()` — not from `onMount()`, and not to remount. 
 
 ```javascript title:effects() — multiple useEffect, no remount
 import { SwitchComponent, useEffect, updateState, getState } from 'switch-framework';
-import { useParams, useScreenFocus } from 'switch-framework/router';
+import { useParams, useScreenFocus } from 'switch-framework-router';
 
 export class HomeScreen extends SwitchComponent {
   static tag = 'sw-home-screen';

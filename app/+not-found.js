@@ -1,5 +1,5 @@
-import { SwitchComponent, navigate, goBack } from 'switch-framework';
-import { getActivePath } from 'switch-framework/router';
+import { SwitchComponent } from 'switch-framework';
+import { navigate, goBack, getActivePath } from 'switch-framework-router';
 
 export default class extends SwitchComponent {
   static screenName = '+not-found';

@@ -10,7 +10,7 @@ Two ways to get started: install the packages yourself, or let the CLI do the he
 Add the core packages to your project:
 
 ```bash title:bash
-npm i switch-framework switch-framework-backend
+npm i switch-framework switch-framework-backend switch-framework-router switch-framework-icons
 ```
 
 ### Option 2: Create a new app (recommended)

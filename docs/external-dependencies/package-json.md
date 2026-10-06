@@ -3,7 +3,7 @@
 The browser only sees packages you **explicitly** list. `npm i` installs on disk; `switchFramework.imports` is what Switch is allowed to put on the import map and serve from `/npm`.
 
 > [!NOTE]
-> `switch-framework`, `switch-framework/router`, and `switch-framework/themes` are always mapped. You never add those names to `imports`.
+> SDK names are always mapped: `switch-framework`, `switch-framework/router`, `switch-framework/themes`, `switch-framework/overlay`, `switch-framework-icons`, and `switch-framework-router`. You never add those names to `imports`. That list is for third-party packs only.
 
 ### App `package.json` (consumer)
 

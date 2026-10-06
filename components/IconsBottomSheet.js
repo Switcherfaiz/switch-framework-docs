@@ -6,6 +6,7 @@ export class IconsBottomSheet extends Modal {
   static animationType = 'slide';
   static presentationStyle = 'pageSheet';
   static interceptBack = true;
+  static transparent = false;
 
   _isVisible() {
     return !!getState('icon-sheet')?.open;
@@ -30,6 +31,7 @@ export class IconsBottomSheet extends Modal {
     this.listener('#icon-sheet-prev', 'click', () => this.navigate(-1));
     this.listener('#icon-sheet-next', 'click', () => this.navigate(1));
     this.listener('#icon-sheet-copy-span', 'click', () => this.copySpan());
+    this.listener('#icon-sheet-copy-sw', 'click', () => this.copySw());
     this.listener('#icon-sheet-copy-code', 'click', () => this.copyCode());
     this.listener('#icon-sheet-copy-svg', 'click', () => this.copySvg());
     this.listener('#icon-sheet-expand', 'click', () => this.toggleExpand());
@@ -79,7 +81,7 @@ export class IconsBottomSheet extends Modal {
     }
 
     const codeEl = this.select('#icon-sheet-code-content');
-    if (codeEl) codeEl.textContent = currentKey ? `<span class="${currentKey}"></span>` : '';
+    if (codeEl) codeEl.textContent = currentKey ? this.swSnippet(currentKey) : '';
   }
 
   toggleExpand() {
@@ -122,6 +124,22 @@ export class IconsBottomSheet extends Modal {
     const state = getState('icon-sheet') || {};
     updateState('icon-sheet', { ...state, index: newIndex, iconKey });
     this.updateSheetDOM({ ...state, index: newIndex, iconKey });
+  }
+
+  shortName(key) {
+    return String(key || '').replace(/^switch_icon_/, '');
+  }
+
+  swTag(key) {
+    return `<sw-icon name="${this.shortName(key)}" size="18"></sw-icon>`;
+  }
+
+  swSnippet(key) {
+    return `import 'switch-framework-icons'; // registerComponent
+
+render() {
+  return \`${this.swTag(key)}\`;
+}`;
   }
 
   async copySpan() {
@@ -185,11 +203,17 @@ export class IconsBottomSheet extends Modal {
     if (ok) this.showCopyFeedback('#icon-sheet-copy-svg');
   }
 
+  async copySw() {
+    const state = getState('icon-sheet');
+    if (!state?.iconKey) return;
+    const ok = await copyText(this.swTag(state.iconKey));
+    if (ok) this.showCopyFeedback('#icon-sheet-copy-sw');
+  }
+
   async copyCode() {
     const state = getState('icon-sheet');
     if (!state?.iconKey) return;
-    const code = `<span class="${state.iconKey}"></span>`;
-    const ok = await copyText(code);
+    const ok = await copyText(this.swSnippet(state.iconKey));
     if (ok) this.showCopyFeedback('#icon-sheet-copy-code');
   }
 
@@ -252,8 +276,9 @@ export class IconsBottomSheet extends Modal {
             </button>
           </div>
           <div class="icon-sheet-actions">
-            <button id="icon-sheet-copy-svg" class="icon-sheet-btn icon-sheet-btn-primary" type="button">Copy SVG</button>
+            <button id="icon-sheet-copy-sw" class="icon-sheet-btn icon-sheet-btn-primary" type="button">Copy sw-icon</button>
             <button id="icon-sheet-copy-span" class="icon-sheet-btn icon-sheet-btn-secondary" type="button">Copy span</button>
+            <button id="icon-sheet-copy-svg" class="icon-sheet-btn icon-sheet-btn-secondary" type="button">Copy SVG</button>
           </div>
         </div>
     `;

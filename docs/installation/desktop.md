@@ -3,7 +3,7 @@
 Use the CLI to scaffold a Switch Framework Electron app. The template forks the Express server, picks a free port automatically, shows a splash window while booting, and opens a native frameless window.
 
 > [!NOTE]
-> New projects pin **`switch-framework@^0.2.9`** and **`switch-framework-backend@^0.2.9`**.
+> New projects pin **`switch-framework@^0.3.0`**, **`switch-framework-backend@^0.3.0`**, **`switch-framework-router@^0.3.0`**, **`switch-framework-icons@^0.3.0`**, and **`switch-framework-electron@^0.3.0`**.
 
 ### Create a desktop app
 

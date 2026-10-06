@@ -1,5 +1,6 @@
-import { StackLayout, createState, registerComponents, setGlobalComponentSheet } from 'switch-framework';
-import { replace } from 'switch-framework/router';
+import { createState, registerComponents, setGlobalComponentSheet } from 'switch-framework';
+import { StackLayout, replace } from 'switch-framework-router';
+import 'switch-framework-icons';
 import { SwStarterSplashScreen } from '/components/SwStarterSplashScreen.js';
 import { SwTabBar } from '/components/SwTabBar.js';
 import { DocsSearch } from '/components/DocsSearch.js';

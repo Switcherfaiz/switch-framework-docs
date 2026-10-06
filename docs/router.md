@@ -7,12 +7,59 @@ Switch Framework's router is **runtime-first** – no webpack, no build step. Re
 
 See [[Layouts|docs/layouts]] for RootLayout, nested stacks, and tab chrome.
 
+### switch-framework-router
+
+`switch-framework-router` is the first-party **layouts + navigation** package. It is **0.3.0**, the same version line as `switch-framework`. `create-switch-framework-app` installs both. `switch-framework-doctor` checks that the pair matches.
+
+Install the npm package `switch-framework-router`. In screens and layouts, import from that package — same grouping as Expo Router (`Stack` / `Tabs` / `useRouter` live in `expo-router`, not in `react-native`).
+
+Do **not** add `switch-framework-router` to `switchFramework.imports`. That list is for third-party packs. The backend always maps this package.
+
+```javascript title:Current — import from switch-framework-router
+import { RootLayout, TabLayout, StackLayout } from 'switch-framework-router';
+import {
+  navigate,
+  replace,
+  reset,
+  wipeTo,
+  goBack,
+  redirect,
+  useParams,
+  useSearchParams,
+  useScreenFocus,
+  getActiveRoute,
+  Link,
+  Redirect
+} from 'switch-framework-router';
+```
+
+`from 'switch-framework/router'` is the same package (subpath alias) and still works in 0.3.x. Prefer the Expo-style name `switch-framework-router`.
+
+What lives in this package: `RootLayout`, `TabLayout`, `StackLayout`, `registerScreens`, `navigate` / `replace` / `reset` / `wipeTo` / `goBack` / `redirect`, `<sw-link>` / `<sw-redirect>`, params, focus, and boot (`startApp`). `SwitchComponent`, state, overlay, and lists stay on `switch-framework`.
+
+New apps already have the dependency. For an existing app on the 0.3 line:
+
+```bash title:Existing app
+npm i switch-framework-router@0.3.0
+```
+
+Navigation throws (`navigate`, `replace`, `reset`, `wipeTo`, history) report to the error overlay as **Navigation failed**. Expected missing routes still render `+not-found` and do not open the overlay.
+
+> [!DEPRECATED]
+> In **0.3.x** the main `switch-framework` barrel still re-exports layouts and navigation. Those imports still work. Shift to `switch-framework-router` now — the core re-exports will be **removed in the next version**.
+
+```javascript title:Deprecated — still works in 0.3.x
+import { RootLayout, TabLayout, StackLayout, navigate, useParams, Link } from 'switch-framework';
+```
+
+Do not add this name to `switchFramework.imports`.
+
 ### Register screens
 
 Screens are registered in layout static arrays — not individually at boot. A layout class in that array is a **nested navigator**, not a URL.
 
 ```javascript title:app/_layout.js — root stack
-import { RootLayout } from 'switch-framework';
+import { RootLayout } from 'switch-framework-router';
 
 export class MyRootLayout extends RootLayout {
   static screens = [MyTabsLayout, IndexScreen, LoginScreen, NotFoundScreen];
@@ -22,6 +69,8 @@ export class MyRootLayout extends RootLayout {
 ```
 
 ```javascript title:app/(tabs)/_layout.js — tabs + nested stack
+import { TabLayout } from 'switch-framework-router';
+
 export class MyTabsLayout extends TabLayout {
   static screenName = '(tabs)';
   static initialTab = 'home';
@@ -38,6 +87,8 @@ export class MyTabsLayout extends TabLayout {
 Each **leaf** defines its route identity. Layout (`stack` vs `tabs`) is inferred from which navigator owns it (nearest TabLayout in the chain → `tabs`). Optionally set `static layout` — it must match that owner.
 
 ```javascript title:Static route — /home
+import { SwitchComponent } from 'switch-framework';
+
 export class HomeScreen extends SwitchComponent {
   static screenName = 'home';
   static path = '/home';
@@ -47,6 +98,8 @@ export class HomeScreen extends SwitchComponent {
 ```
 
 ```javascript title:Dynamic route — /home/:id
+import { SwitchComponent } from 'switch-framework';
+
 export class HomeCategoryScreen extends SwitchComponent {
   static screenName = 'home/:id';
   static path = '/home/:id';
@@ -62,6 +115,8 @@ Screen enter/leave is **off** unless you set `static inAnimation`, `outAnimation
 Screens stay mounted when you leave them (hide/show). Scroll is kept. Use `useScreenFocus` from [[Hooks|docs/hooks]] to fetch only while the screen is the active leaf.
 
 ```javascript title:Root stack route — /login
+import { SwitchComponent } from 'switch-framework';
+
 export class LoginScreen extends SwitchComponent {
   static screenName = 'login';
   static path = '/login';
@@ -94,6 +149,24 @@ One browser history for the whole tree. Nested stacks do not push a second histo
 8. **Guards belong on the class**, not as the only child of layout `render()`. `<sw-link>` / `<sw-redirect>` are leaf tags.
 
 ```javascript title:Navigate to routes
+import { navigate, replace, reset, wipeTo, goBack } from 'switch-framework-router';
+
+navigate('home');
+navigate('home/electronics');
+navigate('login');
+navigate('(tabs)');
+navigate('docs', { id: 'introduction' });
+replace('login');
+wipeTo('login');
+goBack();
+reset('home');
+reset('*');
+```
+
+> [!DEPRECATED]
+> The same helpers still export from `switch-framework` in 0.3.x. Prefer `switch-framework-router`. The barrel exports go away in the next version.
+
+```javascript title:Deprecated — navigate from switch-framework
 import { navigate, replace, reset, wipeTo, goBack } from 'switch-framework';
 
 navigate('home');
@@ -112,7 +185,10 @@ reset('*');
 
 ### Link and Redirect
 
-Import `{ Link, Redirect }` from `switch-framework` or `switch-framework/router` (defines `<sw-link>` / `<sw-redirect>`). Use the tags in `render()`. They are not the route table.
+Import `{ Link, Redirect }` from `switch-framework-router` (defines `<sw-link>` / `<sw-redirect>`). Use the tags in `render()`. They are not the route table.
+
+> [!DEPRECATED]
+> `import { Link, Redirect } from 'switch-framework'` still works in 0.3.x. Move those imports to `switch-framework-router` before the next version.
 
 | | `<sw-link>` | `<sw-redirect>` |
 |---|---|---|
@@ -125,6 +201,7 @@ Props (attribute **or** `data="${createProps({ ... })}"`): `href`, `params`, `re
 `target="_blank"` (or `target="new"`, or the `new-tab` attribute) opens the public path in a **new browser tab** and does not call `navigate`. Cmd/Ctrl-click still uses the real `<a href>`.
 
 ```javascript title:Tags in render()
+import { Link, Redirect } from 'switch-framework-router';
 import { createProps } from 'switch-framework';
 
 render() {
@@ -139,7 +216,7 @@ render() {
 ### Route params & state
 
 ```javascript title:Path params (:id) and query params (?name=)
-import { useParams, useSearchParams, getActiveRoute, getActivePath } from 'switch-framework/router';
+import { useParams, useSearchParams, getActiveRoute, getActivePath } from 'switch-framework-router';
 
 onMount() {
   const params = useParams();       // { id: '42' } from /user/:id
@@ -152,12 +229,16 @@ onMount() {
 ### Navigation helpers
 
 ```javascript title:previousRoute / nextRoute
+import { previousRoute, nextRoute, navigate } from 'switch-framework-router';
+
 const prev = previousRoute('docs');
 const next = nextRoute('docs');
 if (prev) navigate(prev.route, prev.params);
 ```
 
 ### API
+
+Import these from `switch-framework-router` (`Link` and `Redirect` live in this package and register `<sw-link>` / `<sw-redirect>`):
 
 - `navigate(route, params)` – Go to a leaf `screenName`, path, or layout id; push browser history
 - `goBack()` – Go back in browser history

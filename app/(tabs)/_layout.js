@@ -1,5 +1,5 @@
-import { TabLayout, registerComponents, updateState, getState, syncOverlayBack } from 'switch-framework';
-import { getActiveRoute, useRouteChangesSubscriber, replace } from 'switch-framework/router';
+import { registerComponents, updateState, getState, syncOverlayBack } from 'switch-framework';
+import { TabLayout, getActiveRoute, useRouteChangesSubscriber, replace } from 'switch-framework-router';
 import { CodeBlock } from '/components/CodeBlock/index.js';
 import { DocsChangelogLink } from '/components/DocsChangelogLink.js';
 import { DocsLeftSidebarNav } from '/components/DocsLeftSidebarNav.js';
@@ -67,7 +67,7 @@ import { SwDocsComponentsModalScreen } from './screens/components-modal.js';
 import { SwDocsComponentsElectronTitleBarScreen } from './screens/components-electron-titlebar.js';
 import { SwDocsThemingScreen } from './screens/theming.js';
 import { SwDocsAnimationsScreen } from './screens/animations.js';
-import { SwDocsSwitchIconsScreen } from './screens/switch-icons.js';
+import { SwDocsSwitchIconsScreen } from './screens/switch-framework-icons.js';
 import { SwDocsTutorialReactiveButtonScreen } from './screens/tutorial/reactive-button.js';
 import { SwDocsThinkingScreen } from './screens/thinking.js';
 import { SwDocsGoalsScreen } from './screens/goals.js';
@@ -79,6 +79,7 @@ import { SwDocsDataFlowPropsScreen } from './screens/data-flow/props.js';
 import { SwDocsExternalDependenciesScreen } from './screens/external-dependencies.js';
 import { SwDocsExternalDependenciesCreatingScreen } from './screens/external-dependencies/creating.js';
 import { SwDocsExternalDependenciesPackageJsonScreen } from './screens/external-dependencies/package-json.js';
+import { SwDocsSwitchFrameworkDoctorScreen } from './screens/external-dependencies/switch-framework-doctor.js';
 import { SwDocsServerIntroScreen } from './screens/server/introduction.js';
 import { SwDocsServerWebScreen } from './screens/server/web.js';
 import { SwDocsServerDesktopScreen } from './screens/server/desktop.js';
@@ -113,6 +114,7 @@ registerComponents([
   SwDocsExternalDependenciesScreen,
   SwDocsExternalDependenciesCreatingScreen,
   SwDocsExternalDependenciesPackageJsonScreen,
+  SwDocsSwitchFrameworkDoctorScreen,
   SwDocsServerIntroScreen,
   SwDocsServerWebScreen,
   SwDocsServerDesktopScreen,
@@ -167,7 +169,8 @@ export class SwTabsLayout extends TabLayout {
     SwDocsDataFlowPropsScreen,
     SwDocsExternalDependenciesScreen,
     SwDocsExternalDependenciesCreatingScreen,
-    SwDocsExternalDependenciesPackageJsonScreen
+    SwDocsExternalDependenciesPackageJsonScreen,
+    SwDocsSwitchFrameworkDoctorScreen
   ];
 
   onMount() {

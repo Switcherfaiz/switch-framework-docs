@@ -81,7 +81,8 @@ registerComponent(Counter);
 - **Skip rerender:** `setProfile(next, { rerender: false })` then use `this.paint()` or a small DOM patch.
 
 ```javascript title:screens/UserScreen.js
-import { SwitchComponent, useInstanceState, useScreenFocus, registerComponent } from 'switch-framework';
+import { SwitchComponent, useInstanceState, registerComponent } from 'switch-framework';
+import { useScreenFocus } from 'switch-framework-router';
 
 export class UserScreen extends SwitchComponent {
   static screenName = 'user/:id';
@@ -144,7 +145,8 @@ updateState('user', sessionUser);
 `useShared(key, defaultValue?)` reads a global state key **and** subscribes this component to it. When the value changes (from anywhere in the app), this component rerenders. Uses `ensureState` internally — no try/catch needed.
 
 ```javascript title:screens/PinsScreen.js
-import { SwitchComponent, useShared, useScreenFocus, createProps } from 'switch-framework';
+import { SwitchComponent, useShared, createProps } from 'switch-framework';
+import { useScreenFocus } from 'switch-framework-router';
 import { apiGet } from '../api.js';
 
 export class PinsScreen extends SwitchComponent {
@@ -248,7 +250,8 @@ This example shows all three hooks on the **same component with different keys**
 - `useState(null)` is purely local open-thread tracking.
 
 ```javascript title:screens/MessagesScreen.js
-import { SwitchComponent, useShared, useState, onState, updateState, useScreenFocus } from 'switch-framework';
+import { SwitchComponent, useShared, useState, onState, updateState } from 'switch-framework';
+import { useScreenFocus } from 'switch-framework-router';
 import { apiGet } from '../api.js';
 
 export class MessagesScreen extends SwitchComponent {
@@ -623,7 +626,7 @@ Kept-alive screens stay in the DOM when you navigate away. `useEffect(['activeRo
 `home` matches only `/home`. `home/:id` matches `/home/travel`, not `/home`.
 
 ```javascript
-import { useScreenFocus } from 'switch-framework';
+import { useScreenFocus } from 'switch-framework-router';
 
 effects() {
   useScreenFocus(() => {

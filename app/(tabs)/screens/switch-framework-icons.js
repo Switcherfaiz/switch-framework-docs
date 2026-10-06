@@ -8,10 +8,10 @@ const BATCH_SIZE = 96;
 const INITIAL_COUNT = BATCH_SIZE;
 
 export class SwDocsSwitchIconsScreen extends SwitchComponent {
-  static screenName = 'docs/switch-icons';
-  static path = '/docs/switch-icons';
+  static screenName = 'docs/switch-framework-icons';
+  static path = '/docs/switch-framework-icons';
   static title = 'Switch Icons';
-  static tag = 'sw-docs-switch-icons-screen';
+  static tag = 'sw-docs-switch-framework-icons-screen';
 
   filterKeys(query) {
     const q = String(query || '').trim().toLowerCase();

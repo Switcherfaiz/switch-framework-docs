@@ -3,7 +3,7 @@
 Use `npx` to run the CLI without installing, or install globally for faster repeated use.
 
 > [!NOTE]
-> New projects pin **`switch-framework@^0.3.0`** and **`switch-framework-backend@^0.2.9`** in `package.json`.
+> New projects pin **`switch-framework@^0.3.0`**, **`switch-framework-backend@^0.3.0`**, **`switch-framework-router@^0.3.0`**, and **`switch-framework-icons@^0.3.0`**. Electron apps also get **`switch-framework-electron@^0.3.0`**. The CLI can install **`switch-framework-doctor`** (`--doctor` / `--no-doctor`).
 
 ```bash title:Commands (npx)
 npx create-switch-framework-app my-app
@@ -28,7 +28,7 @@ create-switch-framework-app my-app --yes --app-type web
 ### Options
 
 ```params-table
-{"headers":["Option","Description"],"htmlColumns":[0,1],"rows":[["<code>--yes</code>, <code>-y</code>","Skip prompts and use defaults"],["<code>--app-type &lt;type&gt;</code>","<code>web</code> | <code>electron</code> | <code>both</code>"],["<code>--port &lt;port&gt;</code>","Server port. Default: 3000"],["<code>--no-install</code>","Do not run npm install after creation"],["<code>--use-local</code>","Use npm link for local switch-framework packages"],["<code>-h</code>, <code>--help</code>","Show help"]]}
+{"headers":["Option","Description"],"htmlColumns":[0,1],"rows":[["<code>--yes</code>, <code>-y</code>","Skip prompts and use defaults"],["<code>--app-type &lt;type&gt;</code>","<code>web</code> | <code>electron</code> | <code>both</code>"],["<code>--port &lt;port&gt;</code>","Server port. Default: 3000"],["<code>--no-install</code>","Do not run npm install after creation"],["<code>--use-local</code>","Use npm link for local switch-framework packages"],["<code>--doctor</code>","Also install <code>switch-framework-doctor</code>"],["<code>--no-doctor</code>","Do not install doctor"],["<code>-h</code>, <code>--help</code>","Show help"]]}
 ```
 
 ### Electron desktop apps
@@ -50,4 +50,4 @@ Check your Node version with `node -v`, then install a matching Electron if need
 npm install electron@33 electron-builder --save-dev
 ```
 
-New projects pin **`switch-framework@^0.2.9`** and **`switch-framework-backend@^0.2.9`** in `package.json`.
+After scaffolding, run **`npx switch-framework-doctor`** if you installed it. See [[Switch Framework Doctor|docs/external-dependencies/switch-framework-doctor]].

@@ -1,6 +1,6 @@
 ## Desktop Server (Electron)
 
-Electron apps from **`create-switch-framework-app@0.2.9`** do **not** run `server.js` inside the main process. Instead, **`switch-framework-electron`** forks a **child Node process** that runs the same `server.js` you would use on the web. The child binds **`PORT=0`** on **`127.0.0.1`**, reports the real port over IPC, and the BrowserWindow loads that URL.
+Electron apps from **`create-switch-framework-app@0.3.0`** do **not** run `server.js` inside the main process. Instead, **`switch-framework-electron`** forks a **child Node process** that runs the same `server.js` you would use on the web. The child binds **`PORT=0`** on **`127.0.0.1`**, reports the real port over IPC, and the BrowserWindow loads that URL.
 
 > [!TIP]
 > Related pages: [[Multiple child servers|docs/server/desktop-multi-server]] · [[switch-framework-electron|docs/server/desktop-electron-package]] · [[Splash window|docs/server/desktop-splash]] · [[Web viewing & auth|docs/server/desktop-auth]]
@@ -50,7 +50,7 @@ The **authoritative** Electron port is the `[switch-framework-electron:…]` lin
 The CLI writes **`assets/script/versions.js`** with pinned package versions. The starter splash reads **`window.__SW_VERSIONS__`** and shows:
 
 ```text
-framework 0.2.9 · backend 0.2.9 · cli 0.2.9 · electron 0.2.9
+framework 0.3.0 · backend 0.3.0 · router 0.3.0 · icons 0.3.0 · cli 0.3.0 · electron 0.3.0
 ```
 
 ---
@@ -78,9 +78,11 @@ Use **`config({ onHttpServer })`** if you need the raw `http.Server` before bind
     "build": "electron-builder --config electron/electron-builder.json"
   },
   "dependencies": {
-    "switch-framework": "^0.2.9",
-    "switch-framework-backend": "^0.2.9",
-    "switch-framework-electron": "^0.2.9"
+    "switch-framework": "^0.3.0",
+    "switch-framework-backend": "^0.3.0",
+    "switch-framework-router": "^0.3.0",
+    "switch-framework-icons": "^0.3.0",
+    "switch-framework-electron": "^0.3.0"
   }
 }
 ```
@@ -90,7 +92,7 @@ Use **`config({ onHttpServer })`** if you need the raw `http.Server` before bind
 
 ---
 
-### CLI scaffold (0.2.9)
+### CLI scaffold (0.3.0)
 
 ```bash
 npx create-switch-framework-app my-app --app-type electron

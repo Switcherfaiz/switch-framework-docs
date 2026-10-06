@@ -1,6 +1,6 @@
 ## switch-framework-electron
 
-**`switch-framework-electron@0.2.9`** is the desktop companion package for Switch Framework. It hides Electron-specific plumbing — child server forking, dynamic ports, IPC, splash bootstrap, local auth cookies, and window controls — so your app only keeps **`electron/servers.js`**, **`electron/preload.js`**, and your own **`server.js`**.
+**`switch-framework-electron@0.3.0`** is the desktop companion package for Switch Framework. It hides Electron-specific plumbing — child server forking, dynamic ports, IPC, splash bootstrap, local auth cookies, and window controls — so your app only keeps **`electron/servers.js`**, **`electron/preload.js`**, and your own **`server.js`**.
 
 Installed automatically when you scaffold with:
 
@@ -82,7 +82,7 @@ swElectron.childEntry; // path to child.js inside the package
 ```json title:package.json
 {
   "dependencies": {
-    "switch-framework-electron": "^0.2.9"
+    "switch-framework-electron": "^0.3.0"
   },
   "devDependencies": {
     "electron": "^41.7.1"
@@ -102,7 +102,9 @@ When using **`create-switch-framework-app --use-local`**:
 cd switch-framework && npm link
 cd switch-framework-backend && npm link
 cd switch-framework-electron && npm link
-cd my-app && npm link switch-framework switch-framework-backend switch-framework-electron
+cd switch-framework-icons && npm link
+cd switch-framework-router && npm link
+cd my-app && npm link switch-framework switch-framework-backend switch-framework-electron switch-framework-icons switch-framework-router
 ```
 
 ---
@@ -112,7 +114,7 @@ cd my-app && npm link switch-framework switch-framework-backend switch-framework
 | | |
 |---|---|
 | **Name** | `switch-framework-electron` |
-| **Version** | `0.2.9` |
+| **Version** | `0.3.0` |
 | **License** | MIT |
 | **Repo** | [github.com/Switcherfaiz/switch-framework-electron](https://github.com/Switcherfaiz/switch-framework-electron) |
 

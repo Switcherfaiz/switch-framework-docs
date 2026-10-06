@@ -38,7 +38,7 @@ No `startApp()` — the framework auto-boots when it finds your `RootLayout` (or
 ### 3. Root layout
 
 ```javascript title:app/_layout.js
-import { RootLayout } from 'switch-framework';
+import { RootLayout } from 'switch-framework-router';
 import { IndexScreen } from './index.js';
 import { MyTabsLayout } from './(tabs)/_layout.js';
 
@@ -52,7 +52,7 @@ export class MyRootLayout extends RootLayout {
 ### 4. Tab layout
 
 ```javascript title:app/(tabs)/_layout.js
-import { TabLayout } from 'switch-framework';
+import { TabLayout } from 'switch-framework-router';
 import { HomeScreen } from './home/index.js';
 
 export class MyTabsLayout extends TabLayout {

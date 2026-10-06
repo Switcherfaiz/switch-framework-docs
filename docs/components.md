@@ -173,8 +173,8 @@ registerComponent(MyBadge);
 If the framework finds a `+not-found.js` file, it expects a component with `path: '/+not-found'`. That screen is used instead of the framework's default not-found. The router auto-detects it by path – add it to `stackScreens` in your layout.
 
 ```javascript title:+not-found.js
-import { SwitchComponent, navigate, goBack } from 'switch-framework';
-import { getActivePath } from 'switch-framework/router';
+import { SwitchComponent } from 'switch-framework';
+import { navigate, goBack, getActivePath } from 'switch-framework-router';
 
 export default class extends SwitchComponent {
   static screenName = '+not-found';

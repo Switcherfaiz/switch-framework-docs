@@ -17,9 +17,12 @@ You get a declarative routing system (stack screens, tab navigation), Web Compon
 - **Runtime-first** – No bundler required. Use native ES modules. Your `index.html` loads scripts, and you're off to the races.
 - **SwitchComponent** – Base class for screens and components. Shadow DOM, `render()`, `styleSheet()`, `connected()`/`disconnected()`, and `useEffect` for reactive updates.
 - **Reactive state** – `createState` and `useState` for shared, event-driven state. No prop drilling.
-- **RootLayout, TabLayout, StackLayout** – Root boots the app. Nest navigators by putting a layout class in a parent `screens` list. Leaf screens own URLs; layouts use `screenName`, not `path`.
+- **RootLayout, TabLayout, StackLayout** – Import from `switch-framework-router`. Root boots the app. Nest navigators by putting a layout class in a parent `screens` list. Leaf screens own URLs; layouts use `screenName`, not `path`.
+- **Navigation** – `navigate`, `replace`, `wipeTo`, `useScreenFocus`, and `<sw-link>` also live on `switch-framework-router` (same grouping as Expo Router).
+- **Icons** – `import 'switch-framework-icons'` registers `<sw-icon name="heart">`. Span classes stay `switch_icon_*`.
 - **Auto boot** – Load `app/_layout.js` from `index.html`. When the framework detects your `RootLayout` (or `StackLayout`) subclass, it starts the app — no manual `startApp()` call.
 - **Backend integration** – `switch-framework-backend` gives you auth, sessions, and API helpers. Full-stack made easy.
+- **Doctor** – `npx switch-framework-doctor` checks first-party versions and allowlisted peers before the browser opens.
 - **Theming** – Dark/light mode with CSS variables. One line to init, and you're themed.
 
 ### When should I use Switch?

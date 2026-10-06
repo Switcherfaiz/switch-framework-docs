@@ -8,6 +8,22 @@ Switch Framework has three layout classes:
 
 Layouts are **containers**. They do not own a URL. Leaf screens own `static path`. The address bar always shows a leaf path such as `/home` or `/settings`, never `/(tabs)` or `/profile-stack`.
 
+Import `RootLayout`, `TabLayout`, and `StackLayout` from `switch-framework-router` — the same package as `navigate`, like `Stack` / `Tabs` from `expo-router`.
+
+```javascript title:Current — layouts from switch-framework-router
+import { RootLayout, TabLayout, StackLayout } from 'switch-framework-router';
+```
+
+Do **not** add `switch-framework-router` to `switchFramework.imports`. The CLI installs it on the **0.3.0** line next to `switch-framework`.
+
+> [!DEPRECATED]
+> In **0.3.x** these still work. Prefer `switch-framework-router`. The core barrel re-exports will be **removed in the next version**.
+
+```javascript title:Deprecated — still works in 0.3.x
+import { RootLayout, TabLayout, StackLayout } from 'switch-framework';
+import { RootLayout } from 'switch-framework/router';
+```
+
 Screens do **not** need `static layout`. Register them in the correct layout `screens` / `stackScreens` array and the framework assigns `stack` or `tabs`. You can still set `static layout` explicitly — it must match where the screen is registered.
 
 > [!TIP]
@@ -18,7 +34,7 @@ Screens do **not** need `static layout`. Register them in the correct layout `sc
 Put a layout **class** in a parent `screens` list to nest a navigator. That is the Expo-style `<Stack.Screen name="(tabs)" />` equivalent — there is no extra XML, and you do not scan folders.
 
 ```javascript title:app/_layout.js
-import { RootLayout } from 'switch-framework';
+import { RootLayout } from 'switch-framework-router';
 import { MyTabsLayout } from './(tabs)/_layout.js';
 import { IndexScreen } from './index.js';
 import { LoginScreen } from './login/index.js';
@@ -52,7 +68,7 @@ Auth, intro, and 404 stay **siblings of the tabs layout** on the root stack. Ope
 Tab screens share a tab bar. Register **leaf screens and nested stacks** in `static screens`, and define tab bar items in `static tabs`. Give the layout a `screenName` (default `'(tabs)'`) so `navigate('(tabs)')` can resolve to the initial tab's leaf path.
 
 ```javascript title:app/(tabs)/_layout.js
-import { TabLayout } from 'switch-framework';
+import { TabLayout } from 'switch-framework-router';
 import { HomeScreen } from './home/index.js';
 import { HomeCategoryScreen } from './home/[id].js';
 import { ExploreScreen } from './explore/index.js';
@@ -117,7 +133,7 @@ A stack inside tabs keeps the tab bar while you push profile → settings → ab
 Layouts use `screenName` + `initialScreen` (or `initialTab` on tabs). **Do not set `static path` on a layout.**
 
 ```javascript title:app/(tabs)/profile/_layout.js
-import { StackLayout } from 'switch-framework';
+import { StackLayout } from 'switch-framework-router';
 import { ProfileScreen } from './index.js';
 import { SettingsScreen } from '../settings/index.js';
 import { AboutScreen } from '../../about/index.js';
@@ -170,7 +186,7 @@ Add the route prefix to the tab's `match` array: `match: ['home']`. Give `/home`
 Always navigate to a **leaf** `screenName` or a **layout `screenName`**. Layout ids resolve to that layout's initial child path — they never become `/(tabs)` in the address bar.
 
 ```javascript title:Navigate to leaves and layout ids
-import { navigate, replace, reset } from 'switch-framework';
+import { navigate, replace, reset } from 'switch-framework-router';
 
 navigate('home');              // /home
 navigate('settings');          // /settings (tab bar stays if nested under tabs)
@@ -180,6 +196,22 @@ navigate('profile-stack');     // same as that stack's initialScreen leaf (usual
 replace('login');              // replace history entry
 reset('home');                 // drop the cached home instance, then go there
 reset('*');                    // drop every cached screen/layout
+```
+
+> [!DEPRECATED]
+> `import { navigate, replace, reset } from 'switch-framework'` still works in 0.3.x. Move it to `switch-framework-router` before the next version.
+
+```javascript title:Deprecated — navigate from switch-framework
+import { navigate, replace, reset } from 'switch-framework';
+
+navigate('home');
+navigate('settings');
+navigate('login');
+navigate('(tabs)');
+navigate('profile-stack');
+replace('login');
+reset('home');
+reset('*');
 ```
 
 ```params-table
@@ -206,7 +238,8 @@ Guards run at navigate / replace / popstate / start, **before** the leaf mounts.
 `static guard` **must be a function** (not `!!getState('user')` at class load). Truthy return allows the route. Falsy return `replace`s to `static redirect` (default `'login'`), wipes keep-alive, and locks history so Back cannot reopen the protected tree.
 
 ```javascript title:Protect tabs; bounce signed-in users off login
-import { TabLayout, SwitchComponent, getState } from 'switch-framework';
+import { TabLayout } from 'switch-framework-router';
+import { SwitchComponent, getState } from 'switch-framework';
 
 export class MyTabsLayout extends TabLayout {
   static redirect = 'login';

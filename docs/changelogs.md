@@ -17,6 +17,7 @@ Release notes and version history for Switch Framework. Each version includes ne
 **Router**
 
 - [[Router|docs/router]] — `layoutChain` on each leaf, `replace` / `reset` documented, navigation-by-layout-id rules.
+- `switch-framework-router@0.3.0` — layouts + `navigate` live in this package. App code imports `from 'switch-framework-router'` (Expo-style). `from 'switch-framework/router'` is the same package. The main barrel still re-exports those names in 0.3.x (deprecated; removed in the next version).
 - `<sw-link>` / `<sw-redirect>` — Expo-style tags. Link navigates on click; Redirect `replace`s on mount. Not the route table.
 - `wipeTo(route)` — Drop keep-alive, clear app history, replace + lock so Back cannot reopen a protected screen.
 - Guards — `static guard = () => getState('user')` (function, evaluated at navigate time). Falsy → `static redirect`. Leaf overrides; else nearest layout. `static protected = true` is `() => getState('user')`.
@@ -33,6 +34,9 @@ Release notes and version history for Switch Framework. Each version includes ne
 - [[Importing packages|docs/external-dependencies]] — allowlisted npm packages on the same import map as `switch-framework`. `npm i`, add the name to `switchFramework.imports`, restart, then `import '@scope/pkg'`.
 - [[Creating a Switch package|docs/external-dependencies/creating]] — ESM entry, `peerDependencies.switch-framework`, unique tag, `registerComponent` on import, host CSS variables for theme.
 - [[Allowlisting in package.json|docs/external-dependencies/package-json]] — app `switchFramework.imports` (array or object), merged with `config({ imports })`. `/npm` jail; `/node_modules` is never mounted.
+- [[Switch Framework Doctor|docs/external-dependencies/switch-framework-doctor]] — `npx switch-framework-doctor` (`check`, `--json`, `--fix`). First-party version alignment and Switch component peers. Not an allowlisted import.
+- [[switch-framework-icons|docs/switch-framework-icons]] — `import 'switch-framework-icons'` registers `<sw-icon>`. Font CSS is `/switch-framework-icons/style.css`. Span classes stay `switch_icon_*`.
+- `switch-framework-electron@0.3.0` — desktop peer is `switch-framework-backend@>=0.3.0`. CLI scaffolds Electron on the same 0.3 line.
 
 **Fixes**
 

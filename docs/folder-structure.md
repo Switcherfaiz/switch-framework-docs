@@ -43,6 +43,7 @@ The entry HTML only needs `<sw-app-initial>` and a script that loads your root l
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Switch Framework App</title>
   <link rel="stylesheet" href="/assets/styles/styles.css">
+  <link rel="stylesheet" href="/switch-framework-icons/style.css">
 </head>
 <body>
   <sw-app-initial></sw-app-initial>
@@ -70,6 +71,9 @@ Screens are registered **only in layout files**, not on the screen class itself:
 ```
 
 ```javascript title:app/_layout.js
+import { RootLayout } from 'switch-framework-router';
+import 'switch-framework-icons';
+
 export class MyRootLayout extends RootLayout {
   static screens = [MyTabsLayout, IndexScreen, LoginScreen, NotFoundScreen];
   static tabsLayout = MyTabsLayout;

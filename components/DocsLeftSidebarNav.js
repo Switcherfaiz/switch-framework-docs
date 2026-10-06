@@ -14,9 +14,9 @@ export class DocsLeftSidebarNav extends SwitchComponent {
     const routeMap = {
       'quick-start': ['docs/introduction', 'docs/tutorial/reactive-button', 'docs/thinking', 'docs/goals'],
       installation: ['docs/cli', 'docs/installation/web', 'docs/installation/desktop'],
-      'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations', 'docs/switch-icons'],
+      'app-structure': ['docs/folder-structure', 'docs/layouts', 'docs/router', 'docs/state', 'docs/theming', 'docs/animations', 'docs/switch-framework-icons'],
       'data-flow': ['docs/data-flow/props'],
-      'external-dependencies': ['docs/external-dependencies', 'docs/external-dependencies/creating', 'docs/external-dependencies/package-json'],
+      'external-dependencies': ['docs/external-dependencies', 'docs/external-dependencies/creating', 'docs/external-dependencies/package-json', 'docs/external-dependencies/switch-framework-doctor'],
       components: ['docs/components', 'docs/components/flatlist', 'docs/components/scrollview', 'docs/components/modal', 'docs/components/electron-titlebar', 'docs/hooks'],
       backend: [
         'docs/server/introduction',
@@ -168,7 +168,7 @@ export class DocsLeftSidebarNav extends SwitchComponent {
               { label: 'State Management', to: 'docs/state' },
               { label: 'Theming', to: 'docs/theming' },
               { label: 'Animations', to: 'docs/animations' },
-              { label: 'Switch Icons', to: 'docs/switch-icons' }
+              { label: 'Switch Icons', to: 'docs/switch-framework-icons' }
             ]
           },
           {
@@ -186,7 +186,8 @@ export class DocsLeftSidebarNav extends SwitchComponent {
             children: [
               { label: 'Importing packages', to: 'docs/external-dependencies' },
               { label: 'Creating a Switch package', to: 'docs/external-dependencies/creating' },
-              { label: 'Allowlisting in package.json', to: 'docs/external-dependencies/package-json' }
+              { label: 'Allowlisting in package.json', to: 'docs/external-dependencies/package-json' },
+              { label: 'Switch Framework Doctor', to: 'docs/external-dependencies/switch-framework-doctor' }
             ]
           }
         ]

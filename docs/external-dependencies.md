@@ -43,7 +43,15 @@ switchFrameworkBackend.config({
 });
 ```
 
-`package.json` and `config({ imports })` are merged. `switch-framework`, `switch-framework/router`, and `switch-framework/themes` are always mapped — you do not list them.
+`package.json` and `config({ imports })` are merged.
+
+**SDK packages** are always on the import map. Do **not** add them to `switchFramework.imports`:
+
+- `switch-framework`, `switch-framework/router`, `switch-framework/themes`, `switch-framework/overlay`
+- `switch-framework-icons`
+- `switch-framework-router`
+
+`imports` is only for **third-party** packs. Layouts and navigation come from `switch-framework-router` (`RootLayout`, `TabLayout`, `StackLayout`, `navigate`) — same idea as `expo-router`. `from 'switch-framework/router'` still works in 0.3.x. Do not allowlist the package. `SwitchComponent` and state stay on `switch-framework`.
 
 ### 3. Import in a screen or component
 
@@ -116,4 +124,4 @@ async function openWidget() {
 - Skip the allowlist because the package is already in `dependencies` — extra deps (`express`, `dotenv`, `esbuild`) must not ship to the browser.
 - Type `/npm/@scope/name` in source. That URL is an implementation detail.
 
-Next: [[Creating a Switch package|docs/external-dependencies/creating]] · [[Allowlisting in package.json|docs/external-dependencies/package-json]]
+Next: [[Creating a Switch package|docs/external-dependencies/creating]] · [[Allowlisting in package.json|docs/external-dependencies/package-json]] · [[Switch Framework Doctor|docs/external-dependencies/switch-framework-doctor]]
