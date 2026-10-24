@@ -1,4 +1,4 @@
-import { SwitchComponent, decodeData } from 'switch-framework';
+import { SwitchComponent } from 'switch-framework';
 import { useRouteChangesSubscriber } from 'switch-framework/router';
 
 const HEADING_TAGS = [
@@ -154,28 +154,14 @@ export class DocsRightSidebarNav extends SwitchComponent {
 
   _headingId(el) {
     if (el.id) return el.id;
-    const raw = el.getAttribute('data');
-    if (!raw) return '';
-    try {
-      return decodeData(raw)?.id || '';
-    } catch {
-      return '';
-    }
+    return el.getProps?.()?.id || '';
   }
 
   _headingText(el, innerSelector) {
     const inner = el.shadowRoot?.querySelector(innerSelector);
     if (inner?.textContent?.trim()) return inner.textContent.trim();
-
-    const raw = el.getAttribute('data');
-    if (raw) {
-      try {
-        const html = decodeData(raw)?.html || '';
-        return html.replace(/<[^>]+>/g, '').trim();
-      } catch {
-        /* ignore */
-      }
-    }
+    const html = el.getProps?.()?.html || '';
+    if (html) return html.replace(/<[^>]+>/g, '').trim();
     return this._headingId(el);
   }
 

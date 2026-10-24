@@ -1,11 +1,20 @@
 export const DOC_STYLES = `
-  :host { display: block; width: 100%; font-family: var(--font); color: var(--main_text); }
+  :host {
+    display: block;
+    width: 100%;
+    font-family: var(--font);
+    color: var(--main_text);
+    background: var(--page_background);
+    color-scheme: inherit;
+  }
   * { box-sizing: border-box; }
   .doc-section {
     padding: 36px 40px 80px;
     max-width: 820px;
     margin: 0 auto;
     width: 100%;
+    color: var(--main_text);
+    background: var(--page_background);
   }
   .doc-page-toolbar {
     display: flex;

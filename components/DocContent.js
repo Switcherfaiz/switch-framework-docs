@@ -1,26 +1,11 @@
-import { SwitchComponent, decodeData } from 'switch-framework';
-
-function readData(el) {
-  const raw = el.getAttribute('data');
-  if (!raw) return null;
-  try {
-    return decodeData(raw);
-  } catch {
-    return null;
-  }
-}
+import { SwitchComponent } from 'switch-framework';
 
 function createDocTextComponent(tag, className, styleBlock) {
   return class extends SwitchComponent {
     static tag = tag;
-    static observedAttributes = ['data'];
-
-    attributeChangedCallback(name, oldValue, newValue) {
-      if (name === 'data' && oldValue !== newValue) this.rerender();
-    }
 
     getData() {
-      return readData(this) || { html: '' };
+      return this.getProps() || { html: '' };
     }
 
     render() {
@@ -134,14 +119,9 @@ const CALLOUT_LABELS = {
 
 export class DocCallout extends SwitchComponent {
   static tag = 'sw-doc-callout';
-  static observedAttributes = ['data'];
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'data' && oldValue !== newValue) this.rerender();
-  }
 
   getData() {
-    return readData(this) || { html: '', variant: 'note' };
+    return this.getProps() || { html: '', variant: 'note' };
   }
 
   render() {

@@ -1,24 +1,13 @@
-import { SwitchComponent, decodeData } from 'switch-framework';
+import { SwitchComponent } from 'switch-framework';
 import { formatInline } from '/utils/inline-format.js';
 
 export class DocsParamsTable extends SwitchComponent {
   static tag = 'sw-docs-params-table';
-  static observedAttributes = ['data'];
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'data' && oldValue !== newValue) {
-      this._renderToShadow();
-    }
-  }
 
   getData() {
-    const raw = this.getAttribute('data');
-    if (!raw) return null;
-    try {
-      return decodeData(raw);
-    } catch {
-      return null;
-    }
+    const props = this.getProps();
+    if (!props || (props.headers == null && props.rows == null)) return null;
+    return props;
   }
 
   escapeHtml(text) {
