@@ -8,7 +8,10 @@ export const LIVE_PREVIEW_STYLESHEETS = [
 export const LIVE_PREVIEW_IMPORT_MAP = {
   imports: {
     'switch-framework': '/switch-framework/index.js',
-    'switch-framework/router': '/switch-framework/router/index.js',
+    'switch-framework/': '/switch-framework/',
+    'switch-framework/router': '/switch-framework-router/index.js',
+    'switch-framework-router': '/switch-framework-router/index.js',
+    'switch-framework-router/': '/switch-framework-router/',
   },
 };
 

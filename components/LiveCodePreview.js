@@ -1,4 +1,4 @@
-import { SwitchComponent, decodeData, getState, updateState } from 'switch-framework';
+import { SwitchComponent, getState, updateState } from 'switch-framework';
 import { copyText } from '/utils/clipboard.js';
 import { buildComponentPreviewUrl } from '/utils/livePreview.js';
 
@@ -40,16 +40,10 @@ function highlightJson(code) {
 
 export class LiveCodePreview extends SwitchComponent {
   static tag = 'sw-live-code-preview';
-  static observedAttributes = ['data'];
   static { this.useState('live-edit-mode'); }
 
   onMount() {
     this.bindEvents();
-    // Re-bind events after re-renders (e.g. live-edit-mode toggle)
-    this.useEffect(() => {
-      queueMicrotask(() => this.bindEvents());
-    }, ['live-edit-mode']);
-
     this._hasRun = false;
     this._setupAutoRun();
     if (!this._logHandlerBound) {
@@ -168,26 +162,12 @@ export class LiveCodePreview extends SwitchComponent {
     el.scrollTop = el.scrollHeight;
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'data' && oldValue !== newValue) {
-      this._editedCode = null;
-      this._hasRun = false;
-      this.rerender();
-      queueMicrotask(() => {
-        this.bindEvents();
-        this._setupAutoRun();
-      });
-    }
+  onUpdate() {
+    this.bindEvents();
   }
 
   getData() {
-    const raw = this.getAttribute('data');
-    if (!raw) return null;
-    try {
-      return decodeData(raw);
-    } catch {
-      return null;
-    }
+    return this.getProps();
   }
 
   highlight(code, language) {

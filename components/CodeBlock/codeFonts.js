@@ -1,11 +1,11 @@
 export const CODE_FONT_STACK = "'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
 
 export const CODE_FONT_CSS = `
-  --sw-code-font: ${CODE_FONT_STACK};
+  :host { --sw-code-font: ${CODE_FONT_STACK}; }
 
   .hljs,
   .code-pre code.hljs,
-  .code-fs-edit {
+  .fs-edit {
     font-family: var(--sw-code-font) !important;
     font-size: 13px !important;
     line-height: 22px !important;
@@ -90,24 +90,4 @@ export function ensureCodeAssetsInHead() {
     style.textContent = `:root { --sw-code-font: ${CODE_FONT_STACK}; }`;
     document.head.appendChild(style);
   }
-}
-
-export function ensureHljsStylesInShadow(shadowRoot) {
-  if (!shadowRoot || shadowRoot.querySelector('#sw-code-hl-shadow')) return;
-  const link = document.createElement('link');
-  link.id = 'sw-code-hl-shadow';
-  link.rel = 'stylesheet';
-  link.href = '/codehighlighter/codehighlighter.css';
-  shadowRoot.prepend(link);
-}
-
-export function whenCodeAssetsReady() {
-  ensureCodeAssetsInHead();
-  const links = ['sw-code-hl-css', 'sw-code-font-css'].map((id) => document.getElementById(id)).filter(Boolean);
-  const pending = links.filter((link) => !link.sheet);
-  if (!pending.length) return Promise.resolve();
-  return Promise.all(pending.map((link) => new Promise((resolve) => {
-    link.addEventListener('load', resolve, { once: true });
-    link.addEventListener('error', resolve, { once: true });
-  })));
 }

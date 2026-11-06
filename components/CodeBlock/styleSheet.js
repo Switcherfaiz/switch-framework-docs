@@ -4,6 +4,7 @@ export function codeBlockStyleSheet() {
   return `
     <style>
       @import '/assets/icons/style.css';
+      @import '/codehighlighter/codehighlighter.css';
       ${CODE_FONT_CSS}
 
       * {
